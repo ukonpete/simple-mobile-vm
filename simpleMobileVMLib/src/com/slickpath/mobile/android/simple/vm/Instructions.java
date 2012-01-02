@@ -1,7 +1,9 @@
 package com.slickpath.mobile.android.simple.vm;
 
-import java.util.Hashtable;
-
+/**
+ * @author PJ Procopio
+ *
+ */
 public interface Instructions {
 
     public static final int _BEGIN = -1;

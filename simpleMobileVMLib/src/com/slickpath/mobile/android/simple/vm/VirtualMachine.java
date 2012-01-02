@@ -10,10 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import android.util.Log;
-
 /**
- * @author PJ
+ * @author PJ Procopio
  *
  */
 public class VirtualMachine implements Instructions{
@@ -635,7 +633,7 @@ public class VirtualMachine implements Instructions{
 
     private void debug(final String sText)
     {
-        Log.d(TAG, sText);
+        //Log.d(TAG, sText);
     }
 }
 

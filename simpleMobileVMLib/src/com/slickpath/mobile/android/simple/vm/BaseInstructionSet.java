@@ -7,7 +7,7 @@ import java.util.Hashtable;
 import java.util.Set;
 
 /**
- * @author PJ
+ * @author PJ Procopio
  *
  */
 public class BaseInstructionSet implements Instructions{
