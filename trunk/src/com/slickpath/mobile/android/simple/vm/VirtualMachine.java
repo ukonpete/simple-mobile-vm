@@ -5,16 +5,12 @@ package com.slickpath.mobile.android.simple.vm;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import android.util.Log;
-
-import com.slickpath.mobile.android.simple.vm.util.VMUtil;
 
 /**
  * @author PJ
@@ -24,20 +20,25 @@ public class VirtualMachine implements Instructions{
 	
 	private static final String TAG = VirtualMachine.class.getName();
 
+    public static final int EMPTY_MEMORY_LOC = 999999;
+    public static final int MAX_MEMORY = 500;
+    public static final int STACK_LIMIT = MAX_MEMORY / 2;
+    public static final int YES = 1;
+    public static final int NO = 0;
+    
     private int _stackPtr = -1;
-    private int _stackLimit = VMUtil.STACK_LIMIT;
-    private int _programCtr = VMUtil.STACK_LIMIT;
-    private int _programWriter = VMUtil.STACK_LIMIT;
+    private int _programCtr = STACK_LIMIT;
+    private int _programWriter = STACK_LIMIT;
 
     private List<Integer> _memory = null;
 
-    PrintStream _textWriter;
-    InputStream _textReader;
-    Scanner _textScanner;
+    private final PrintStream _textWriter;
+    private final InputStream _textReader;
+    private final Scanner _textScanner;
     private int _numInstrsRun = 0;
     private boolean _bDebug = false;
 
-    public VirtualMachine(PrintStream writer, InputStream reader) throws IOException
+    public VirtualMachine(final PrintStream writer, final InputStream reader)
     {
     	_textWriter = writer;
     	_textReader = reader;
@@ -53,146 +54,145 @@ public class VirtualMachine implements Instructions{
     	initMemory();    	
     }
 
-    public void connect(PipedInputStream stream) throws IOException
-    {
-    	_textWriter.flush();
-    	_textWriter.close();
-    }
-
 	/**
 	 * 
 	 */
 	private void initMemory() {
-		_memory = new ArrayList<Integer>(VMUtil.MAX_MEMORY);
+		_memory = new ArrayList<Integer>(MAX_MEMORY);
         // initialize every piece of memory to EMPTY
-        for (int i = 0; i < VMUtil.MAX_MEMORY; i++)
+        for (int i = 0; i < MAX_MEMORY; i++)
         {
-        	_memory.set(i++, VMUtil.EMPTY_MEMORY_LOC);
+        	_memory.set(i++, EMPTY_MEMORY_LOC);
         }
 	}
     
+    public void setDebug(final boolean bDebug)
+    {
+    	_bDebug = bDebug;
+    }
+
     //  Command Category : ARITHMATIC
 
-    public void ADD()
+    public void ADD() throws VMError
     {
-        int val1 = _pop();
-        int val2 = _pop();
-        int val3 = val1 + val2;
+        final int val1 = _pop();
+        final int val2 = _pop();
+        final int val3 = val1 + val2;
         PUSHC(val3);
     }
 
-    public void SUB()
+    public void SUB() throws VMError
     {
-        int val1 = _pop();
-        int val2 = _pop();
-        int val3 = val1 - val2;
+    	final int val1 = _pop();
+    	final int val2 = _pop();
+    	final int val3 = val1 - val2;
         PUSHC(val3);
     }
 
-    public void MUL()
+    public void MUL() throws VMError
     {
-        int val1 = _pop();
-        int val2 = _pop();
-        int val3 = val1 * val2;
+    	final int val1 = _pop();
+    	final int val2 = _pop();
+    	final int val3 = val1 * val2;
         PUSHC(val3);
     }
 
-    public void DIV()
+    public void DIV() throws VMError
     {
-        int val1 = _pop();
-        int val2 = _pop();
-        int val3 = val1 / val2;
+    	final int val1 = _pop();
+    	final int val2 = _pop();
+    	final int val3 = val1 / val2;
         PUSHC(val3);
     }
 
-    public void NEG()
+    public void NEG() throws VMError
     {
-        int val1 = _pop();
-        int val2 = 0 - val1;
+    	final int val1 = _pop();
+    	final int val2 = 0 - val1;
         PUSHC(val2);
     }
 
     //  Command Category : BOOLEAN
 
-    public void EQUAL()
+    public void EQUAL() throws VMError
     {
-        int equal = VMUtil.YES;
-        int val1 = _pop();
-        int val2 = _pop();
+        int equal = YES;
+        final int val1 = _pop();
+        final int val2 = _pop();
 
         if (val1 != val2)
         {
-            equal = VMUtil.NO;
+            equal = NO;
         }
         PUSHC(equal);
     }
 
-    public void NOTEQL()
+    public void NOTEQL() throws VMError
     {
-        int notEqual = VMUtil.NO;
-        int val1 = _pop();
-        int val2 = _pop();
+        int notEqual = NO;
+        final int val1 = _pop();
+        final int val2 = _pop();
 
         if (val1 != val2)
         {
-            notEqual = VMUtil.YES;
+            notEqual = YES;
         }
         PUSHC(notEqual);
     }
 
-    public void GREATER()
+    public void GREATER() throws VMError
     {
-        int greater = VMUtil.NO;
-        int val1 = _pop();
-        int val2 = _pop();
+        int greater = NO;
+        final int val1 = _pop();
+        final int val2 = _pop();
 
         if (val1 > val2)
         {
-            greater = VMUtil.YES;
+            greater = YES;
         }
         PUSHC(greater);
     }
 
-    public void LESS()
+    public void LESS() throws VMError
     {
-        int less = VMUtil.NO;
-        int val1 = _pop();
-        int val2 = _pop();
+        int less = NO;
+        final int val1 = _pop();
+        final int val2 = _pop();
 
         if (val1 < val2)
         {
-            less = VMUtil.YES;
+            less = YES;
         }
         PUSHC(less);
     }
 
-    public void GTREQL()
+    public void GTREQL() throws VMError
     {
-        int greaterOrEqual = VMUtil.NO;
-        int val1 = _pop();
-        int val2 = _pop();
+        int greaterOrEqual = NO;
+        final int val1 = _pop();
+        final int val2 = _pop();
 
         if (val1 >= val2)
         {
-            greaterOrEqual = VMUtil.YES;
+            greaterOrEqual = YES;
         }
         PUSHC(greaterOrEqual);
     }
 
-    public void LSSEQL()
+    public void LSSEQL() throws VMError
     {
-        int lessEqual = VMUtil.NO;
-        int val1 = _pop();
-        int val2 = _pop();
+        int lessEqual = NO;
+        final int val1 = _pop();
+        final int val2 = _pop();
 
         if (val1 <= val2)
         {
-            lessEqual = VMUtil.YES;
+            lessEqual = YES;
         }
         PUSHC(lessEqual);
     }
 
-    public void NOT()
+    public void NOT() throws VMError
     {
         int val = _pop();
 
@@ -210,132 +210,118 @@ public class VirtualMachine implements Instructions{
 
     //  Command Category : STACK_MANIPULATION
 
-    public void PUSH(int location )
+    public void PUSH(final int location ) throws VMError
     {
-        int val = (int)_memory.get(location);
+    	final int val = (int)_memory.get(location);
         PUSHC(val);
     }
 
-    public void PUSHC(int arg)
+    public void PUSHC(final int arg) throws VMError
     {
-        if (_stackPtr < _stackLimit)
+        if (_stackPtr < STACK_LIMIT)
         {
            _memory.set(arg, ++_stackPtr);
         }
         else
         {
-            // TODO
-        	// throw new Exception("PUSHC");
+        	throw new VMError("PUSHC", VMError.VM_ERROR_TYPE_STACK_LIMIT);
         }
     }
 
-    public void POP()
+    public void POP() throws VMError
     {
-        int locationVal = _pop();
-        int arg = _pop();
+    	final int locationVal = _pop();
+    	final int arg = _pop();
         setValAtLocation(arg, locationVal);
     }
 
-    public void POPC(int locationVal)
+    public void POPC(final int locationVal) throws VMError
     {
-        int arg = _pop();
+    	final int arg = _pop();
         setValAtLocation(arg, locationVal);
     }
 
     //  Command Category : INPUT/OUTPUT
 
-    public void RDCHAR()
+    public void RDCHAR() throws VMError
     {
-        // TODO
-    	char ch;
 		try {
-			ch = (char)_textReader.read();
-	        int iAsciiValue = (int)ch;
+			final char ch = (char)_textReader.read();
+			final int iAsciiValue = (int)ch;
 	        PUSHC(iAsciiValue);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new VMError("RDCHAR", e, VMError.VM_ERROR_TYPE_IO);
 		}
     }
 
-    public void WRCHAR()
+    public void WRCHAR() throws VMError
     {
-        // TODO
-    	int value = _pop();
-        String sVal = Integer.toString(value);
+    	final int value = _pop();
+    	final String sVal = Integer.toString(value);
         _textWriter.print(sVal);
-        if ( !_textWriter.equals(System.out))
-        {
-        	System.out.print(sVal);
-        }
+        debug("WRCHAR: " + sVal);
     }
 
-    public void RDINT()
+    public void RDINT()  throws VMError
     {
-        // TODO: handle parsing error
-    	int val = _textScanner.nextInt();
+    	final int val = _textScanner.nextInt();
         PUSHC(val);
     }
 
-    public void WRINT() 
+    public void WRINT()  throws VMError
     {
-        // TODO: handle parsing error
-        int value = _pop();
-        String sOut = "" + value;
+    	final int value = _pop();
+        final String sOut = Integer.toString(value);
         _textWriter.println(sOut);
-        if ( !_textWriter.equals(System.out))
-        {
-        	System.out.println(sOut);
-        }
+        debug("WRINT" + sOut);
     }
 
     //  Command Category : CONTROL
 
-    public void BRANCH(int locationVal)
+    public void BRANCH(final int locationVal) throws VMError
     {
-        locationVal = (locationVal * 2) + VMUtil.STACK_LIMIT;
-        if (locationVal >= _stackLimit)
+    	final int tempLocationVal = (locationVal * 2) + STACK_LIMIT;
+        if (tempLocationVal >= STACK_LIMIT)
         {
-            debug("--BR=" + locationVal);
-            _programCtr = locationVal;
+            debug("--BR=" + tempLocationVal);
+            _programCtr = tempLocationVal;
             debug("--BR=" + _programCtr);
         }
         else
         {
-            // TODO
-        	// throw new Exception("BRANCH");
+        	throw new VMError("BRANCH", VMError.VM_ERROR_TYPE_STACK_LIMIT);
         }
     }
 
-    public void JUMP()
+    public void JUMP() throws VMError
     {
-        int locationVal = _pop();
+    	final int locationVal = _pop();
         debug("--JMP=" + locationVal);
-        _programCtr = (locationVal * 2) + VMUtil.STACK_LIMIT;
+        _programCtr = (locationVal * 2) + STACK_LIMIT;
         debug("--JMP=" + _programCtr);
     }
 
-    public void BREQL(int locationVal)
+    public void BREQL(final int locationVal) throws VMError
     {
-        int val = _pop();
+    	final int val = _pop();
         if (val == 0)
         {
             BRANCH(locationVal);
         }
     }
 
-    public void BRLSS(int locationVal)
+    public void BRLSS(final int locationVal) throws VMError
     {
-        int val = _pop();
+    	final int val = _pop();
         if (val < 0)
         {
             BRANCH(locationVal);
         }
     }
 
-    public void BRGTR(int locationVal)
+    public void BRGTR(final int locationVal) throws VMError
     {
-        int val = _pop();
+    	final int val = _pop();
         if (val > 0)
         {
             BRANCH(locationVal);
@@ -344,26 +330,26 @@ public class VirtualMachine implements Instructions{
 
     //  Command Category : MISC
 
-    public void CONTENTS()
+    public void CONTENTS() throws VMError
     {
-        int locationVal = _pop();
-        int val = getValueAt(locationVal);
+    	final int locationVal = _pop();
+    	final int val = getValueAt(locationVal);
         PUSHC(val);
     }
 
     public void HALT()
     {
-
+    	// TODO
     }
 
     //   EXECUTION
 
     public int getProgramMemoryLoc()
     {
-        return VMUtil.STACK_LIMIT;
+        return STACK_LIMIT;
     }
 
-    public void addInstruction(int instruction, List<Integer> instructionParams)
+    public void addInstruction(final int instruction, final List<Integer> instructionParams) throws VMError
     {
         if (instruction < 1000)
         {
@@ -380,10 +366,14 @@ public class VirtualMachine implements Instructions{
                     setValAt_REG_ProgramWtr(instPram);
                 }
             }
+            else
+            {
+            	throw new VMError("addInstruction", VMError.VM_ERROR_BAD_PARAMS);
+            }
         }
     }
 
-    public void addInstructions(List<Integer> instructions, List<List<Integer>> instructionParams)
+    public void addInstructions(final List<Integer> instructions, final List<List<Integer>> instructionParams) throws VMError
     {
         if (instructions != null )
         {
@@ -395,93 +385,103 @@ public class VirtualMachine implements Instructions{
                     addInstruction(instruction, instructionParams.get(location++));
                 }
             }
+            else
+            {
+            	throw new VMError("addInstructions instructionParams", VMError.VM_ERROR_BAD_PARAMS);
+            }
+        }
+        else
+        {
+        	throw new VMError("addInstructions instructions", VMError.VM_ERROR_BAD_PARAMS);
         }
     }
 
     //public boolean runNextInstruction(out int line)
-    // TODO - line is an OUT parameter
-    public boolean runNextInstruction(Integer line)
+    public boolean runNextInstruction(final LineNumber... line) throws VMError
     {
-        _programWriter = VMUtil.STACK_LIMIT;
+        boolean bReturn = false;
+    	_programWriter = STACK_LIMIT;
 
-        line = (_programCtr - VMUtil.STACK_LIMIT)/2;
-        int instructionVal = getValueAt(_programCtr++);
+        if ( line.length > 0)
+        {
+        	line[0].set((_programCtr - STACK_LIMIT)/2);
+        }
+        final int instructionVal = getValueAt(_programCtr++);
         runCommand(instructionVal);
 
         if (instructionVal == BaseInstructionSet._HALT)
         {
             _numInstrsRun = 0;
-            _programCtr = VMUtil.STACK_LIMIT;
+            _programCtr = STACK_LIMIT;
             _stackPtr = 0;
-            return true;
+            bReturn = true;
         }
-        return false;
+        return bReturn;
     }
 
-   // public void runInstructions(int numInstrsToRun, out int line
-    // TODO - line is an OUT parameter
-    public void runInstructions(int numInstrsToRun, Integer line)
+    // Mutable Line number ( to make it an "out" variable )
+    public void runInstructions(final int numInstrsToRun, final LineNumber... line) throws VMError
     {
         int numInstrsRun = 0;
-        _programWriter = VMUtil.STACK_LIMIT;
+        _programWriter = STACK_LIMIT;
 
         int instructionVal = BaseInstructionSet._BEGIN;
 
-        while (instructionVal != BaseInstructionSet._HALT && _programCtr < VMUtil.MAX_MEMORY && numInstrsRun < numInstrsToRun)
+        while (instructionVal != BaseInstructionSet._HALT && _programCtr < MAX_MEMORY && numInstrsRun < numInstrsToRun)
         {
             numInstrsRun++;
             instructionVal = getValueAt(_programCtr++);
             runCommand(instructionVal);
         }
-        line = (_programCtr - 2 - VMUtil.STACK_LIMIT)/2;
+        if ( line.length > 0)
+        {
+        	line[0].set((_programCtr - 2 - STACK_LIMIT)/2);
+        }
     }
 
-    public void runInstructions()
+    public void runInstructions() throws VMError
     {
         _numInstrsRun = 0;
-        _programWriter = VMUtil.STACK_LIMIT;
+        _programWriter = STACK_LIMIT;
 
         int instructionVal = BaseInstructionSet._BEGIN;
 
-        while (instructionVal != BaseInstructionSet._HALT && _programCtr < VMUtil.MAX_MEMORY)
+        while (instructionVal != BaseInstructionSet._HALT && _programCtr < MAX_MEMORY)
         {
             instructionVal = getValueAt(_programCtr++);
             runCommand(instructionVal);
         }
-        _programCtr = VMUtil.STACK_LIMIT;
+        _programCtr = STACK_LIMIT;
         _stackPtr = 0;
     }
 
     // PRIVATE_METHODS
-    private int getValueAt(int locationVal)
+    private int getValueAt(final int locationVal) throws VMError
     {
         int returnVal = 0;
-        if (locationVal < VMUtil.MAX_MEMORY)
+        if (locationVal < MAX_MEMORY)
         {
             returnVal = (int)_memory.get(locationVal);
         }
         else
         {
-            // TODO
-        	// throw new Exception("getValueAt");
+        	throw new VMError("getValueAt", VMError.VM_ERROR_TYPE_MAX_MEMORY);
         }
         return returnVal;
     }
 
-    private int _pop()
+    private int _pop() throws VMError
     {
         if (_stackPtr >= 0)
         {
-            int returnVal = (int)_memory.get(_stackPtr--);
+        	final int returnVal = (int)_memory.get(_stackPtr--);
             // Reset every memory position we pop to 99999
-           _memory.set(VMUtil.EMPTY_MEMORY_LOC, (int)(_stackPtr + 1));
+           _memory.set(EMPTY_MEMORY_LOC, (int)(_stackPtr + 1));
             return returnVal;
         }
         else
         {
-            // TODO
-        	// throw new Exception("_pop");
-        	return -1;
+            throw new VMError("_pop", VMError.VM_ERROR_TYPE_STACK_PTR);
         }
     }
 
@@ -490,36 +490,38 @@ public class VirtualMachine implements Instructions{
         return _memory;
     }
 
-    private void setValAt_REG_ProgramWtr(int arg)
+    private void setValAt_REG_ProgramWtr(final int arg) throws VMError
     {
         setValAtLocation(arg, _programWriter++);
     }
 
-    private void setValAtLocation(int arg, int locationVal)
+    private void setValAtLocation(final int arg, final int locationVal) throws VMError
     {
-        if (locationVal < VMUtil.MAX_MEMORY)
+        if (locationVal < MAX_MEMORY)
         {
            _memory.set(arg, locationVal);
         }
         else
         {
-            // TODO 
-        	// throw new Exception("setValAtLocation");
+        	throw new VMError("setValAtLocation", VMError.VM_ERROR_TYPE_LOC_MAX_MEMORY);
         }
     }
 
-    private void runCommand(int command)
+    private void runCommand(final int command) throws VMError
     {
         if (_bDebug)
         {
-            String sLineCount = "[" + _numInstrsRun++ + "]";
-            String sParam = " Line=" + (_programCtr - 1);
-            debug(sLineCount + "CMD=" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(command));
+        	final StringBuffer sLineCount = new StringBuffer("[");
+        	sLineCount.append(_numInstrsRun).append(']');
+        	final StringBuffer sParam = new StringBuffer(" Line=");
+        	sParam.append(_programCtr - 1);
+        	sLineCount.append("CMD=").append(BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(command));
+            debug(sLineCount.toString());
             if (command >= 1000)
             {
-                sParam += " PARAM=" + getValueAt(_programCtr);
+            	sParam.append(" PARAM=").append(getValueAt(_programCtr));
             }
-            debug(sParam);
+            debug(sParam.toString());
         }
 
         switch (command)
@@ -626,11 +628,12 @@ public class VirtualMachine implements Instructions{
             case _BRGTR:
                 BRGTR(getValueAt(_programCtr++));
                 break;
+            default:
+            	throw new VMError("runCommand :" + command, VMError.VM_ERROR_BAD_UNKNOWN_COMMAND);
         }
     }
 
-    // TODO - make this a log
-    private void debug(String sText)
+    private void debug(final String sText)
     {
         Log.d(TAG, sText);
     }
