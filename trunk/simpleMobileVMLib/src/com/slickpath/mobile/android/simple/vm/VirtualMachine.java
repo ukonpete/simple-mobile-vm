@@ -6,7 +6,6 @@ package com.slickpath.mobile.android.simple.vm;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,21 +15,9 @@ import java.util.Scanner;
  * @author PJ
  *
  */
-public class VirtualMachine implements Instructions{
+public class VirtualMachine extends Machine implements Instructions{
 	
 	// TODO private static final String TAG = VirtualMachine.class.getName();
-
-    public static final int EMPTY_MEMORY_LOC = 999999;
-    public static final int MAX_MEMORY = 500;
-    public static final int STACK_LIMIT = MAX_MEMORY / 2;
-    public static final int YES = 1;
-    public static final int NO = 0;
-    
-    private int _stackPtr = -1;
-    private int _programCtr = STACK_LIMIT;
-    private int _programWriter = STACK_LIMIT;
-
-    private List<Integer> _memory = null;
 
     private final PrintStream _textWriter;
     private final InputStream _textReader;
@@ -40,31 +27,19 @@ public class VirtualMachine implements Instructions{
 
     public VirtualMachine(final PrintStream writer, final InputStream reader)
     {
+    	super();
     	_textWriter = writer;
     	_textReader = reader;
     	_textScanner = new Scanner(_textReader);
-    	initMemory();    	
     }
 
     public VirtualMachine()
     {
+    	super();
     	_textWriter = System.out;
     	_textReader = System.in;
     	_textScanner = new Scanner(_textReader);
-    	initMemory();    	
     }
-
-	/**
-	 * 
-	 */
-	private void initMemory() {
-		_memory = new ArrayList<Integer>(MAX_MEMORY);
-        // initialize every piece of memory to EMPTY
-        for (int i = 0; i < MAX_MEMORY; i++)
-        {
-        	_memory.set(i++, EMPTY_MEMORY_LOC);
-        }
-	}
     
     public void setDebug(final boolean bDebug)
     {
@@ -212,15 +187,16 @@ public class VirtualMachine implements Instructions{
 
     public void PUSH(final int location ) throws VMError
     {
-    	final int val = (int)_memory.get(location);
+    	final int val = getValueAt(location);
         PUSHC(val);
     }
 
     public void PUSHC(final int arg) throws VMError
     {
-        if (_stackPtr < STACK_LIMIT)
+        if (isStackPointerValid())
         {
-           _memory.set(arg, ++_stackPtr);
+           incStackPtr();
+           setValAtLocation(arg, getStackPointer());
         }
         else
         {
@@ -280,25 +256,14 @@ public class VirtualMachine implements Instructions{
 
     public void BRANCH(final int locationVal) throws VMError
     {
-    	final int tempLocationVal = (locationVal * 2) + STACK_LIMIT;
-        if (tempLocationVal >= STACK_LIMIT)
-        {
-            debug("--BR=" + tempLocationVal);
-            _programCtr = tempLocationVal;
-            debug("--BR=" + _programCtr);
-        }
-        else
-        {
-        	throw new VMError("BRANCH", VMError.VM_ERROR_TYPE_STACK_LIMIT);
-        }
+        debug("--BR=" + locationVal);
+        _branch(locationVal);
+        debug("--BR=" + getProgramCounter());
     }
 
     public void JUMP() throws VMError
     {
-    	final int locationVal = _pop();
-        debug("--JMP=" + locationVal);
-        _programCtr = (locationVal * 2) + STACK_LIMIT;
-        debug("--JMP=" + _programCtr);
+        _jump();
     }
 
     public void BREQL(final int locationVal) throws VMError
@@ -373,6 +338,16 @@ public class VirtualMachine implements Instructions{
         }
     }
 
+    private void setValAt_REG_ProgramWtr(final int arg) throws VMError
+    {
+        setValAtLocation(arg, getProgramWriter());
+        incProgramWriter();
+    }
+
+    protected void setValAtLocation(final int arg, final int locationVal) throws VMError
+    {
+        setValueAt(arg, locationVal);
+    }
     public void addInstructions(final List<Integer> instructions, final List<List<Integer>> instructionParams) throws VMError
     {
         if (instructions != null )
@@ -400,20 +375,21 @@ public class VirtualMachine implements Instructions{
     public boolean runNextInstruction(final LineNumber... line) throws VMError
     {
         boolean bReturn = false;
-    	_programWriter = STACK_LIMIT;
+        resetProgramWriter();
 
         if ( line.length > 0)
         {
-        	line[0].set((_programCtr - STACK_LIMIT)/2);
+        	line[0].set((getProgramCounter() - STACK_LIMIT)/2);
         }
-        final int instructionVal = getValueAt(_programCtr++);
+        final int instructionVal = getValueAt(getProgramCounter());
+        incProgramWriter();
         runCommand(instructionVal);
 
         if (instructionVal == BaseInstructionSet._HALT)
         {
             _numInstrsRun = 0;
-            _programCtr = STACK_LIMIT;
-            _stackPtr = 0;
+            resetProgramWriter();
+            resetStackPointer();
             bReturn = true;
         }
         return bReturn;
@@ -423,88 +399,39 @@ public class VirtualMachine implements Instructions{
     public void runInstructions(final int numInstrsToRun, final LineNumber... line) throws VMError
     {
         int numInstrsRun = 0;
-        _programWriter = STACK_LIMIT;
+        resetProgramWriter();
 
         int instructionVal = BaseInstructionSet._BEGIN;
 
-        while (instructionVal != BaseInstructionSet._HALT && _programCtr < MAX_MEMORY && numInstrsRun < numInstrsToRun)
+        while (instructionVal != BaseInstructionSet._HALT && getProgramCounter() < MAX_MEMORY && numInstrsRun < numInstrsToRun)
         {
             numInstrsRun++;
-            instructionVal = getValueAt(_programCtr++);
+            instructionVal = getValueAt(getProgramCounter());
+            incProgramCounter();
+            
             runCommand(instructionVal);
         }
         if ( line.length > 0)
         {
-        	line[0].set((_programCtr - 2 - STACK_LIMIT)/2);
+        	line[0].set((getProgramCounter() - 2 - STACK_LIMIT)/2);
         }
     }
 
     public void runInstructions() throws VMError
     {
         _numInstrsRun = 0;
-        _programWriter = STACK_LIMIT;
+        resetProgramWriter();
 
         int instructionVal = BaseInstructionSet._BEGIN;
 
-        while (instructionVal != BaseInstructionSet._HALT && _programCtr < MAX_MEMORY)
+        while (instructionVal != BaseInstructionSet._HALT && getProgramCounter() < MAX_MEMORY)
         {
-            instructionVal = getValueAt(_programCtr++);
+            instructionVal = getValueAt(getProgramCounter());
+            incProgramCounter();
             runCommand(instructionVal);
         }
-        _programCtr = STACK_LIMIT;
-        _stackPtr = 0;
-    }
-
-    // PRIVATE_METHODS
-    private int getValueAt(final int locationVal) throws VMError
-    {
-        int returnVal = 0;
-        if (locationVal < MAX_MEMORY)
-        {
-            returnVal = (int)_memory.get(locationVal);
-        }
-        else
-        {
-        	throw new VMError("getValueAt", VMError.VM_ERROR_TYPE_MAX_MEMORY);
-        }
-        return returnVal;
-    }
-
-    private int _pop() throws VMError
-    {
-        if (_stackPtr >= 0)
-        {
-        	final int returnVal = (int)_memory.get(_stackPtr--);
-            // Reset every memory position we pop to 99999
-           _memory.set(EMPTY_MEMORY_LOC, (int)(_stackPtr + 1));
-            return returnVal;
-        }
-        else
-        {
-            throw new VMError("_pop", VMError.VM_ERROR_TYPE_STACK_PTR);
-        }
-    }
-
-    public List<Integer> memoryDump()
-    {
-        return _memory;
-    }
-
-    private void setValAt_REG_ProgramWtr(final int arg) throws VMError
-    {
-        setValAtLocation(arg, _programWriter++);
-    }
-
-    private void setValAtLocation(final int arg, final int locationVal) throws VMError
-    {
-        if (locationVal < MAX_MEMORY)
-        {
-           _memory.set(arg, locationVal);
-        }
-        else
-        {
-        	throw new VMError("setValAtLocation", VMError.VM_ERROR_TYPE_LOC_MAX_MEMORY);
-        }
+        resetProgramCounter();
+        resetStackPointer();
     }
 
     private void runCommand(final int command) throws VMError
@@ -514,12 +441,12 @@ public class VirtualMachine implements Instructions{
         	final StringBuffer sLineCount = new StringBuffer("[");
         	sLineCount.append(_numInstrsRun).append(']');
         	final StringBuffer sParam = new StringBuffer(" Line=");
-        	sParam.append(_programCtr - 1);
+        	sParam.append(getProgramCounter() - 1);
         	sLineCount.append("CMD=").append(BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(command));
             debug(sLineCount.toString());
             if (command >= 1000)
             {
-            	sParam.append(" PARAM=").append(getValueAt(_programCtr));
+            	sParam.append(" PARAM=").append(getValueAt(getProgramCounter()));
             }
             debug(sParam.toString());
         }
@@ -528,105 +455,112 @@ public class VirtualMachine implements Instructions{
         {
             case _ADD:
                 ADD();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _SUB:
                 SUB();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _MUL:
                 MUL();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _DIV:
                 DIV();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _NEG:
                 NEG();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _EQUAL:
                 EQUAL();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _NOTEQL:
                 NOTEQL();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _GREATER:
                 GREATER();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _LESS:
                 LESS();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _GTREQL:
                 GTREQL();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _LSSEQL:
                 LSSEQL();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _NOT:
                 NOT();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _POP:
                 POP();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _JUMP:
                 JUMP();
-                //_programCtr++;
+                //incProgramCounter();
                 break;
             case _RDCHAR:
                 RDCHAR();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _RDINT:
                 RDINT();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _WRCHAR:
                 WRCHAR();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _WRINT:
                 WRINT();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _CONTENTS:
                 CONTENTS();
-                _programCtr++;
+                incProgramCounter();
                 break;
             case _HALT:
                 HALT();
-                _programCtr++;
+                incProgramCounter();
                 break;
             // 1 PARAM COMMANDS
             case _PUSHC:
-                PUSHC(getValueAt(_programCtr++));
+                PUSHC(getValueAt(getProgramCounter()));
+                incProgramCounter();
                 break;
             case _PUSH:
-                PUSH(getValueAt(_programCtr++));
+                PUSH(getValueAt(getProgramCounter()));
+                incProgramCounter();
                 break;
             case _POPC:
-                POPC(getValueAt(_programCtr++));
+                POPC(getValueAt(getProgramCounter()));
+                incProgramCounter();
                 break;
             case _BRANCH:
-                BRANCH(getValueAt(_programCtr++));
+                BRANCH(getValueAt(getProgramCounter()));
+                incProgramCounter();
                 break;
             case _BREQL:
-                BREQL(getValueAt(_programCtr++));
+                BREQL(getValueAt(getProgramCounter()));
+                incProgramCounter();
                 break;
             case _BRLSS:
-                BRLSS(getValueAt(_programCtr++));
+                BRLSS(getValueAt(getProgramCounter()));
+                incProgramCounter();
                 break;
             case _BRGTR:
-                BRGTR(getValueAt(_programCtr++));
+                BRGTR(getValueAt(getProgramCounter()));
+                incProgramCounter();
                 break;
             default:
             	throw new VMError("runCommand :" + command, VMError.VM_ERROR_BAD_UNKNOWN_COMMAND);
