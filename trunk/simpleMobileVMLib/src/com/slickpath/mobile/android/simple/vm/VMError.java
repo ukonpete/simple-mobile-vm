@@ -4,7 +4,7 @@
 package com.slickpath.mobile.android.simple.vm;
 
 /**
- * @author PJ
+ * @author PJ Procopio
  *
  */
 public class VMError extends Exception {
