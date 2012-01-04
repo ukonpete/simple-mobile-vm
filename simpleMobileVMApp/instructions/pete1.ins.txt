@@ -1,0 +1,3 @@
+PUSHC 5
+WRINT
+HALT

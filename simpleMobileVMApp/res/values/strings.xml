@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, SimpleMobileVMAppActivity!</string>
+    <string name="pickfile">Pick Instruction Set</string>
     <string name="app_name">SimpleMobileVMApp</string>
+    <string name="path">Path:</string>
+    <string name="notavailable">N/A</string>
+    <string name="file">File:</string>
 
 </resources>
