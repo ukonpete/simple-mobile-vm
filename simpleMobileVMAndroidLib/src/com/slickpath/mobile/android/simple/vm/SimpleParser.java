@@ -20,6 +20,8 @@ import java.util.List;
  */
 public class SimpleParser {
 
+    private VMListener vmListener;
+    
     private String _sInstructionFile;
 
     private Hashtable<String, Integer> _htSymbols = new Hashtable<String, Integer>();
@@ -34,7 +36,36 @@ public class SimpleParser {
         BaseInstructionSet bis = new BaseInstructionSet();
     }
 
-    public List<Integer> parse(List<List<Integer>> allParameters) throws VMError
+    public void setVMListener(VMListener listener)
+    {
+    	vmListener = listener;
+    }
+    
+    public void parse()
+    {
+    	new Thread(new Runnable()
+    	{
+			public void run()
+			{
+				List<List<Integer>> allParameters = new ArrayList<List<Integer>>();
+
+				VMError vmError = null;
+				List<Integer> allInstructions = null;
+				try {
+					allInstructions = _parse(allParameters);
+				} catch (VMError e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if ( vmListener != null)
+				{
+					vmListener.completedParse(vmError, allInstructions, allParameters);
+				}
+			}
+    	}).start();
+    }
+    
+    private List<Integer> _parse(List<List<Integer>> allParameters) throws VMError
     {
     	List<Integer> instructions = new ArrayList<Integer>();
         FileInputStream fis = null;
@@ -58,17 +89,20 @@ public class SimpleParser {
             	// If line is not a comment
                 if (!sLine.startsWith("//"))
                 {
-                    //char[] delimiters = new char[] { ' ' };
+                	System.out.println("-Line " + sLine);
+                	//char[] delimiters = new char[] { ' ' };
                     String[] words = sLine.split(" ");
                     //String[] words = sLine.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
 
                     //long wordVal  = words[0];
                     String sInstruction = words[0];
 
+                    System.out.println("-RAW " + sInstruction);
                     // If the line does not start with a symbol
                     if (!(sInstruction.startsWith("[") && sInstruction.contains("]")))
                     {
                         int commandVal = (int)BaseInstructionSet.INSTRUCTION_SET_HT.get(sInstruction);
+                        System.out.println("INST : " + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(commandVal) + "(" + commandVal + ")");
                         instructions.add(commandVal);
                         List<Integer> parameters = new ArrayList<Integer>();
                         if (words.length > 1)
@@ -89,10 +123,10 @@ public class SimpleParser {
                                 if (sParam.startsWith("[") && sParam.contains("]"))
                                 {
                                     int locEnd = sParam.indexOf("]");
-                                    String sSymbol = sParam.substring(1, locEnd - 1);
+                                    String sSymbol = sParam.substring(1, locEnd);
 
-                                    System.out.println("SYMBOL : " + sSymbol);
                                     paramVal = _htSymbols.get(sSymbol);
+                                    System.out.println("  SYMBOL : " + sSymbol + "(" + paramVal + ")");
                                 }
                                 else if (sParam.startsWith("g"))
                                 {
@@ -107,10 +141,12 @@ public class SimpleParser {
                                         _freeMemoryLoc++;
                                     }
                                     paramVal = memLoc;
+                                    System.out.println("  G-PARAM : " + sParam + "(" + paramVal + ")");
                                 }
                                 else
                                 {
                                     paramVal = Integer.parseInt(sParam);
+                                    System.out.println("  PARAM : " + sParam);
                                 }
                                 parameters.add(paramVal);
                             }
@@ -165,7 +201,8 @@ public class SimpleParser {
                     if (sLine.startsWith("[") && sLine.contains("]"))
                     {
                         int locEnd = sLine.indexOf("]");
-                        String sSymbol = sLine.substring(1, locEnd - 1);
+                        String sSymbol = sLine.substring(1, locEnd);
+                        System.out.println("--NEW SYM : " + sSymbol + "(" + line + ")");
                         _htSymbols.put(sSymbol, line);
                     }
                     else

@@ -6,5 +6,6 @@
     <string name="path">Path:</string>
     <string name="notavailable">N/A</string>
     <string name="file">File:</string>
+	<string name="execute">Execute</string>    
 
 </resources>

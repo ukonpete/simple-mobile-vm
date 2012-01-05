@@ -30,6 +30,8 @@ public class VirtualMachine extends Machine implements Instructions{
     private int _numInstrsRun = 0;
     private boolean _bDebug = false;
     
+    private VMListener vmListener;
+    
     private Context _context;
 
     public VirtualMachine(final PrintStream writer, final InputStream reader, Context context)
@@ -50,6 +52,10 @@ public class VirtualMachine extends Machine implements Instructions{
     	_context = context;
     }
     
+    public void setVMListener(VMListener listener)
+    {
+    	vmListener = listener;
+    }
     public void setDebug(final boolean bDebug)
     {
     	_bDebug = bDebug;
@@ -265,9 +271,9 @@ public class VirtualMachine extends Machine implements Instructions{
 
     public void BRANCH(final int location) throws VMError
     {
-        debug("--BR=" + location);
+        //debug("--BR=" + location);
         _branch(location);
-        debug("--BR=" + getProgramCounter());
+        //debug("--BR=" + getProgramCounter());
     }
 
     public void JUMP() throws VMError
@@ -351,7 +357,7 @@ public class VirtualMachine extends Machine implements Instructions{
                     sVal += Integer.toString(instPram) + ":";
                 	setValAt_REG_ProgramWtr(instPram);
                 }
-                debug("AI ins="+ instruction + " params=" + sVal);
+                debug("Add ins="+ instruction + " params=" + sVal);
             }
             else
             {
@@ -371,27 +377,15 @@ public class VirtualMachine extends Machine implements Instructions{
         setValueAt(value, location);
     }
 
-    public void addInstructions(final List<Integer> instructions, final List<List<Integer>> instructionParams) throws VMError
+    public void addInstructions(final List<Integer> instructions, final List<List<Integer>> instructionParams)
     {
-        if (instructions != null )
-        {
-            if (instructionParams == null || instructionParams.size() == instructions.size())
-            {
-                int location = 0;
-                for (int instruction : instructions)
-                {
-                	addInstruction(instruction, instructionParams.get(location++));
-                }
-            }
-            else
-            {
-            	throw new VMError("addInstructions instructionParams", VMError.VM_ERROR_BAD_PARAMS);
-            }
-        }
-        else
-        {
-        	throw new VMError("addInstructions instructions", VMError.VM_ERROR_BAD_PARAMS);
-        }
+    	new Thread(new Runnable()
+    	{
+			public void run()
+			{
+				_addInstructions(instructions, instructionParams);
+			}
+    	}).start();	
     }
 
     //public boolean runNextInstruction(out int line)
@@ -418,7 +412,7 @@ public class VirtualMachine extends Machine implements Instructions{
     // Mutable Line number ( to make it an "out" variable )
     public void runInstructions(final int numInstrsToRun, final LineNumber... line) throws VMError
     {    	
-        dumpMem("1");
+        // dumpMem("1");
     	int numInstrsRun = 0;
         resetProgramWriter();
 
@@ -443,14 +437,18 @@ public class VirtualMachine extends Machine implements Instructions{
         }
         catch(VMError vme)
         {
+        	/*
         	System.out.println("PROG_CTR=" + getProgramCounter());
         	System.out.println("LAST_PROG_CTR=" + last);
         	dumpMem("2");
+        	*/
         	throw vme;
         }
+        /*
     	System.out.println("PROG_CTR=" + getProgramCounter());
     	System.out.println("LAST_PROG_CTR=" + last);
         dumpMem("3");
+        */
     }
 
 	/**
@@ -486,38 +484,15 @@ public class VirtualMachine extends Machine implements Instructions{
 		}
 	}
 
-    public void runInstructions() throws VMError
+    public void runInstructions()
     {
-        dumpMem("1");
-    	_numInstrsRun = 0;
-        resetProgramWriter();
-
-        int instructionVal = BaseInstructionSet._BEGIN;
-        int last = -1;
-
-        try
-        {
-	        while (instructionVal != BaseInstructionSet._HALT && getProgramCounter() < MAX_MEMORY)
-	        {
-	        	last = getProgramCounter();
-	        	instructionVal = getValueAt(getProgramCounter());
-	        	System.out.println("-PROG_CTR=" + getProgramCounter() + " line=" + ((getProgramCounter() - STACK_LIMIT)/2) + " inst=" + instructionVal);
-	        	incProgramCounter();
-	            runCommand(instructionVal);
-	        }
-        	System.out.println("PROG_CTR=" + getProgramCounter());
-        	System.out.println("LAST_PROG_CTR=" + last);
-	        dumpMem("3");
-	        resetProgramCounter();
-	        resetStackPointer();
-        }
-        catch(VMError vme)
-        {
-        	System.out.println("+PROG_CTR=" + getProgramCounter());
-        	System.out.println("+LAST_PROG_CTR=" + last);
-        	dumpMem("2");
-        	throw vme;
-        }
+    	new Thread(new Runnable()
+    	{
+			public void run()
+			{
+				_runInstructions();
+			}
+    	}).start();
     }
 
     private void runCommand(final int command) throws VMError
@@ -636,7 +611,7 @@ public class VirtualMachine extends Machine implements Instructions{
                 break;
             case _BRANCH:
                 BRANCH(getValueAt(getProgramCounter()));
-                incProgramCounter();
+                //incProgramCounter();
                 break;
             case _BREQL:
             	bBranched = BREQL(getValueAt(getProgramCounter()));
@@ -668,5 +643,82 @@ public class VirtualMachine extends Machine implements Instructions{
     {
         Log.d(TAG, sText);
     }
+
+	/**
+	 * 
+	 */
+	private void _runInstructions() {
+		VMError vmError = null;
+		//dumpMem("1");
+		_numInstrsRun = 0;
+		resetProgramWriter();
+
+		int instructionVal = BaseInstructionSet._BEGIN;
+		int last = -1;
+
+		try
+		{
+		    while (instructionVal != BaseInstructionSet._HALT && getProgramCounter() < MAX_MEMORY)
+		    {
+		    	last = getProgramCounter();
+		    	instructionVal = getValueAt(getProgramCounter());
+		    	//System.out.println("-PROG_CTR=" + getProgramCounter() + " line=" + ((getProgramCounter() - STACK_LIMIT)/2) + " inst=" + instructionVal);
+		    	incProgramCounter();
+		        runCommand(instructionVal);
+		    }
+			//System.out.println("PROG_CTR=" + getProgramCounter());
+			//System.out.println("LAST_PROG_CTR=" + last);
+		    dumpMem("3");
+		    resetProgramCounter();
+		    resetStackPointer();
+		}
+		catch(VMError vme)
+		{
+			//System.out.println("+PROG_CTR=" + getProgramCounter());
+			//System.out.println("+LAST_PROG_CTR=" + last);
+			//dumpMem("2");
+			vmError = vme;
+		}
+		if ( vmListener != null)
+		{
+			vmListener.completedRunningInstructions(vmError);
+		}
+	}
+
+	/**
+	 * @param instructions
+	 * @param instructionParams
+	 */
+	private void _addInstructions(final List<Integer> instructions,
+			final List<List<Integer>> instructionParams) {
+		VMError vmError = null;
+		if (instructions != null )
+		{
+		    if (instructionParams == null || instructionParams.size() == instructions.size())
+		    {
+		        int location = 0;
+		        for (int instruction : instructions)
+		        {
+		        	try {
+						addInstruction(instruction, instructionParams.get(location++));
+					} catch (VMError e) {
+						vmError = e;
+					}
+		        }
+		    }
+		    else
+		    {
+		    	vmError =  new VMError("addInstructions instructionParams", VMError.VM_ERROR_BAD_PARAMS);
+		    }
+		}
+		else
+		{
+			vmError = new VMError("addInstructions instructions", VMError.VM_ERROR_BAD_PARAMS);
+		}
+		if ( vmListener != null)
+		{
+			vmListener.completedAddingInstructions(vmError);
+		}
+	}
 }
 
