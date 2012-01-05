@@ -89,7 +89,6 @@ public class SimpleMobileVMAppActivity extends Activity implements VMListener{
 
         parser.parse();
 
-        
     }
 
 	/**

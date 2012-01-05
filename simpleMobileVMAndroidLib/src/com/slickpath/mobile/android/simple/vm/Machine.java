@@ -3,174 +3,337 @@
  */
 package com.slickpath.mobile.android.simple.vm;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.util.Scanner;
+
+import android.util.Log;
 
 /**
  * @author PJ
  *
  */
-public class Machine {
+public class Machine extends Kernel{
 
-    public static final int EMPTY_MEMORY_LOC = 999999;
-    public static final int MAX_MEMORY = 500;
-    public static final int STACK_LIMIT = MAX_MEMORY / 2;
-    public static final int YES = 1;
-    public static final int NO = 0;
+	private static final String TAG = Machine.class.getName();
+	
+	protected final PrintStream _textWriter;
+    protected final Scanner _textScanner;
+    private final InputStream _textReader;
     
-    private int _stackPtr = -1;
-    private int _programCtr = STACK_LIMIT;
-    private int _programWriter = STACK_LIMIT;
-
-    private List<Integer> _memory = null;
-
+    protected boolean _bDebug = false;
 	/**
 	 * 
 	 */
-	public Machine() {
-		initMemory();
+	public Machine(final PrintStream writer, final InputStream reader) {
+		super();
+    	_textWriter = writer;
+    	_textReader = reader;
+    	_textScanner = new Scanner(_textReader);
 	}
 
-	/**
-	 * 
-	 */
-	private void initMemory() {
-		_memory = new ArrayList<Integer>(MAX_MEMORY);
-        // initialize every piece of memory to EMPTY
-        for (int i = 0; i < MAX_MEMORY; i++)
-        {
-        	_memory.add(EMPTY_MEMORY_LOC);
-        }
-	}
-
-    // PRIVATE_METHODS
-    protected int getValueAt(final int location) throws VMError
+    public Machine()
     {
-        int returnVal = 0;
-        if (location < MAX_MEMORY)
+    	super();
+    	_textWriter = System.out;
+    	_textReader = System.in;
+    	_textScanner = new Scanner(_textReader);
+    }
+
+    //  Command Category : ARITHMATIC
+
+    public void ADD() throws VMError
+    {
+        final int val1 = _pop();
+        final int val2 = _pop();
+        final int val3 = val1 + val2;
+        PUSHC(val3);
+    }
+
+    public void SUB() throws VMError
+    {
+    	final int val1 = _pop();
+    	final int val2 = _pop();
+    	final int val3 = val1 - val2;
+        PUSHC(val3);
+    }
+
+    public void MUL() throws VMError
+    {
+    	final int val1 = _pop();
+    	final int val2 = _pop();
+    	final int val3 = val1 * val2;
+        PUSHC(val3);
+    }
+
+    public void DIV() throws VMError
+    {
+    	final int val1 = _pop();
+    	final int val2 = _pop();
+    	final int val3 = val1 / val2;
+        PUSHC(val3);
+    }
+
+    public void NEG() throws VMError
+    {
+    	final int val1 = _pop();
+    	final int val2 = 0 - val1;
+        PUSHC(val2);
+    }
+
+    //  Command Category : BOOLEAN
+
+    public void EQUAL() throws VMError
+    {
+        int equal = YES;
+        final int val1 = _pop();
+        final int val2 = _pop();
+
+        if (val1 != val2)
         {
-            returnVal = (int)_memory.get(location);
+            equal = NO;
+        }
+        PUSHC(equal);
+    }
+
+    public void NOTEQL() throws VMError
+    {
+        int notEqual = NO;
+        final int val1 = _pop();
+        final int val2 = _pop();
+
+        if (val1 != val2)
+        {
+            notEqual = YES;
+        }
+        PUSHC(notEqual);
+    }
+
+    public void GREATER() throws VMError
+    {
+        int greater = NO;
+        final int val1 = _pop();
+        final int val2 = _pop();
+
+        if (val1 > val2)
+        {
+            greater = YES;
+        }
+        PUSHC(greater);
+    }
+
+    public void LESS() throws VMError
+    {
+        int less = NO;
+        final int val1 = _pop();
+        final int val2 = _pop();
+
+        if (val1 < val2)
+        {
+            less = YES;
+        }
+        PUSHC(less);
+    }
+
+    public void GTREQL() throws VMError
+    {
+        int greaterOrEqual = NO;
+        final int val1 = _pop();
+        final int val2 = _pop();
+
+        if (val1 >= val2)
+        {
+            greaterOrEqual = YES;
+        }
+        PUSHC(greaterOrEqual);
+    }
+
+    public void LSSEQL() throws VMError
+    {
+        int lessEqual = NO;
+        final int val1 = _pop();
+        final int val2 = _pop();
+
+        if (val1 <= val2)
+        {
+            lessEqual = YES;
+        }
+        PUSHC(lessEqual);
+    }
+
+    public void NOT() throws VMError
+    {
+        int val = _pop();
+
+        if (val == 0)
+        {
+            val = 1;
         }
         else
         {
-        	throw new VMError("getValueAt", VMError.VM_ERROR_TYPE_MAX_MEMORY);
+            val = 0;
         }
-        return returnVal;
+
+        PUSHC(val);
     }
 
-    protected void setValueAt(final int value, final int location) throws VMError
+    //  Command Category : STACK_MANIPULATION
+
+    public void PUSH(final int location ) throws VMError
     {
-    	if (location < MAX_MEMORY)
-    	{
-    		_memory.set(location,value);
-    	}
-        else
-        {
-        	throw new VMError("setValAtLocation", VMError.VM_ERROR_TYPE_LOC_MAX_MEMORY);
-        }
+    	final int val = getValueAt(location);
+        PUSHC(val);
     }
 
-    protected int _pop() throws VMError
+    public void PUSHC(final int value) throws VMError
     {
-        if (_stackPtr >= 0)
+        if (isStackPointerValid())
         {
-        	final int returnVal = (int)_memory.get(_stackPtr--);
-            // Reset every memory position we pop to 99999
-           _memory.set((int)(_stackPtr + 1), EMPTY_MEMORY_LOC);
-            return returnVal;
+           incStackPtr();
+           setValAtLocation(value, getStackPointer());
         }
         else
         {
-            throw new VMError("_pop", VMError.VM_ERROR_TYPE_STACK_PTR);
+        	throw new VMError("PUSHC", VMError.VM_ERROR_TYPE_STACK_LIMIT);
         }
     }
 
-    public List<Integer> memoryDump()
-    {
-        return _memory;
-    }
-    
-    public int getStackPointer()
-    {
-    	return _stackPtr;
-    }
-    
-    protected void incStackPtr()
-    {
-    	_stackPtr++;
-    }
-    
-    protected void decStackPtr()
-    {
-    	_stackPtr--;
-    }
-    
-    protected void resetStackPointer()
-    {
-        _stackPtr = 0;
-    }
-
-    public boolean isStackPointerValid()
-    {
-    	return _stackPtr < STACK_LIMIT;
-    }
-    
-    protected void _branch(final int location) throws VMError
-    {
-    	final int tempLocation = (location * 2) + STACK_LIMIT;
-    	if (tempLocation >= STACK_LIMIT)
-    	{
-	    	_programCtr = tempLocation;
-    	}
-        else
-        {
-        	throw new VMError("BRANCH : loc=" + location + " temp="+ tempLocation, VMError.VM_ERROR_TYPE_STACK_LIMIT);
-        }
-    }
-
-    protected void _jump() throws VMError
+    public void POP() throws VMError
     {
     	final int location = _pop();
-    	_programCtr = (location * 2) + STACK_LIMIT;
+    	final int value = _pop();
+        setValAtLocation(value, location);
     }
 
-    protected int getProgramCounter()
+    public void POPC(final int location) throws VMError
     {
-    	return _programCtr;
+    	final int value = _pop();
+        setValAtLocation(value, location);
     }
 
-    protected void incProgramCounter()
+    //  Command Category : INPUT/OUTPUT
+
+    public void RDCHAR() throws VMError
     {
-    	_programCtr++;
+		try {
+			final char ch = (char)_textReader.read();
+			final int iAsciiValue = (int)ch;
+	        PUSHC(iAsciiValue);
+		} catch (IOException e) {
+			throw new VMError("RDCHAR", e, VMError.VM_ERROR_TYPE_IO);
+		}
     }
-    
-    protected void decProgramCounter()
+
+    public void WRCHAR() throws VMError
     {
-    	_programCtr--;
+    	final int value = _pop();
+    	final String sVal = Integer.toString(value);
+        _textWriter.print(sVal);
+        debug("WRCHAR: " + sVal);
     }
-    
-    protected void resetProgramCounter()
+
+    public void RDINT()  throws VMError
     {
-    	_programCtr = STACK_LIMIT;
+    	final int val = _textScanner.nextInt();
+        PUSHC(val);
     }
-    
-    protected int getProgramWriter()
+
+    public void WRINT()  throws VMError
     {
-    	return _programWriter;
+    	final int value = _pop();
+        final String sOut = Integer.toString(value);
+        _textWriter.println(sOut);
+        debug("WRINT" + sOut);
     }
-    
-    protected void incProgramWriter()
+
+    //  Command Category : CONTROL
+
+    public void BRANCH(final int location) throws VMError
     {
-    	_programWriter++;
+        debug("--BR=" + location);
+        _branch(location);
+        debug("--BR=" + getProgramCounter());
     }
-    
-    protected void decProgramWriter()
+
+    public void JUMP() throws VMError
     {
-    	_programWriter--;
+        _jump();
     }
-    
-    protected void resetProgramWriter()
+
+    public boolean BREQL(final int location) throws VMError
     {
-    	_programWriter = STACK_LIMIT;
+    	final int val = _pop();
+    	boolean bBranched = false;
+        if (val == 0)
+        {
+            BRANCH(location);
+            bBranched = true;
+        }
+        return bBranched;
+    }
+
+    public boolean BRLSS(final int location) throws VMError
+    {
+    	final int val = _pop();
+    	boolean bBranched = false;
+        if (val < 0)
+        {
+            BRANCH(location);
+            bBranched = true;
+        }
+        return bBranched;
+    }
+
+    public boolean BRGTR(final int location) throws VMError
+    {
+    	final int val = _pop();
+    	boolean bBranched = false;
+        if (val > 0)
+        {
+            BRANCH(location);
+            bBranched = true;
+        }
+        return bBranched;
+    }
+
+    //  Command Category : MISC
+
+    public void CONTENTS() throws VMError
+    {
+    	final int location = _pop();
+    	final int val = getValueAt(location);
+        PUSHC(val);
+    }
+
+    public void HALT()
+    {
+    	// TODO
+    }
+
+    protected void setValAtLocation(final int value, final int location) throws VMError
+    {
+        setValueAt(value, location);
+    }
+
+    protected void debug(final String sText)
+    {
+        if ( _bDebug )
+        {
+        	debug(TAG, sText);
+        }
+    }
+
+    protected void debug(final String sTag, final String sText)
+    {
+        if ( _bDebug )
+        {
+        	Log.d(sTag, sText);
+        }
+    }
+
+    public void setDebug(final boolean bDebug)
+    {
+    	_bDebug = bDebug;
     }
 }
