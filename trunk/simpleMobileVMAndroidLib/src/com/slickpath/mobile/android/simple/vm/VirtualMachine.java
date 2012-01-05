@@ -9,10 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.List;
-import java.util.Scanner;
 
 import android.content.Context;
-import android.util.Log;
 
 // import android.util.Log;
 
@@ -24,31 +22,21 @@ public class VirtualMachine extends Machine implements Instructions{
 	
 	private static final String TAG = VirtualMachine.class.getName();
 
-    private final PrintStream _textWriter;
-    private final InputStream _textReader;
-    private final Scanner _textScanner;
     private int _numInstrsRun = 0;
-    private boolean _bDebug = false;
-    
     private VMListener vmListener;
-    
     private Context _context;
 
     public VirtualMachine(final PrintStream writer, final InputStream reader, Context context)
     {
-    	super();
-    	_textWriter = writer;
-    	_textReader = reader;
-    	_textScanner = new Scanner(_textReader);
+    	super(writer, reader);
+    	BaseInstructionSet bis = new BaseInstructionSet();
     	_context = context;
     }
 
     public VirtualMachine(Context context)
     {
     	super();
-    	_textWriter = System.out;
-    	_textReader = System.in;
-    	_textScanner = new Scanner(_textReader);
+    	BaseInstructionSet bis = new BaseInstructionSet();
     	_context = context;
     }
     
@@ -56,325 +44,42 @@ public class VirtualMachine extends Machine implements Instructions{
     {
     	vmListener = listener;
     }
-    public void setDebug(final boolean bDebug)
-    {
-    	_bDebug = bDebug;
-    }
 
-    //  Command Category : ARITHMATIC
-
-    public void ADD() throws VMError
-    {
-        final int val1 = _pop();
-        final int val2 = _pop();
-        final int val3 = val1 + val2;
-        PUSHC(val3);
-    }
-
-    public void SUB() throws VMError
-    {
-    	final int val1 = _pop();
-    	final int val2 = _pop();
-    	final int val3 = val1 - val2;
-        PUSHC(val3);
-    }
-
-    public void MUL() throws VMError
-    {
-    	final int val1 = _pop();
-    	final int val2 = _pop();
-    	final int val3 = val1 * val2;
-        PUSHC(val3);
-    }
-
-    public void DIV() throws VMError
-    {
-    	final int val1 = _pop();
-    	final int val2 = _pop();
-    	final int val3 = val1 / val2;
-        PUSHC(val3);
-    }
-
-    public void NEG() throws VMError
-    {
-    	final int val1 = _pop();
-    	final int val2 = 0 - val1;
-        PUSHC(val2);
-    }
-
-    //  Command Category : BOOLEAN
-
-    public void EQUAL() throws VMError
-    {
-        int equal = YES;
-        final int val1 = _pop();
-        final int val2 = _pop();
-
-        if (val1 != val2)
-        {
-            equal = NO;
-        }
-        PUSHC(equal);
-    }
-
-    public void NOTEQL() throws VMError
-    {
-        int notEqual = NO;
-        final int val1 = _pop();
-        final int val2 = _pop();
-
-        if (val1 != val2)
-        {
-            notEqual = YES;
-        }
-        PUSHC(notEqual);
-    }
-
-    public void GREATER() throws VMError
-    {
-        int greater = NO;
-        final int val1 = _pop();
-        final int val2 = _pop();
-
-        if (val1 > val2)
-        {
-            greater = YES;
-        }
-        PUSHC(greater);
-    }
-
-    public void LESS() throws VMError
-    {
-        int less = NO;
-        final int val1 = _pop();
-        final int val2 = _pop();
-
-        if (val1 < val2)
-        {
-            less = YES;
-        }
-        PUSHC(less);
-    }
-
-    public void GTREQL() throws VMError
-    {
-        int greaterOrEqual = NO;
-        final int val1 = _pop();
-        final int val2 = _pop();
-
-        if (val1 >= val2)
-        {
-            greaterOrEqual = YES;
-        }
-        PUSHC(greaterOrEqual);
-    }
-
-    public void LSSEQL() throws VMError
-    {
-        int lessEqual = NO;
-        final int val1 = _pop();
-        final int val2 = _pop();
-
-        if (val1 <= val2)
-        {
-            lessEqual = YES;
-        }
-        PUSHC(lessEqual);
-    }
-
-    public void NOT() throws VMError
-    {
-        int val = _pop();
-
-        if (val == 0)
-        {
-            val = 1;
-        }
-        else
-        {
-            val = 0;
-        }
-
-        PUSHC(val);
-    }
-
-    //  Command Category : STACK_MANIPULATION
-
-    public void PUSH(final int location ) throws VMError
-    {
-    	final int val = getValueAt(location);
-        PUSHC(val);
-    }
-
-    public void PUSHC(final int value) throws VMError
-    {
-        if (isStackPointerValid())
-        {
-           incStackPtr();
-           setValAtLocation(value, getStackPointer());
-        }
-        else
-        {
-        	throw new VMError("PUSHC", VMError.VM_ERROR_TYPE_STACK_LIMIT);
-        }
-    }
-
-    public void POP() throws VMError
-    {
-    	final int location = _pop();
-    	final int value = _pop();
-        setValAtLocation(value, location);
-    }
-
-    public void POPC(final int location) throws VMError
-    {
-    	final int value = _pop();
-        setValAtLocation(value, location);
-    }
-
-    //  Command Category : INPUT/OUTPUT
-
-    public void RDCHAR() throws VMError
-    {
-		try {
-			final char ch = (char)_textReader.read();
-			final int iAsciiValue = (int)ch;
-	        PUSHC(iAsciiValue);
-		} catch (IOException e) {
-			throw new VMError("RDCHAR", e, VMError.VM_ERROR_TYPE_IO);
-		}
-    }
-
-    public void WRCHAR() throws VMError
-    {
-    	final int value = _pop();
-    	final String sVal = Integer.toString(value);
-        _textWriter.print(sVal);
-        debug("WRCHAR: " + sVal);
-    }
-
-    public void RDINT()  throws VMError
-    {
-    	final int val = _textScanner.nextInt();
-        PUSHC(val);
-    }
-
-    public void WRINT()  throws VMError
-    {
-    	final int value = _pop();
-        final String sOut = Integer.toString(value);
-        _textWriter.println(sOut);
-        //debug("WRINT" + sOut);
-    }
-
-    //  Command Category : CONTROL
-
-    public void BRANCH(final int location) throws VMError
-    {
-        //debug("--BR=" + location);
-        _branch(location);
-        //debug("--BR=" + getProgramCounter());
-    }
-
-    public void JUMP() throws VMError
-    {
-        _jump();
-    }
-
-    public boolean BREQL(final int location) throws VMError
-    {
-    	final int val = _pop();
-    	boolean bBranched = false;
-        if (val == 0)
-        {
-            BRANCH(location);
-            bBranched = true;
-        }
-        return bBranched;
-    }
-
-    public boolean BRLSS(final int location) throws VMError
-    {
-    	final int val = _pop();
-    	boolean bBranched = false;
-        if (val < 0)
-        {
-            BRANCH(location);
-            bBranched = true;
-        }
-        return bBranched;
-    }
-
-    public boolean BRGTR(final int location) throws VMError
-    {
-    	final int val = _pop();
-    	boolean bBranched = false;
-        if (val > 0)
-        {
-            BRANCH(location);
-            bBranched = true;
-        }
-        return bBranched;
-    }
-
-    //  Command Category : MISC
-
-    public void CONTENTS() throws VMError
-    {
-    	final int location = _pop();
-    	final int val = getValueAt(location);
-        PUSHC(val);
-    }
-
-    public void HALT()
-    {
-    	// TODO
-    }
 
     //   EXECUTION
-
-    public int getProgramMemoryLoc()
-    {
-        return STACK_LIMIT;
-    }
 
     public void addInstruction(final int instruction, final List<Integer> instructionParams) throws VMError
     {
         if (instruction < 1000)
         {
-            setValAt_REG_ProgramWtr(instruction);
-            setValAt_REG_ProgramWtr(0);
-            // $$$$ debug("AI ins="+ instruction + " params=X");
+            setValAtProgramWtr(instruction);
+            setValAtProgramWtr(0);
+            debug(TAG, "Add ins="+ BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(instruction)+ "(" + instruction + ")" + " params=X");
         }
         if (instruction >= 1000)
         {
             if ( instructionParams != null )
             {
                 String sVal = "";
-            	setValAt_REG_ProgramWtr(instruction);
+            	setValAtProgramWtr(instruction);
                 for(int instPram : instructionParams)
                 {
                     sVal += Integer.toString(instPram) + ":";
-                	setValAt_REG_ProgramWtr(instPram);
+                	setValAtProgramWtr(instPram);
                 }
-                debug("Add ins="+ instruction + " params=" + sVal);
+                debug(TAG, "Add ins="+ BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(instruction)+ "(" + instruction + ")" + " params=" + sVal);
             }
             else
             {
-            	throw new VMError("addInstruction", VMError.VM_ERROR_BAD_PARAMS);
+            	throw new VMError("addInstruction NULL parameter list", VMError.VM_ERROR_BAD_PARAMS);
             }
         }
     }
 
-    private void setValAt_REG_ProgramWtr(final int value) throws VMError
+    private void setValAtProgramWtr(final int value) throws VMError
     {
         setValAtLocation(value, getProgramWriter());
         incProgramWriter();
-    }
-
-    protected void setValAtLocation(final int value, final int location) throws VMError
-    {
-        setValueAt(value, location);
     }
 
     public void addInstructions(final List<Integer> instructions, final List<List<Integer>> instructionParams)
@@ -388,7 +93,30 @@ public class VirtualMachine extends Machine implements Instructions{
     	}).start();	
     }
 
-    //public boolean runNextInstruction(out int line)
+    // Mutable Line number ( to make it an "out" variable )
+    public void runInstructions(final int numInstrsToRun, final LineNumber... line)
+    {    	
+    	new Thread(new Runnable()
+    	{
+			public void run()
+			{
+				_runInstructions(numInstrsToRun, line);
+			}
+    	}).start();	
+    }
+
+    public void runInstructions()
+    {
+    	new Thread(new Runnable()
+    	{
+			public void run()
+			{
+				_runInstructions();
+			}
+    	}).start();
+    }
+
+    // Mutable Line number ( to make it an "out" variable )
     public boolean runNextInstruction(final LineNumber... line) throws VMError
     {
         boolean bReturn = false;
@@ -409,10 +137,93 @@ public class VirtualMachine extends Machine implements Instructions{
         return bReturn;
     }
 
-    // Mutable Line number ( to make it an "out" variable )
-    public void runInstructions(final int numInstrsToRun, final LineNumber... line) throws VMError
-    {    	
-        // dumpMem("1");
+    /**
+	 * 
+	 */
+	private void _runInstructions() {
+		VMError vmError = null;
+		dumpMem("1");
+		_numInstrsRun = 0;
+		resetProgramWriter();
+
+		int instructionVal = BaseInstructionSet._BEGIN;
+		int last = -1;
+
+		try
+		{
+		    while (instructionVal != BaseInstructionSet._HALT && getProgramCounter() < MAX_MEMORY)
+		    {
+		    	last = getProgramCounter();
+		    	instructionVal = getValueAt(getProgramCounter());
+		    	debug(TAG, "-PROG_CTR=" + getProgramCounter() + " line=" + ((getProgramCounter() - STACK_LIMIT)/2) + " inst=" + instructionVal);
+		    	incProgramCounter();
+		        runCommand(instructionVal);
+		    }
+			debug(TAG, "PROG_CTR=" + getProgramCounter());
+			debug(TAG, "LAST_PROG_CTR=" + last);
+		    dumpMem("3");
+		    resetProgramCounter();
+		    resetStackPointer();
+		}
+		catch(VMError vme)
+		{
+			debug(TAG, "+PROG_CTR=" + getProgramCounter());
+			debug(TAG, "+LAST_PROG_CTR=" + last);
+			dumpMem("2");
+			vmError = vme;
+		}
+		if ( vmListener != null)
+		{
+			vmListener.completedRunningInstructions(vmError);
+		}
+	}
+
+	/**
+	 * @param instructions
+	 * @param instructionParams
+	 */
+	private void _addInstructions(final List<Integer> instructions,
+			final List<List<Integer>> instructionParams) {
+		VMError vmError = null;
+		if (instructions != null )
+		{
+		    if (instructionParams == null || instructionParams.size() == instructions.size())
+		    {
+		        int location = 0;
+		        for (int instruction : instructions)
+		        {
+		        	try {
+						addInstruction(instruction, instructionParams.get(location++));
+					} catch (VMError e) {
+						vmError = e;
+					}
+		        }
+		    }
+		    else
+		    {
+		    	vmError =  new VMError("addInstructions instructionParams", VMError.VM_ERROR_BAD_PARAMS);
+		    }
+		}
+		else
+		{
+			vmError = new VMError("addInstructions instructions", VMError.VM_ERROR_BAD_PARAMS);
+		}
+		if ( vmListener != null)
+		{
+			vmListener.completedAddingInstructions(vmError);
+		}
+	}
+	
+	/**
+	 * @param numInstrsToRun
+	 * @param line
+	 * @throws VMError
+	 */
+	private void _runInstructions(final int numInstrsToRun,
+			final LineNumber... line)
+	{
+		VMError vmError = null;
+		dumpMem("1");
     	int numInstrsRun = 0;
         resetProgramWriter();
 
@@ -437,63 +248,55 @@ public class VirtualMachine extends Machine implements Instructions{
         }
         catch(VMError vme)
         {
-        	/*
-        	System.out.println("PROG_CTR=" + getProgramCounter());
-        	System.out.println("LAST_PROG_CTR=" + last);
+        	debug(TAG, "PROG_CTR=" + getProgramCounter());
+        	debug(TAG, "LAST_PROG_CTR=" + last);
         	dumpMem("2");
-        	*/
-        	throw vme;
+        	vmError = vme;
         }
-        /*
-    	System.out.println("PROG_CTR=" + getProgramCounter());
-    	System.out.println("LAST_PROG_CTR=" + last);
+    	debug(TAG, "PROG_CTR=" + getProgramCounter());
+    	debug(TAG, "LAST_PROG_CTR=" + last);
         dumpMem("3");
-        */
-    }
+		if ( vmListener != null)
+		{
+			vmListener.completedRunningInstructions(vmError);
+		}
+	}
 
 	/**
 	 * 
 	 */
 	private void dumpMem(String sAppend) {
-		String FILENAME = "memDump" + sAppend + ".txt";
-		String sData = "";
-		
-		for(int i = 1; i < MAX_MEMORY; i+=2)
+		if ( _bDebug )
 		{
-			try {
-				int parm = getValueAt(i);
-				int command = getValueAt(i-1);
-				sData += command + " " + parm + "\r\n";
+			String FILENAME = "memDump" + sAppend + ".txt";
+			String sData = "";
+			
+			for(int i = 1; i < MAX_MEMORY; i+=2)
+			{
+				try {
+					int parm = getValueAt(i);
+					int command = getValueAt(i-1);
+					sData += command + " " + parm + "\r\n";
+				}
+				catch (VMError e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-			catch (VMError e) {
+		    FileOutputStream fos;
+			try {
+				fos = _context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+			    fos.write(sData.getBytes());
+			    fos.close();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-	    FileOutputStream fos;
-		try {
-			fos = _context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
-		    fos.write(sData.getBytes());
-		    fos.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
-
-    public void runInstructions()
-    {
-    	new Thread(new Runnable()
-    	{
-			public void run()
-			{
-				_runInstructions();
-			}
-    	}).start();
-    }
 
     private void runCommand(final int command) throws VMError
     {
@@ -504,13 +307,14 @@ public class VirtualMachine extends Machine implements Instructions{
         	final StringBuffer sParam = new StringBuffer(" Line=");
         	sParam.append(getProgramCounter() - 1);
         	sLineCount.append("CMD=").append(BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(command));
-            debug(sLineCount.toString());
+            debug(TAG, sLineCount.toString());
             if (command >= 1000)
             {
             	sParam.append(" PARAM=").append(getValueAt(getProgramCounter()));
             }
-            debug(sParam.toString());
+            debug(TAG, sParam.toString());
         }
+        _numInstrsRun++;
 
         boolean bBranched = false;
         
@@ -635,90 +439,8 @@ public class VirtualMachine extends Machine implements Instructions{
                 }
                 break;
             default:
-            	throw new VMError("runCommand :" + command, VMError.VM_ERROR_BAD_UNKNOWN_COMMAND);
+            	throw new VMError("BAD runCommand :" + command, VMError.VM_ERROR_BAD_UNKNOWN_COMMAND);
         }
     }
-
-    private void debug(final String sText)
-    {
-        Log.d(TAG, sText);
-    }
-
-	/**
-	 * 
-	 */
-	private void _runInstructions() {
-		VMError vmError = null;
-		//dumpMem("1");
-		_numInstrsRun = 0;
-		resetProgramWriter();
-
-		int instructionVal = BaseInstructionSet._BEGIN;
-		int last = -1;
-
-		try
-		{
-		    while (instructionVal != BaseInstructionSet._HALT && getProgramCounter() < MAX_MEMORY)
-		    {
-		    	last = getProgramCounter();
-		    	instructionVal = getValueAt(getProgramCounter());
-		    	//System.out.println("-PROG_CTR=" + getProgramCounter() + " line=" + ((getProgramCounter() - STACK_LIMIT)/2) + " inst=" + instructionVal);
-		    	incProgramCounter();
-		        runCommand(instructionVal);
-		    }
-			//System.out.println("PROG_CTR=" + getProgramCounter());
-			//System.out.println("LAST_PROG_CTR=" + last);
-		    dumpMem("3");
-		    resetProgramCounter();
-		    resetStackPointer();
-		}
-		catch(VMError vme)
-		{
-			//System.out.println("+PROG_CTR=" + getProgramCounter());
-			//System.out.println("+LAST_PROG_CTR=" + last);
-			//dumpMem("2");
-			vmError = vme;
-		}
-		if ( vmListener != null)
-		{
-			vmListener.completedRunningInstructions(vmError);
-		}
-	}
-
-	/**
-	 * @param instructions
-	 * @param instructionParams
-	 */
-	private void _addInstructions(final List<Integer> instructions,
-			final List<List<Integer>> instructionParams) {
-		VMError vmError = null;
-		if (instructions != null )
-		{
-		    if (instructionParams == null || instructionParams.size() == instructions.size())
-		    {
-		        int location = 0;
-		        for (int instruction : instructions)
-		        {
-		        	try {
-						addInstruction(instruction, instructionParams.get(location++));
-					} catch (VMError e) {
-						vmError = e;
-					}
-		        }
-		    }
-		    else
-		    {
-		    	vmError =  new VMError("addInstructions instructionParams", VMError.VM_ERROR_BAD_PARAMS);
-		    }
-		}
-		else
-		{
-			vmError = new VMError("addInstructions instructions", VMError.VM_ERROR_BAD_PARAMS);
-		}
-		if ( vmListener != null)
-		{
-			vmListener.completedAddingInstructions(vmError);
-		}
-	}
 }
 

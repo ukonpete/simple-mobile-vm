@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import android.util.Log;
+
 
 
 /**
@@ -20,15 +22,16 @@ import java.util.List;
  */
 public class SimpleParser {
 
-    private VMListener vmListener;
-    
+	private static final String TAG = SimpleParser.class.getName();
+
+	private VMListener vmListener;
+ 
     private String _sInstructionFile;
-
     private Hashtable<String, Integer> _htSymbols = new Hashtable<String, Integer>();
-
     private Hashtable<String, Integer> _htAddresses = new Hashtable<String, Integer>();
-
     private int _freeMemoryLoc = 0;
+    
+    protected boolean _bDebug = false;
 
     public SimpleParser(String sFile)
     {
@@ -54,8 +57,7 @@ public class SimpleParser {
 				try {
 					allInstructions = _parse(allParameters);
 				} catch (VMError e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					vmError = e;
 				}
 				if ( vmListener != null)
 				{
@@ -84,40 +86,33 @@ public class SimpleParser {
 
             while (sLine != null)
             {
-                // $$$$ System.out.println("LINE : " + sLine);
+                debug("LINE : " + sLine);
             	
             	// If line is not a comment
                 if (!sLine.startsWith("//"))
                 {
-                	System.out.println("-Line " + sLine);
-                	//char[] delimiters = new char[] { ' ' };
+                	debug("-Line " + sLine);
                     String[] words = sLine.split(" ");
-                    //String[] words = sLine.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
 
-                    //long wordVal  = words[0];
                     String sInstruction = words[0];
 
-                    System.out.println("-RAW " + sInstruction);
+                    debug("-RAW " + sInstruction);
                     // If the line does not start with a symbol
                     if (!(sInstruction.startsWith("[") && sInstruction.contains("]")))
                     {
                         int commandVal = (int)BaseInstructionSet.INSTRUCTION_SET_HT.get(sInstruction);
-                        System.out.println("INST : " + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(commandVal) + "(" + commandVal + ")");
+                        debug("INST : " + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(commandVal) + "(" + commandVal + ")");
                         instructions.add(commandVal);
                         List<Integer> parameters = new ArrayList<Integer>();
                         if (words.length > 1)
                         {
                             String sParams = words[1];
-                            // char[] paramDelimiters = new char[] { ',' };
                             String[] InstrParams = sParams.split(",");
-                            //String[] InstrParams = sParams.Split(paramDelimiters, StringSplitOptions.RemoveEmptyEntries);
-
                             int paramVal = -1;
 
                             for (String sParamTemp : InstrParams)
                             {
                                 String sParam = sParamTemp.trim();
-                                //String sParam = words[1];
 
                                 // We found a symbol parameter, replace with line number from symbol table
                                 if (sParam.startsWith("[") && sParam.contains("]"))
@@ -126,7 +121,7 @@ public class SimpleParser {
                                     String sSymbol = sParam.substring(1, locEnd);
 
                                     paramVal = _htSymbols.get(sSymbol);
-                                    System.out.println("  SYMBOL : " + sSymbol + "(" + paramVal + ")");
+                                    debug("  SYMBOL : " + sSymbol + "(" + paramVal + ")");
                                 }
                                 else if (sParam.startsWith("g"))
                                 {
@@ -141,12 +136,12 @@ public class SimpleParser {
                                         _freeMemoryLoc++;
                                     }
                                     paramVal = memLoc;
-                                    System.out.println("  G-PARAM : " + sParam + "(" + paramVal + ")");
+                                    debug("  G-PARAM : " + sParam + "(" + paramVal + ")");
                                 }
                                 else
                                 {
                                     paramVal = Integer.parseInt(sParam);
-                                    System.out.println("  PARAM : " + sParam);
+                                    debug("  PARAM : " + sParam);
                                 }
                                 parameters.add(paramVal);
                             }
@@ -169,8 +164,7 @@ public class SimpleParser {
             	try {
 					fis.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					throw new VMError("[runInstructions] finally " + e.getMessage(), e, VMError.VM_ERROR_TYPE_IO);
 				}
             }
         }
@@ -178,9 +172,9 @@ public class SimpleParser {
     }
 
     /**
-     * Look for lines with symbol definitions (These are lines with [XXX] where XXX is a String).
-     * If its found save the XXX String and the line number for later use.
-     * If when parsing a command during parse, we see a symbol (Parameter with [XXX] where XXX is a String)
+     * Look for lines with symbol definitions (These are lines with [XYZ] where XYZ is a String).
+     * If its found save the XYZ String and the line number for later use.
+     * If when parsing a command during parse, we see a symbol (Parameter with [XYZ] where XYZ is a String)
      * we replace that symbol with the line number associated with the matching symbol in the symbol table.
      */
     public void getSymbols(FileInputStream fis)
@@ -190,7 +184,8 @@ public class SimpleParser {
         DataInputStream in = new DataInputStream(fis);
         BufferedReader br = new BufferedReader(new InputStreamReader(in), 8192 );
         
-        String sLine;
+        String sLine = "";
+        String sSymbol = "";
 		try {
 			sLine = br.readLine();
             while (sLine != null)
@@ -201,8 +196,8 @@ public class SimpleParser {
                     if (sLine.startsWith("[") && sLine.contains("]"))
                     {
                         int locEnd = sLine.indexOf("]");
-                        String sSymbol = sLine.substring(1, locEnd);
-                        System.out.println("--NEW SYM : " + sSymbol + "(" + line + ")");
+                        sSymbol = sLine.substring(1, locEnd);
+                        debug("--NEW SYM : " + sSymbol + "(" + line + ")");
                         _htSymbols.put(sSymbol, line);
                     }
                     else
@@ -215,8 +210,17 @@ public class SimpleParser {
         
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			debug("[getSymbols] IOException " + sSymbol + "(" + line + ")");
 			e.printStackTrace();
 		}
 
+    }
+    
+    protected void debug(final String sText)
+    {
+        if ( _bDebug )
+        {
+        	Log.d(TAG, sText);
+        }
     }
 }
