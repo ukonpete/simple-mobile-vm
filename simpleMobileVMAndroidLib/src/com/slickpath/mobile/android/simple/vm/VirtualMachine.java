@@ -8,7 +8,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.Iterator;
 import java.util.List;
+
+import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet;
+import com.slickpath.mobile.android.simple.vm.instructions.Instructions;
+import com.slickpath.mobile.android.simple.vm.util.Command;
+import com.slickpath.mobile.android.simple.vm.util.CommandSet;
+import com.slickpath.mobile.android.simple.vm.util.LineNumber;
 
 import android.content.Context;
 
@@ -29,17 +36,27 @@ public class VirtualMachine extends Machine implements Instructions{
     public VirtualMachine(final PrintStream writer, final InputStream reader, Context context)
     {
     	super(writer, reader);
-    	BaseInstructionSet bis = new BaseInstructionSet();
-    	_context = context;
+    	init(context);
     }
 
     public VirtualMachine(Context context)
     {
     	super();
-    	BaseInstructionSet bis = new BaseInstructionSet();
-    	_context = context;
+    	init(context);
     }
-    
+
+	/**
+	 * @param context
+	 */
+	private void init(Context context) {
+		try {
+			Class.forName("BaseInstructionSet");
+		} catch (ClassNotFoundException e) {
+			debug(TAG, e.getMessage());
+		}
+    	_context = context;
+	}
+
     public void setVMListener(VMListener listener)
     {
     	vmListener = listener;
@@ -48,9 +65,11 @@ public class VirtualMachine extends Machine implements Instructions{
 
     //   EXECUTION
 
-    public void addInstruction(final int instruction, final List<Integer> instructionParams) throws VMError
+    public void addInstruction(final Command command) throws VMError
     {
-        if (instruction < 1000)
+        int instruction = command.getCommandId();
+        List<Integer> instructionParams = command.getParameters();
+    	if (instruction < 1000)
         {
             setValAtProgramWtr(instruction);
             setValAtProgramWtr(0);
@@ -82,13 +101,13 @@ public class VirtualMachine extends Machine implements Instructions{
         incProgramWriter();
     }
 
-    public void addInstructions(final List<Integer> instructions, final List<List<Integer>> instructionParams)
+    public void addInstructions(final CommandSet commandSet)
     {
     	new Thread(new Runnable()
     	{
 			public void run()
 			{
-				_addInstructions(instructions, instructionParams);
+				_addInstructions(commandSet);
 			}
     	}).start();	
     }
@@ -182,27 +201,19 @@ public class VirtualMachine extends Machine implements Instructions{
 	 * @param instructions
 	 * @param instructionParams
 	 */
-	private void _addInstructions(final List<Integer> instructions,
-			final List<List<Integer>> instructionParams) {
+	private void _addInstructions(final CommandSet commandSet) {
 		VMError vmError = null;
-		if (instructions != null )
+		if (commandSet != null )
 		{
-		    if (instructionParams == null || instructionParams.size() == instructions.size())
-		    {
-		        int location = 0;
-		        for (int instruction : instructions)
-		        {
-		        	try {
-						addInstruction(instruction, instructionParams.get(location++));
-					} catch (VMError e) {
-						vmError = e;
-					}
-		        }
-		    }
-		    else
-		    {
-		    	vmError =  new VMError("addInstructions instructionParams", VMError.VM_ERROR_BAD_PARAMS);
-		    }
+			int numCommands = commandSet.getNumCommands();
+			for(int i = 0 ; i < numCommands; i++)
+	        {
+	        	try {
+	        		addInstruction(commandSet.getCommand(i));
+				} catch (VMError e) {
+					vmError = e;
+				}
+	        }
 		}
 		else
 		{
