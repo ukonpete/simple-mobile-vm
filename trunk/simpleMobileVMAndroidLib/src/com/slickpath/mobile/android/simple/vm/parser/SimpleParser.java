@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.slickpath.mobile.android.simple.vm;
+package com.slickpath.mobile.android.simple.vm.parser;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -11,6 +11,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+
+import com.slickpath.mobile.android.simple.vm.VMError;
+import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet;
+import com.slickpath.mobile.android.simple.vm.util.CommandSet;
 
 import android.util.Log;
 
@@ -24,11 +28,12 @@ public class SimpleParser {
 
 	private static final String TAG = SimpleParser.class.getName();
 
-	private VMListener vmListener;
+	private ParserListener _parserListener;
  
     private String _sInstructionFile;
     private Hashtable<String, Integer> _htSymbols = new Hashtable<String, Integer>();
     private Hashtable<String, Integer> _htAddresses = new Hashtable<String, Integer>();
+    private final CommandSet _commandSet = new CommandSet();
     private int _freeMemoryLoc = 0;
     
     protected boolean _bDebug = false;
@@ -36,12 +41,16 @@ public class SimpleParser {
     public SimpleParser(String sFile)
     {
         _sInstructionFile = sFile;
-        BaseInstructionSet bis = new BaseInstructionSet();
+		try {
+			Class.forName("BaseInstructionSet");
+		} catch (ClassNotFoundException e) {
+			debug(e.getMessage());
+		}
     }
 
-    public void setVMListener(VMListener listener)
+    public void setListener(ParserListener listener)
     {
-    	vmListener = listener;
+    	_parserListener = listener;
     }
     
     public void parse()
@@ -50,26 +59,27 @@ public class SimpleParser {
     	{
 			public void run()
 			{
-				List<List<Integer>> allParameters = new ArrayList<List<Integer>>();
-
 				VMError vmError = null;
-				List<Integer> allInstructions = null;
 				try {
-					allInstructions = _parse(allParameters);
+					_parse();
 				} catch (VMError e) {
 					vmError = e;
 				}
-				if ( vmListener != null)
+				if ( _parserListener != null)
 				{
-					vmListener.completedParse(vmError, allInstructions, allParameters);
+					_parserListener.completedParse(vmError, _commandSet);
 				}
 			}
     	}).start();
     }
     
-    private List<Integer> _parse(List<List<Integer>> allParameters) throws VMError
+    public CommandSet getCommandSet()
     {
-    	List<Integer> instructions = new ArrayList<Integer>();
+    	return _commandSet;
+    }
+    
+    private void _parse() throws VMError
+    {
         FileInputStream fis = null;
 
         try
@@ -102,7 +112,6 @@ public class SimpleParser {
                     {
                         int commandVal = (int)BaseInstructionSet.INSTRUCTION_SET_HT.get(sInstruction);
                         debug("INST : " + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(commandVal) + "(" + commandVal + ")");
-                        instructions.add(commandVal);
                         List<Integer> parameters = new ArrayList<Integer>();
                         if (words.length > 1)
                         {
@@ -146,7 +155,7 @@ public class SimpleParser {
                                 parameters.add(paramVal);
                             }
                         }
-                        allParameters.add(parameters);
+                        _commandSet.addCommand(commandVal, parameters);
                     }
                 }
                 sLine = br.readLine();
@@ -168,13 +177,12 @@ public class SimpleParser {
 				}
             }
         }
-        return instructions;
     }
 
     /**
-     * Look for lines with symbol definitions (These are lines with [XYZ] where XYZ is a String).
+     * Look for lines with symbol definitions (These are lines with "[XYZ]" where XYZ is a String).
      * If its found save the XYZ String and the line number for later use.
-     * If when parsing a command during parse, we see a symbol (Parameter with [XYZ] where XYZ is a String)
+     * If when parsing a command during parse, we see a symbol (Parameter with "[XYZ]" where XYZ is a String)
      * we replace that symbol with the line number associated with the matching symbol in the symbol table.
      */
     public void getSymbols(FileInputStream fis)
@@ -209,7 +217,6 @@ public class SimpleParser {
             }
         
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			debug("[getSymbols] IOException " + sSymbol + "(" + line + ")");
 			e.printStackTrace();
 		}

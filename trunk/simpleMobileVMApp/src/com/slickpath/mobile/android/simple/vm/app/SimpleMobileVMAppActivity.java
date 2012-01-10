@@ -1,8 +1,6 @@
 package com.slickpath.mobile.android.simple.vm.app;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -16,12 +14,14 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.slickpath.mobile.android.simple.vm.SimpleParser;
+import com.slickpath.mobile.android.simple.vm.parser.SimpleParser;
 import com.slickpath.mobile.android.simple.vm.VMError;
 import com.slickpath.mobile.android.simple.vm.VirtualMachine;
 import com.slickpath.mobile.android.simple.vm.VMListener;
+import com.slickpath.mobile.android.simple.vm.parser.ParserListener;
+import com.slickpath.mobile.android.simple.vm.util.CommandSet; 
 
-public class SimpleMobileVMAppActivity extends Activity implements VMListener{
+public class SimpleMobileVMAppActivity extends Activity implements VMListener, ParserListener{
 
 	ProgressDialog _dialog;
 	VirtualMachine _vm;
@@ -82,13 +82,12 @@ public class SimpleMobileVMAppActivity extends Activity implements VMListener{
         File filesDir = this.getApplicationContext().getFilesDir();
     
         SimpleParser parser = new SimpleParser(filesDir.getPath() + File.separator + sSelectedFile);
-        parser.setVMListener(this);
+        parser.setListener(this);
         
         _dialog = ProgressDialog.show(SimpleMobileVMAppActivity.this, "",
         		"Please wait for few seconds...", true);
 
         parser.parse();
-
     }
 
 	/**
@@ -105,14 +104,14 @@ public class SimpleMobileVMAppActivity extends Activity implements VMListener{
 	}
 
 	@Override
-	public void completedParse(VMError vmError, List<Integer> allInstructions, List<List<Integer>> allParameters)
+	public void completedParse(VMError vmError, CommandSet commandSet)
 	{
 		if ( vmError != null)
 		{
 			System.out.println("ERROR PARSE");
 			vmError.printStackTrace();
 		}
-        _vm.addInstructions(allInstructions, allParameters);
+        _vm.addInstructions(commandSet);
 	}
 
 	@Override

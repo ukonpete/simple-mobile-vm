@@ -1,4 +1,4 @@
-package com.slickpath.mobile.android.simple.vm;
+package com.slickpath.mobile.android.simple.vm.util;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
