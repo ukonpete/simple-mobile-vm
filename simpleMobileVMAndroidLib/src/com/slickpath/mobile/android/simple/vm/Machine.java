@@ -22,7 +22,7 @@ public class Machine extends Kernel{
 	protected final Scanner _textScanner;
 	private final InputStream _textReader;
 
-	protected boolean _bDebug = false;
+	protected boolean _bDebug = false; 
 	/**
 	 * 
 	 */
@@ -45,39 +45,39 @@ public class Machine extends Kernel{
 
 	public void ADD() throws VMError
 	{
-		final int val1 = _pop();
-		final int val2 = _pop();
+		final int val1 = pop();
+		final int val2 = pop();
 		final int val3 = val1 + val2;
 		PUSHC(val3);
 	}
 
 	public void SUB() throws VMError
 	{
-		final int val1 = _pop();
-		final int val2 = _pop();
+		final int val1 = pop();
+		final int val2 = pop();
 		final int val3 = val1 - val2;
 		PUSHC(val3);
 	}
 
 	public void MUL() throws VMError
 	{
-		final int val1 = _pop();
-		final int val2 = _pop();
+		final int val1 = pop();
+		final int val2 = pop();
 		final int val3 = val1 * val2;
 		PUSHC(val3);
 	}
 
 	public void DIV() throws VMError
 	{
-		final int val1 = _pop();
-		final int val2 = _pop();
+		final int val1 = pop();
+		final int val2 = pop();
 		final int val3 = val1 / val2;
 		PUSHC(val3);
 	}
 
 	public void NEG() throws VMError
 	{
-		final int val1 = _pop();
+		final int val1 = pop();
 		final int val2 = 0 - val1;
 		PUSHC(val2);
 	}
@@ -86,85 +86,85 @@ public class Machine extends Kernel{
 
 	public void EQUAL() throws VMError
 	{
-		int equal = YES;
-		final int val1 = _pop();
-		final int val2 = _pop();
+		int equal = PUSHC_YES;
+		final int val1 = pop();
+		final int val2 = pop();
 
 		if (val1 != val2)
 		{
-			equal = NO;
+			equal = PUSHC_NO;
 		}
 		PUSHC(equal);
 	}
 
 	public void NOTEQL() throws VMError
 	{
-		int notEqual = NO;
-		final int val1 = _pop();
-		final int val2 = _pop();
+		int notEqual = PUSHC_NO;
+		final int val1 = pop();
+		final int val2 = pop();
 
 		if (val1 != val2)
 		{
-			notEqual = YES;
+			notEqual = PUSHC_YES;
 		}
 		PUSHC(notEqual);
 	}
 
 	public void GREATER() throws VMError
 	{
-		int greater = NO;
-		final int val1 = _pop();
-		final int val2 = _pop();
+		int greater = PUSHC_NO;
+		final int val1 = pop();
+		final int val2 = pop();
 
 		if (val1 > val2)
 		{
-			greater = YES;
+			greater = PUSHC_YES;
 		}
 		PUSHC(greater);
 	}
 
 	public void LESS() throws VMError
 	{
-		int less = NO;
-		final int val1 = _pop();
-		final int val2 = _pop();
+		int less = PUSHC_NO;
+		final int val1 = pop();
+		final int val2 = pop();
 
 		if (val1 < val2)
 		{
-			less = YES;
+			less = PUSHC_YES;
 		}
 		PUSHC(less);
 	}
 
 	public void GTREQL() throws VMError
 	{
-		int greaterOrEqual = NO;
-		final int val1 = _pop();
-		final int val2 = _pop();
+		int greaterOrEqual = PUSHC_NO;
+		final int val1 = pop();
+		final int val2 = pop();
 
 		if (val1 >= val2)
 		{
-			greaterOrEqual = YES;
+			greaterOrEqual = PUSHC_YES;
 		}
 		PUSHC(greaterOrEqual);
 	}
 
 	public void LSSEQL() throws VMError
 	{
-		int lessEqual = NO;
-		final int val1 = _pop();
-		final int val2 = _pop();
+		int lessEqual = PUSHC_NO;
+		final int val1 = pop();
+		final int val2 = pop();
 
 		if (val1 <= val2)
 		{
-			lessEqual = YES;
+			lessEqual = PUSHC_YES;
 		}
 		PUSHC(lessEqual);
 	}
 
 	public void NOT() throws VMError
 	{
-		int val = _pop();
+		int val = pop();
 
 		if (val == 0)
 		{
@@ -201,14 +201,14 @@ public class Machine extends Kernel{
 
 	public void POP() throws VMError
 	{
-		final int location = _pop();
-		final int value = _pop();
+		final int location = pop();
+		final int value = pop();
 		setValAtLocation(value, location);
 	}
 
 	public void POPC(final int location) throws VMError
 	{
-		final int value = _pop();
+		final int value = pop();
 		setValAtLocation(value, location);
 	}
 
@@ -227,7 +227,7 @@ public class Machine extends Kernel{
 
 	public void WRCHAR() throws VMError
 	{
-		final int value = _pop();
+		final int value = pop();
 		final String sVal = Integer.toString(value);
 		_textWriter.print(sVal);
 		debug("WRCHAR: " + sVal);
@@ -241,7 +241,7 @@ public class Machine extends Kernel{
 
 	public void WRINT()  throws VMError
 	{
-		final int value = _pop();
+		final int value = pop();
 		final String sOut = Integer.toString(value);
 		_textWriter.println(sOut);
 		debug("WRINT" + sOut);
@@ -253,18 +253,18 @@ public class Machine extends Kernel{
 	{
 		debug("--BR=" + location);
 		debug("--BR=" + getProgramCounter());
-		_branch(location);
+		branch(location);
 		debug("--BR=" + getProgramCounter());
 	}
 
 	public void JUMP() throws VMError
 	{
-		_jump();
+		jump();
 	}
 
 	public boolean BREQL(final int location) throws VMError
 	{
-		final int val = _pop();
+		final int val = pop();
 		boolean bBranched = false;
 		if (val == 0)
 		{
@@ -276,7 +276,7 @@ public class Machine extends Kernel{
 
 	public boolean BRLSS(final int location) throws VMError
 	{
-		final int val = _pop();
+		final int val = pop();
 		boolean bBranched = false;
 		if (val < 0)
 		{
@@ -288,7 +288,7 @@ public class Machine extends Kernel{
 
 	public boolean BRGTR(final int location) throws VMError
 	{
-		final int val = _pop();
+		final int val = pop();
 		boolean bBranched = false;
 		if (val > 0)
 		{
@@ -302,7 +302,7 @@ public class Machine extends Kernel{
 
 	public void CONTENTS() throws VMError
 	{
-		final int location = _pop();
+		final int location = pop();
 		final int val = getValueAt(location);
 		PUSHC(val);
 	}

@@ -10,13 +10,13 @@ public class Command{
 	/**
 	 * 
 	 */
-	
-	public Command(Integer commandId, List<Integer> params)
+
+	public Command(final Integer commandId, final List<Integer> params)
 	{
 		_commandId = commandId;
 		_parameters = params;
 	}
-	
+
 	/**
 	 * @return the _command
 	 */

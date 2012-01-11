@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import android.util.Log;
 
@@ -29,8 +30,8 @@ public class SimpleParser {
 	private ParserListener _parserListener;
 
 	private final String _sInstructionFile;
-	private final Hashtable<String, Integer> _htSymbols = new Hashtable<String, Integer>();
-	private final Hashtable<String, Integer> _htAddresses = new Hashtable<String, Integer>();
+	private final Map<String, Integer> _symbols = new Hashtable<String, Integer>();
+	private final Map<String, Integer> _addresses = new Hashtable<String, Integer>();
 	private final CommandSet _commandSet = new CommandSet();
 	private int _freeMemoryLoc = 0;
 
@@ -101,7 +102,6 @@ public class SimpleParser {
 				{
 					debug("-Line " + sLine);
 					final String[] words = sLine.split(" ");
-
 					final String sInstruction = words[0];
 
 					debug("-RAW " + sInstruction);
@@ -110,50 +110,17 @@ public class SimpleParser {
 					{
 						final int commandVal = BaseInstructionSet.INSTRUCTION_SET_HT.get(sInstruction);
 						debug("INST : " + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(commandVal) + "(" + commandVal + ")");
-						final List<Integer> parameters = new ArrayList<Integer>();
+
+						List<Integer> params = null;
 						if (words.length > 1)
 						{
-							final String sParams = words[1];
-							final String[] InstrParams = sParams.split(",");
-							int paramVal = -1;
-
-							for (final String sParamTemp : InstrParams)
-							{
-								final String sParam = sParamTemp.trim();
-
-								// We found a symbol parameter, replace with line number from symbol table
-								if (sParam.startsWith("[") && sParam.contains("]"))
-								{
-									final int locEnd = sParam.indexOf("]");
-									final String sSymbol = sParam.substring(1, locEnd);
-
-									paramVal = _htSymbols.get(sSymbol);
-									debug("  SYMBOL : " + sSymbol + "(" + paramVal + ")");
-								}
-								else if (sParam.startsWith("g"))
-								{
-									int memLoc = _freeMemoryLoc;
-									if (_htAddresses.containsKey(sParam))
-									{
-										memLoc = _htAddresses.get(sParam);
-									}
-									else
-									{
-										_htAddresses.put(sParam, memLoc);
-										_freeMemoryLoc++;
-									}
-									paramVal = memLoc;
-									debug("  G-PARAM : " + sParam + "(" + paramVal + ")");
-								}
-								else
-								{
-									paramVal = Integer.parseInt(sParam);
-									debug("  PARAM : " + sParam);
-								}
-								parameters.add(paramVal);
-							}
+							params = parseParameters(words);
 						}
-						_commandSet.addCommand(commandVal, parameters);
+						else
+						{
+							params = new ArrayList<Integer>(0);
+						}
+						_commandSet.addCommand(commandVal, params);
 					}
 				}
 				sLine = br.readLine();
@@ -161,7 +128,6 @@ public class SimpleParser {
 		}
 		catch(final Exception e)
 		{
-			e.printStackTrace();
 			throw new VMError("[runInstructions]" + e.getMessage(), e, VMError.VM_ERROR_TYPE_UNKOWN);
 		}
 		finally
@@ -175,6 +141,56 @@ public class SimpleParser {
 				}
 			}
 		}
+	}
+
+	/**
+	 * @param words
+	 * @param parameters
+	 * @throws NumberFormatException
+	 */
+	private List<Integer> parseParameters(final String[] words) throws NumberFormatException {
+		final List<Integer> parameters = new ArrayList<Integer>();
+		final String sParams = words[1];
+		final String[] InstrParams = sParams.split(",");
+		int paramVal = -1;
+
+		for (final String sParamTemp : InstrParams)
+		{
+			final String sParam = sParamTemp.trim();
+
+			// We found a symbol parameter, replace with line number from symbol table
+			if (sParam.startsWith("[") && sParam.contains("]"))
+			{
+				final int locEnd = sParam.indexOf(']');
+				final String sSymbol = sParam.substring(1, locEnd);
+
+				paramVal = _symbols.get(sSymbol);
+				debug("  SYMBOL : " + sSymbol + "(" + paramVal + ")");
+			}
+			else if (sParam.startsWith("g"))
+			{
+				// Handle Variable
+				int memLoc = _freeMemoryLoc;
+				if (_addresses.containsKey(sParam))
+				{
+					memLoc = _addresses.get(sParam);
+				}
+				else
+				{
+					_addresses.put(sParam, memLoc);
+					_freeMemoryLoc++;
+				}
+				paramVal = memLoc;
+				debug("  G-PARAM : " + sParam + "(" + paramVal + ")");
+			}
+			else
+			{
+				paramVal = Integer.parseInt(sParam);
+				debug("  PARAM : " + sParam);
+			}
+			parameters.add(paramVal);
+		}
+		return parameters;
 	}
 
 	/**
@@ -201,10 +217,10 @@ public class SimpleParser {
 				{
 					if (sLine.startsWith("[") && sLine.contains("]"))
 					{
-						final int locEnd = sLine.indexOf("]");
+						final int locEnd = sLine.indexOf(']');
 						sSymbol = sLine.substring(1, locEnd);
 						debug("--NEW SYM : " + sSymbol + "(" + line + ")");
-						_htSymbols.put(sSymbol, line);
+						_symbols.put(sSymbol, line);
 					}
 					else
 					{
@@ -215,13 +231,12 @@ public class SimpleParser {
 			}
 
 		} catch (final IOException e) {
-			debug("[getSymbols] IOException " + sSymbol + "(" + line + ")");
-			e.printStackTrace();
+			debug("[getSymbols] IOException " + sSymbol + "(" + line + ") " + e.getMessage());
 		}
 
 	}
 
-	protected void debug(final String sText)
+	protected final void debug(final String sText)
 	{
 		if ( _bDebug )
 		{
