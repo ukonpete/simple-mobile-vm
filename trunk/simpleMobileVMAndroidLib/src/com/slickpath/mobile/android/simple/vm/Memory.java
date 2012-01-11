@@ -21,8 +21,11 @@ public class Memory {
 	 * Keeps track of currently stack location
 	 */
 	private int _stackPtr = STACK_EMPTY_LOC;
+	// TODO - make private
 	protected int _programCtr = STACK_LIMIT;
+	// TODO - make private
 	protected int _programWriter = STACK_LIMIT;
+	// TODO - make private ???
 	protected final List<Integer> _memory;
 
 	public Memory() {
