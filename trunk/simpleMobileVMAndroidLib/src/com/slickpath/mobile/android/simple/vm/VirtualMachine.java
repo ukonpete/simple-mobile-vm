@@ -26,6 +26,8 @@ import com.slickpath.mobile.android.simple.vm.util.LineNumber;
  */
 public class VirtualMachine extends Machine implements Instructions{
 
+	private static final int SINGLE_PARAM_COMMAND_START = 1000;
+
 	private static final String TAG = VirtualMachine.class.getName();
 
 	private int _numInstrsRun = 0;
@@ -35,21 +37,21 @@ public class VirtualMachine extends Machine implements Instructions{
 	public VirtualMachine(final PrintStream writer, final InputStream reader, final Context context)
 	{
 		super(writer, reader);
-		init(context);
+		init();
 		_context = context;
 	}
 
 	public VirtualMachine(final Context context)
 	{
 		super();
-		init(context);
+		init();
 		_context = context;
 	}
 
 	/**
 	 * @param context
 	 */
-	private void init(final Context context) {
+	private void init() {
 		try
 		{
 			Class.forName("BaseInstructionSet");
@@ -78,15 +80,15 @@ public class VirtualMachine extends Machine implements Instructions{
 			setValAtProgramWtr(0);
 			debug(TAG, "Add ins="+ BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(instruction)+ "(" + instruction + ")" + " params=X");
 		}
-		if (instruction >= 1000)
+		if (instruction >= SINGLE_PARAM_COMMAND_START)
 		{
 			if ( instructionParams != null )
 			{
-				String sVal = "";
+				final StringBuffer sVal = new StringBuffer("");
 				setValAtProgramWtr(instruction);
 				for(final int instPram : instructionParams)
 				{
-					sVal += Integer.toString(instPram) + ":";
+					sVal.append(Integer.toString(instPram)).append(':');
 					setValAtProgramWtr(instPram);
 				}
 				debug(TAG, "Add ins="+ BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(instruction)+ "(" + instruction + ")" + " params=" + sVal);
@@ -133,7 +135,7 @@ public class VirtualMachine extends Machine implements Instructions{
 		{
 			public void run()
 			{
-				_runInstructions();
+				doRunInstructions();
 			}
 		}).start();
 	}
@@ -162,7 +164,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	/**
 	 * 
 	 */
-	private void _runInstructions() {
+	private void doRunInstructions() {
 		VMError vmError = null;
 		dumpMem("1");
 		_numInstrsRun = 0;
@@ -283,14 +285,14 @@ public class VirtualMachine extends Machine implements Instructions{
 		if ( _bDebug )
 		{
 			final String FILENAME = "memDump" + sAppend + ".txt";
-			String sData = "";
+			final StringBuffer sData = new StringBuffer("");
 
 			for(int i = 1; i < MAX_MEMORY; i+=2)
 			{
 				try {
 					final int parm = getValueAt(i);
 					final int command = getValueAt(i-1);
-					sData += command + " " + parm + "\r\n";
+					sData.append(command).append(' ').append(parm).append("\r\n");
 				}
 				catch (final VMError e) {
 					e.printStackTrace();
@@ -299,7 +301,7 @@ public class VirtualMachine extends Machine implements Instructions{
 			FileOutputStream fos;
 			try {
 				fos = _context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
-				fos.write(sData.getBytes());
+				fos.write(sData.toString().getBytes());
 				fos.close();
 			} catch (final FileNotFoundException e) {
 				e.printStackTrace();
@@ -313,17 +315,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	{
 		if (_bDebug)
 		{
-			final StringBuffer sLineCount = new StringBuffer("[");
-			sLineCount.append(_numInstrsRun).append(']');
-			final StringBuffer sParam = new StringBuffer(" Line=");
-			sParam.append(getProgramCounter() - 1);
-			sLineCount.append("CMD=").append(BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(command));
-			debug(TAG, sLineCount.toString());
-			if (command >= 1000)
-			{
-				sParam.append(" PARAM=").append(getValueAt(getProgramCounter()));
-			}
-			debug(TAG, sParam.toString());
+			doCommandDebug(command);
 		}
 		_numInstrsRun++;
 
@@ -452,6 +444,24 @@ public class VirtualMachine extends Machine implements Instructions{
 		default:
 			throw new VMError("BAD runCommand :" + command, VMError.VM_ERROR_BAD_UNKNOWN_COMMAND);
 		}
+	}
+
+	/**
+	 * @param command
+	 * @throws VMError
+	 */
+	private void doCommandDebug(final int command) throws VMError {
+		final StringBuffer sLineCount = new StringBuffer("[");
+		sLineCount.append(_numInstrsRun).append(']');
+		final StringBuffer sParam = new StringBuffer(" Line=");
+		sParam.append(getProgramCounter() - 1);
+		sLineCount.append("CMD=").append(BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(command));
+		debug(TAG, sLineCount.toString());
+		if (command >= 1000)
+		{
+			sParam.append(" PARAM=").append(getValueAt(getProgramCounter()));
+		}
+		debug(TAG, sParam.toString());
 	}
 }
 
