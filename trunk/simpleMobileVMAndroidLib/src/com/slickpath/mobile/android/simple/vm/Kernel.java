@@ -1,49 +1,33 @@
 /**
+ * This class represents the basic functionality of the machine itself
+ * for example
+ *   -  push/pop stack data
+ *   -  stack tracking
+ *   -  read/write memory data
+ *   -  memory tracking
+ *   -  read/write program data
  * 
+ *   NOTE:  Program memory uses the same space as accessible memory
  */
 package com.slickpath.mobile.android.simple.vm;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author PJ
  *
  */
-public class Kernel {
+public class Kernel extends Memory {
 
-	public static final int EMPTY_MEMORY_LOC = 999999;
-	public static final int MAX_MEMORY = 500;
-	public static final int STACK_LIMIT = MAX_MEMORY / 2;
 	public static final int PUSHC_YES = 1;
 	public static final int PUSHC_NO = 0;
-
-	private int _stackPtr = -1;
-	private int _programCtr = STACK_LIMIT;
-	private int _programWriter = STACK_LIMIT;
-
-	private List<Integer> _memory = null;
 
 	/**
 	 * 
 	 */
 	public Kernel() {
-		initMemory();
+		super();
 	}
 
-	/**
-	 * 
-	 */
-	private void initMemory() {
-		_memory = new ArrayList<Integer>(MAX_MEMORY);
-		// initialize every piece of memory to EMPTY
-		for (int i = 0; i < MAX_MEMORY; i++)
-		{
-			_memory.add(EMPTY_MEMORY_LOC);
-		}
-	}
-
-	// PRIVATE_METHODS
 	protected int getValueAt(final int location) throws VMError
 	{
 		int returnVal = 0;
@@ -66,17 +50,18 @@ public class Kernel {
 		}
 		else
 		{
-			throw new VMError("setValAtLocation", VMError.VM_ERROR_TYPE_LOC_MAX_MEMORY);
+			throw new VMError("setValAt", VMError.VM_ERROR_TYPE_LOC_MAX_MEMORY);
 		}
 	}
 
 	protected int pop() throws VMError
 	{
-		if (_stackPtr >= 0)
+		if (!isStackEmpty())
 		{
-			final int returnVal = _memory.get(_stackPtr--);
+			final int returnVal = _memory.get(getStackPointer());
+			decStackPtr();
 			// Reset every memory position we pop to 99999
-			_memory.set((_stackPtr + 1), EMPTY_MEMORY_LOC);
+			_memory.set((getStackPointer() + 1), EMPTY_MEMORY_LOC);
 			return returnVal;
 		}
 		else
@@ -85,34 +70,10 @@ public class Kernel {
 		}
 	}
 
-	public List<Integer> memoryDump()
+	protected void push(final int value) throws VMError
 	{
-		return _memory;
-	}
-
-	public int getStackPointer()
-	{
-		return _stackPtr;
-	}
-
-	protected void incStackPtr()
-	{
-		_stackPtr++;
-	}
-
-	protected void decStackPtr()
-	{
-		_stackPtr--;
-	}
-
-	protected void resetStackPointer()
-	{
-		_stackPtr = 0;
-	}
-
-	public boolean isStackPointerValid()
-	{
-		return _stackPtr < STACK_LIMIT;
+		incStackPtr();
+		_memory.set(getStackPointer(), value);
 	}
 
 	protected void branch(final int location) throws VMError
@@ -132,45 +93,5 @@ public class Kernel {
 	{
 		final int location = pop();
 		_programCtr = (location * 2) + STACK_LIMIT;
-	}
-
-	protected int getProgramCounter()
-	{
-		return _programCtr;
-	}
-
-	protected void incProgramCounter()
-	{
-		_programCtr++;
-	}
-
-	protected void decProgramCounter()
-	{
-		_programCtr--;
-	}
-
-	protected void resetProgramCounter()
-	{
-		_programCtr = STACK_LIMIT;
-	}
-
-	protected int getProgramWriter()
-	{
-		return _programWriter;
-	}
-
-	protected void incProgramWriter()
-	{
-		_programWriter++;
-	}
-
-	protected void decProgramWriter()
-	{
-		_programWriter--;
-	}
-
-	protected void resetProgramWriter()
-	{
-		_programWriter = STACK_LIMIT;
 	}
 }
