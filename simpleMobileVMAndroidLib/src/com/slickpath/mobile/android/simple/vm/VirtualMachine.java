@@ -140,15 +140,17 @@ public class VirtualMachine extends Machine implements Instructions{
 		}).start();
 	}
 
-	// Mutable Line number ( to make it an "out" variable )
-	public boolean runNextInstruction(final LineNumber line) throws VMError
+	// Mutable Line number ( to make it an "out" variable if the user wants that information)
+	public boolean runNextInstruction(final LineNumber... line) throws VMError
 	{
 		boolean bReturn = false;
 		resetProgramWriter();
 
-		line.set((getProgramCounter() - STACK_LIMIT)/2);
+		if ( line.length > 0)
+		{
+			line[0].set((getProgramCounter() - STACK_LIMIT)/2);
+		}
 		final int instructionVal = getValueAt(getProgramCounter());
-		incProgramWriter();
 		runCommand(instructionVal);
 
 		if (instructionVal == BaseInstructionSet._HALT)
@@ -180,7 +182,6 @@ public class VirtualMachine extends Machine implements Instructions{
 				last = getProgramCounter();
 				instructionVal = getValueAt(getProgramCounter());
 				debug(TAG, "-PROG_CTR=" + getProgramCounter() + " line=" + ((getProgramCounter() - STACK_LIMIT)/2) + " inst=" + instructionVal);
-				incProgramCounter();
 				runCommand(instructionVal);
 			}
 			debug(TAG, "PROG_CTR=" + getProgramCounter());
@@ -253,14 +254,14 @@ public class VirtualMachine extends Machine implements Instructions{
 				last = getProgramCounter();
 				numInstrsRun++;
 				instructionVal = getValueAt(getProgramCounter());
-				incProgramCounter();
-
 				runCommand(instructionVal);
 			}
 			if ( line.length > 0)
 			{
 				line[0].set((getProgramCounter() - 2 - STACK_LIMIT)/2);
 			}
+			debug(TAG, "PROG_CTR=" + getProgramCounter());
+			debug(TAG, "LAST_PROG_CTR=" + last);
 		}
 		catch(final VMError vme)
 		{
@@ -269,8 +270,6 @@ public class VirtualMachine extends Machine implements Instructions{
 			dumpMem("2");
 			vmError = vme;
 		}
-		debug(TAG, "PROG_CTR=" + getProgramCounter());
-		debug(TAG, "LAST_PROG_CTR=" + last);
 		dumpMem("3");
 		if ( _vmListener != null)
 		{
@@ -313,6 +312,7 @@ public class VirtualMachine extends Machine implements Instructions{
 
 	private void runCommand(final int command) throws VMError
 	{
+		incProgramCounter();
 		if (_bDebug)
 		{
 			doCommandDebug(command);

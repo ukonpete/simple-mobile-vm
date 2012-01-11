@@ -22,7 +22,7 @@ public class Machine extends Kernel{
 	protected final Scanner _textScanner;
 	private final InputStream _textReader;
 
-	protected boolean _bDebug = false; 
+	protected boolean _bDebug = false;
 	/**
 	 * 
 	 */
@@ -166,6 +166,7 @@ public class Machine extends Kernel{
 	{
 		int val = pop();
 
+		// longhand for val == 0?1:0
 		if (val == 0)
 		{
 			val = 1;
@@ -190,8 +191,7 @@ public class Machine extends Kernel{
 	{
 		if (isStackPointerValid())
 		{
-			incStackPtr();
-			setValAtLocation(value, getStackPointer());
+			push(value);
 		}
 		else
 		{
@@ -202,8 +202,7 @@ public class Machine extends Kernel{
 	public void POP() throws VMError
 	{
 		final int location = pop();
-		final int value = pop();
-		setValAtLocation(value, location);
+		POPC(location);
 	}
 
 	public void POPC(final int location) throws VMError
