@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Memory {
 
-	static final int STACK_EMPTY_LOC = -1;
+	private final int STACK_EMPTY_LOC = -1;
 	public static final int EMPTY_MEMORY_LOC = 999999;
 
 	/**
@@ -51,7 +51,7 @@ public class Memory {
 		}
 		else
 		{
-			throw new VMError("Stack is full when trying to inc", VMError.VM_ERROR_TYPE_STACK_LIMIT);
+			throw new VMError("incStackPtr - Stack is full", VMError.VM_ERROR_TYPE_STACK_LIMIT);
 		}
 	}
 
@@ -63,7 +63,7 @@ public class Memory {
 		}
 		else
 		{
-			throw new VMError("Stack is empty wehn trying to dec", VMError.VM_ERROR_TYPE_STACK_LIMIT);
+			throw new VMError("decStackPtr - Stack is empty", VMError.VM_ERROR_TYPE_STACK_LIMIT);
 		}
 	}
 
