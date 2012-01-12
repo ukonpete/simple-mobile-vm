@@ -32,6 +32,8 @@ public class VMError extends Exception {
 
 	public static final int VM_ERROR_BAD_UNKNOWN_COMMAND = 8;
 
+	public static final int VM_ERROR_THREADING = 9;
+
 	private final int _type;
 
 	/**

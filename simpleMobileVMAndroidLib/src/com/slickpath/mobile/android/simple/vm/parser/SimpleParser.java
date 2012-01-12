@@ -17,9 +17,35 @@ import android.util.Log;
 
 import com.slickpath.mobile.android.simple.vm.VMError;
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet;
-import com.slickpath.mobile.android.simple.vm.util.CommandSet;
+import com.slickpath.mobile.android.simple.vm.util.CommandList;
 
 /**
+ * Parses file for commands, parameters, variables and symbols
+ * 
+ * Possible line combinations
+ * COMMAND
+ * COMMAND PARAMETER
+ * COMMAND VAR
+ * COMMAND SYMBOL
+ * SYMBOL
+ * COMMENT
+ * 
+ * Definitions:
+ * COMMAND - string
+ * PARAMETER - string (typically an integer, but can be VAR OR SYMBOL)
+ * VAR - string starting with 'g'  - Variable memory location reference
+ * SYMBOL - [string] - note if a SYMBOL is used in a parameter it is a reference to an existing SYMBOL, that SYMBOL represents the line it is defined on. It MUST be defined somewhere on a line by itself
+ * COMMENT - Ignore this line during parsing - user wants to leave a compiler ignored note at this line
+ * 
+ * Examples:
+ * COMMAND - ADD  (Adds the top two items on the stack and places result on the stack)
+ * COMMAND PARAMETER - PUSHC 100 (Pushes the value 100 onto the top of the stack)
+ * COMMAND VAR - POPC g1 - (Pop the top value of the stack and place into the memory location represented by g1
+ * COMMAND SYMBOL - JUMP [LOOP2] - jump to the line number represented by [LOOP2]
+ * SYMBOL - [LOOP2] - assign this line number (next instruction in code) to the symbol [LOOP2]
+ * COMMENT - // This code rocks
+ * 
+ * @see "Simple VM 1.0 User Manual.doc" for more details
  * @author PJ
  *
  */
@@ -27,17 +53,17 @@ public class SimpleParser {
 
 	private static final String TAG = SimpleParser.class.getName();
 
-	private ParserListener _parserListener;
+	private final ParserListener _parserListener;
 
 	private final String _sInstructionFile;
 	private final Map<String, Integer> _symbols = new Hashtable<String, Integer>();
 	private final Map<String, Integer> _addresses = new Hashtable<String, Integer>();
-	private final CommandSet _commandSet = new CommandSet();
+	private final CommandList _commands = new CommandList();
 	private int _freeMemoryLoc = 0;
 
 	protected boolean _bDebug = false;
 
-	public SimpleParser(final String sFile)
+	public SimpleParser(final String sFile, final ParserListener  listener)
 	{
 		_sInstructionFile = sFile;
 		try {
@@ -45,14 +71,15 @@ public class SimpleParser {
 		} catch (final ClassNotFoundException e) {
 			debug(e.getMessage());
 		}
-	}
-
-	public void setListener(final ParserListener listener)
-	{
 		_parserListener = listener;
 	}
 
-	public void parse()
+	/**
+	 * Launches thread to Parse file for all commands, parameters, variables and symbols
+	 * When finished calls completedParse on the listener which returns any error information and the CommandList
+	 * Synchronized
+	 */
+	public synchronized void parse()
 	{
 		new Thread(new Runnable()
 		{
@@ -60,24 +87,24 @@ public class SimpleParser {
 			{
 				VMError vmError = null;
 				try {
-					_parse();
+					doParse();
 				} catch (final VMError e) {
 					vmError = e;
 				}
 				if ( _parserListener != null)
 				{
-					_parserListener.completedParse(vmError, _commandSet);
+					_parserListener.completedParse(vmError, _commands);
 				}
 			}
 		}).start();
 	}
 
-	public CommandSet getCommandSet()
-	{
-		return _commandSet;
-	}
-
-	private void _parse() throws VMError
+	/**
+	 * Parse file for all commands, parameters, variables and symbols
+	 * 
+	 * @throws VMError
+	 */
+	private void doParse() throws VMError
 	{
 		FileInputStream fis = null;
 
@@ -120,7 +147,7 @@ public class SimpleParser {
 						{
 							params = new ArrayList<Integer>(0);
 						}
-						_commandSet.addCommand(commandVal, params);
+						_commands.add(commandVal, params);
 					}
 				}
 				sLine = br.readLine();
@@ -144,6 +171,8 @@ public class SimpleParser {
 	}
 
 	/**
+	 * Parse for all the parameters for a particular command
+	 * 
 	 * @param words
 	 * @param parameters
 	 * @throws NumberFormatException
@@ -198,8 +227,10 @@ public class SimpleParser {
 	 * If its found save the XYZ String and the line number for later use.
 	 * If when parsing a command during parse, we see a symbol (Parameter with "[XYZ]" where XYZ is a String)
 	 * we replace that symbol with the line number associated with the matching symbol in the symbol table.
+	 * 
+	 * @param fis - FileInputStream
 	 */
-	public void getSymbols(final FileInputStream fis)
+	private void getSymbols(final FileInputStream fis)
 	{
 		int line = 0;
 
@@ -236,7 +267,12 @@ public class SimpleParser {
 
 	}
 
-	protected final void debug(final String sText)
+	/**
+	 * Central location for logging / debugging statements
+	 * 
+	 * @param sText
+	 */
+	private final void debug(final String sText)
 	{
 		if ( _bDebug )
 		{

@@ -19,7 +19,7 @@ import com.slickpath.mobile.android.simple.vm.VMListener;
 import com.slickpath.mobile.android.simple.vm.VirtualMachine;
 import com.slickpath.mobile.android.simple.vm.parser.ParserListener;
 import com.slickpath.mobile.android.simple.vm.parser.SimpleParser;
-import com.slickpath.mobile.android.simple.vm.util.CommandSet;
+import com.slickpath.mobile.android.simple.vm.util.CommandList;
 
 public class SimpleMobileVMAppActivity extends Activity implements VMListener, ParserListener{
 
@@ -78,8 +78,7 @@ public class SimpleMobileVMAppActivity extends Activity implements VMListener, P
 
 		final File filesDir = this.getApplicationContext().getFilesDir();
 
-		final SimpleParser parser = new SimpleParser(filesDir.getPath() + File.separator + sSelectedFile);
-		parser.setListener(this);
+		final SimpleParser parser = new SimpleParser(filesDir.getPath() + File.separator + sSelectedFile, this);
 
 		_dialog = ProgressDialog.show(SimpleMobileVMAppActivity.this, "",
 				"Please wait for few seconds...", true);
@@ -101,14 +100,14 @@ public class SimpleMobileVMAppActivity extends Activity implements VMListener, P
 	}
 
 	@Override
-	public void completedParse(final VMError vmError, final CommandSet commandSet)
+	public void completedParse(final VMError vmError, final CommandList commands)
 	{
 		if ( vmError != null)
 		{
 			System.out.println("ERROR PARSE");
 			vmError.printStackTrace();
 		}
-		_vm.addInstructions(commandSet);
+		_vm.addCommands(commands);
 	}
 
 	@Override
@@ -122,10 +121,20 @@ public class SimpleMobileVMAppActivity extends Activity implements VMListener, P
 	}
 
 	@Override
-	public void completedRunningInstructions(final VMError vmError) {
+	public void completedRunningInstructions(final int lastLineExecuted, final VMError vmError) {
 		if ( vmError != null)
 		{
-			System.out.println("ERROR RUN INST");
+			System.out.println("ERROR RUN INSTS lastLine=" + lastLineExecuted);
+			vmError.printStackTrace();
+		}
+		_dialog.dismiss();
+	}
+
+	@Override
+	public void completedRunningInstruction(final boolean bHalt, final int lineExecuted, final VMError vmError) {
+		if ( vmError != null)
+		{
+			System.out.println("ERROR RUN INST lastLine=" + lineExecuted);
 			vmError.printStackTrace();
 		}
 		_dialog.dismiss();
