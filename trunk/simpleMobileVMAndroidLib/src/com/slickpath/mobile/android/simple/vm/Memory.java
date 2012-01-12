@@ -112,7 +112,7 @@ public class Memory {
 		_programCtr = STACK_LIMIT;
 	}
 
-	protected int getProgramWriter()
+	protected int getProgramWriterPtr()
 	{
 		return _programWriter;
 	}

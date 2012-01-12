@@ -1,5 +1,16 @@
 package com.slickpath.mobile.android.simple.vm.instructions;
 
+/**
+ * Contains the string and integer definitions for all the instructions
+ * 
+ * If command value is
+ * 		0 - 999 			: No Parameters
+ * 		1000 - 1999 		: 1 Parameters
+ * 		All other values 	: Undefined
+ * 
+ * @author PJ
+ *
+ */
 public interface Instructions {
 
 	public static final int _BEGIN = -1;

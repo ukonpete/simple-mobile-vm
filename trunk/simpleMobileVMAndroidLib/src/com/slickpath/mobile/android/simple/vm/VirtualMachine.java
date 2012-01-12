@@ -15,8 +15,7 @@ import android.content.Context;
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet;
 import com.slickpath.mobile.android.simple.vm.instructions.Instructions;
 import com.slickpath.mobile.android.simple.vm.util.Command;
-import com.slickpath.mobile.android.simple.vm.util.CommandSet;
-import com.slickpath.mobile.android.simple.vm.util.LineNumber;
+import com.slickpath.mobile.android.simple.vm.util.CommandList;
 
 // import android.util.Log;
 
@@ -49,6 +48,8 @@ public class VirtualMachine extends Machine implements Instructions{
 	}
 
 	/**
+	 * Initialize VM Stuff
+	 * 
 	 * @param context
 	 */
 	private void init() {
@@ -62,15 +63,25 @@ public class VirtualMachine extends Machine implements Instructions{
 		}
 	}
 
+	/**
+	 * Set a listener to listen to events thrown by VM
+	 * @param listener
+	 */
 	public void setVMListener(final VMListener listener)
 	{
 		_vmListener = listener;
 	}
 
-
 	//   EXECUTION
 
-	public void addInstruction(final Command command) throws VMError
+	/**
+	 * Add the contents of a Command object to the VM
+	 * Basically write the command id and its parameter(s) into the program memory space
+	 * 
+	 * @param command
+	 * @throws VMError
+	 */
+	public void addCommand(final Command command) throws VMError
 	{
 		final int instruction = command.getCommandId();
 		final List<Integer> instructionParams = command.getParameters();
@@ -100,122 +111,49 @@ public class VirtualMachine extends Machine implements Instructions{
 		}
 	}
 
+	/**
+	 * Write a value at the current location of the programWriter pointer
+	 * @param value
+	 * @throws VMError
+	 */
 	private void setValAtProgramWtr(final int value) throws VMError
 	{
-		setValAtLocation(value, getProgramWriter());
+		setValAtLocation(value, getProgramWriterPtr());
 		incProgramWriter();
 	}
 
-	public void addInstructions(final CommandSet commandSet)
-	{
-		new Thread(new Runnable()
-		{
-			public void run()
-			{
-				_addInstructions(commandSet);
-			}
-		}).start();
-	}
-
-	// Mutable Line number ( to make it an "out" variable )
-	public void runInstructions(final int numInstrsToRun, final LineNumber... line)
-	{
-		new Thread(new Runnable()
-		{
-			public void run()
-			{
-				_runInstructions(numInstrsToRun, line);
-			}
-		}).start();
-	}
-
-	public void runInstructions()
-	{
-		new Thread(new Runnable()
-		{
-			public void run()
-			{
-				doRunInstructions();
-			}
-		}).start();
-	}
-
-	// Mutable Line number ( to make it an "out" variable if the user wants that information)
-	public boolean runNextInstruction(final LineNumber... line) throws VMError
-	{
-		boolean bReturn = false;
-		resetProgramWriter();
-
-		if ( line.length > 0)
-		{
-			line[0].set((getProgramCounter() - STACK_LIMIT)/2);
-		}
-		final int instructionVal = getValueAt(getProgramCounter());
-		runCommand(instructionVal);
-
-		if (instructionVal == BaseInstructionSet._HALT)
-		{
-			_numInstrsRun = 0;
-			resetProgramWriter();
-			resetStackPointer();
-			bReturn = true;
-		}
-		return bReturn;
-	}
-
 	/**
+	 * Launch thread that will add all the Commands in the CommandList to the VM
+	 * will call completedAddingInstructions on VMListener after completion
 	 * 
+	 * @param commandList
 	 */
-	private void doRunInstructions() {
-		VMError vmError = null;
-		dumpMem("1");
-		_numInstrsRun = 0;
-		resetProgramWriter();
-
-		int instructionVal = BaseInstructionSet._BEGIN;
-		int last = -1;
-
-		try
+	public void addCommands(final CommandList commands)
+	{
+		new Thread(new Runnable()
 		{
-			while ((instructionVal != BaseInstructionSet._HALT) && (getProgramCounter() < MAX_MEMORY))
+			public void run()
 			{
-				last = getProgramCounter();
-				instructionVal = getValueAt(getProgramCounter());
-				debug(TAG, "-PROG_CTR=" + getProgramCounter() + " line=" + ((getProgramCounter() - STACK_LIMIT)/2) + " inst=" + instructionVal);
-				runCommand(instructionVal);
+				doAddInstructions(commands);
 			}
-			debug(TAG, "PROG_CTR=" + getProgramCounter());
-			debug(TAG, "LAST_PROG_CTR=" + last);
-			dumpMem("3");
-			resetProgramCounter();
-			resetStackPointer();
-		}
-		catch(final VMError vme)
-		{
-			debug(TAG, "+PROG_CTR=" + getProgramCounter());
-			debug(TAG, "+LAST_PROG_CTR=" + last);
-			dumpMem("2");
-			vmError = vme;
-		}
-		if ( _vmListener != null)
-		{
-			_vmListener.completedRunningInstructions(vmError);
-		}
+		}).start();
 	}
 
 	/**
-	 * @param instructions
-	 * @param instructionParams
+	 * Add all the Commands in the CommandList to the VM
+	 * will call completedAddingInstructions on VMListener after completion
+	 * 
+	 * @param commands
 	 */
-	private void _addInstructions(final CommandSet commandSet) {
+	private void doAddInstructions(final CommandList commands) {
 		VMError vmError = null;
-		if (commandSet != null )
+		if (commands != null )
 		{
-			final int numCommands = commandSet.getNumCommands();
+			final int numCommands = commands.size();
 			for(int i = 0 ; i < numCommands; i++)
 			{
 				try {
-					addInstruction(commandSet.getCommand(i));
+					addCommand(commands.get(i));
 				} catch (final VMError e) {
 					vmError = e;
 				}
@@ -232,53 +170,182 @@ public class VirtualMachine extends Machine implements Instructions{
 	}
 
 	/**
-	 * @param numInstrsToRun
-	 * @param line
-	 * @throws VMError
+	 * Launches thread that will run the instruction the program pointer is pointing at
+	 * will call completedRunningInstruction on VMListener after completion
 	 */
-	private void _runInstructions(final int numInstrsToRun,
-			final LineNumber... line)
+	public void runNextInstruction()
+	{
+		new Thread(new Runnable()
+		{
+			public void run()
+			{
+				doRunNextInstruction();
+			}
+		}).start();
+	}
+
+	/**
+	 * Run the instruction the program pointer is pointing at
+	 * will call completedRunningInstruction on VMListener after completion
+	 */
+	private void doRunNextInstruction()
+	{
+		boolean bHalt = false;
+		VMError vmError = null;
+		resetProgramWriter();
+
+		final int line = getLineNumber();
+		int instructionVal = -1;
+		try {
+			instructionVal = getValueAt(getProgramCounter());
+			runCommand(instructionVal);
+		} catch (final VMError e) {
+			vmError = e;
+		}
+		if (instructionVal == BaseInstructionSet._HALT)
+		{
+			_numInstrsRun = 0;
+			resetProgramWriter();
+			resetStackPointer();
+			bHalt = true;
+		}
+		if ( _vmListener != null)
+		{
+			_vmListener.completedRunningInstruction(bHalt, line , vmError);
+		}
+	}
+
+	/**
+	 * Launches thread that does - Run all remaining instructions - starting from current program ptr location
+	 * will call completedRunningInstructions on VMListener after completion
+	 * 
+	 */
+	public void runInstructions()
+	{
+		new Thread(new Runnable()
+		{
+			public void run()
+			{
+				doRunInstructions();
+			}
+		}).start();
+	}
+
+	/**
+	 * Run all remaining instructions - starting from current program ptr location
+	 * will call completedRunningInstructions on VMListener after completion
+	 */
+	private void doRunInstructions() {
+		VMError vmError = null;
+		dumpMem("1");
+		_numInstrsRun = 0;
+		resetProgramWriter();
+
+		int instructionVal = BaseInstructionSet._BEGIN;
+		int lastLine = -1;
+		int lastProgCtr = -1;
+
+		try
+		{
+			while ((instructionVal != BaseInstructionSet._HALT) && (getProgramCounter() < MAX_MEMORY))
+			{
+				lastProgCtr = getProgramCounter();
+				instructionVal = getValueAt(getProgramCounter());
+				debug(TAG, "-PROG_CTR=" + getProgramCounter() + " line=" + ((getProgramCounter() - STACK_LIMIT)/2) + " inst=" + instructionVal);
+				runCommand(instructionVal);
+			}
+			debug(TAG, "PROG_CTR=" + getProgramCounter());
+			debug(TAG, "LAST_PROG_CTR=" + lastProgCtr);
+			dumpMem("3");
+			lastLine = getLineNumber();
+			resetProgramCounter();
+			resetStackPointer();
+		}
+		catch(final VMError vme)
+		{
+			debug(TAG, "+PROG_CTR=" + getProgramCounter());
+			debug(TAG, "+LAST_PROG_CTR=" + lastProgCtr);
+			dumpMem("2");
+			vmError = vme;
+		}
+		if ( _vmListener != null)
+		{
+			_vmListener.completedRunningInstructions(lastLine , vmError);
+		}
+	}
+
+	/**
+	 * Launch thread that will Run N number of instructions - starting from current program ptr location
+	 * will call completedRunningInstructions on VMListener after completion
+	 * 
+	 * @param numInstrsToRun
+	 */
+	public void runInstructions(final int numInstrsToRun)
+	{
+		new Thread(new Runnable()
+		{
+			public void run()
+			{
+				doRunInstructions(numInstrsToRun);
+			}
+		}).start();
+	}
+
+	/**
+	 * Run N number of instructions - starting from current program ptr location
+	 * will call completedRunningInstructions on VMListener after completion
+	 * 
+	 * @param numInstrsToRun
+	 */
+	private void doRunInstructions(final int numInstrsToRun)
 	{
 		VMError vmError = null;
 		dumpMem("1");
 		int numInstrsRun = 0;
 		resetProgramWriter();
 
-		int last = -1;
+		int lastProgCtr = -1;
 		int instructionVal = BaseInstructionSet._BEGIN;
 
 		try
 		{
 			while ((instructionVal != BaseInstructionSet._HALT) && (getProgramCounter() < MAX_MEMORY) && (numInstrsRun < numInstrsToRun))
 			{
-				last = getProgramCounter();
+				lastProgCtr = getProgramCounter();
 				numInstrsRun++;
 				instructionVal = getValueAt(getProgramCounter());
 				runCommand(instructionVal);
 			}
-			if ( line.length > 0)
-			{
-				line[0].set((getProgramCounter() - 2 - STACK_LIMIT)/2);
-			}
 			debug(TAG, "PROG_CTR=" + getProgramCounter());
-			debug(TAG, "LAST_PROG_CTR=" + last);
+			debug(TAG, "LAST_PROG_CTR=" + lastProgCtr);
 		}
 		catch(final VMError vme)
 		{
 			debug(TAG, "PROG_CTR=" + getProgramCounter());
-			debug(TAG, "LAST_PROG_CTR=" + last);
+			debug(TAG, "LAST_PROG_CTR=" + lastProgCtr);
 			dumpMem("2");
 			vmError = vme;
 		}
 		dumpMem("3");
 		if ( _vmListener != null)
 		{
-			_vmListener.completedRunningInstructions(vmError);
+			_vmListener.completedRunningInstructions(getLineNumber(), vmError);
 		}
 	}
 
 	/**
+	 * Converts current program pointer to an actual line number
 	 * 
+	 * @return Current line number of the program
+	 * 
+	 */
+	private int getLineNumber() {
+		return (getProgramCounter() - 2 - STACK_LIMIT)/2;
+	}
+
+	/**
+	 * Dump the memory into a file for debugging purposes
+	 * file name : "memDump<sAppend>.text
 	 */
 	private void dumpMem(final String sAppend) {
 		if ( _bDebug )
@@ -310,18 +377,24 @@ public class VirtualMachine extends Machine implements Instructions{
 		}
 	}
 
-	private void runCommand(final int command) throws VMError
+	/**
+	 * Run the selected commandId
+	 * 
+	 * @param commandId
+	 * @throws VMError
+	 */
+	private void runCommand(final int commandId) throws VMError
 	{
 		incProgramCounter();
 		if (_bDebug)
 		{
-			doCommandDebug(command);
+			doRunCommandDebug(commandId);
 		}
 		_numInstrsRun++;
 
 		boolean bBranched = false;
 
-		switch (command)
+		switch (commandId)
 		{
 		case _ADD:
 			ADD();
@@ -442,22 +515,24 @@ public class VirtualMachine extends Machine implements Instructions{
 			}
 			break;
 		default:
-			throw new VMError("BAD runCommand :" + command, VMError.VM_ERROR_BAD_UNKNOWN_COMMAND);
+			throw new VMError("BAD runCommand :" + commandId, VMError.VM_ERROR_BAD_UNKNOWN_COMMAND);
 		}
 	}
 
 	/**
-	 * @param command
+	 * Debug output of runCommand
+	 * 
+	 * @param commandId
 	 * @throws VMError
 	 */
-	private void doCommandDebug(final int command) throws VMError {
+	private void doRunCommandDebug(final int commandId) throws VMError {
 		final StringBuffer sLineCount = new StringBuffer("[");
 		sLineCount.append(_numInstrsRun).append(']');
 		final StringBuffer sParam = new StringBuffer(" Line=");
 		sParam.append(getProgramCounter() - 1);
-		sLineCount.append("CMD=").append(BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(command));
+		sLineCount.append("CMD=").append(BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(commandId));
 		debug(TAG, sLineCount.toString());
-		if (command >= 1000)
+		if (commandId >= 1000)
 		{
 			sParam.append(" PARAM=").append(getValueAt(getProgramCounter()));
 		}

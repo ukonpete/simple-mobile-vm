@@ -8,6 +8,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Defines two lookup tables (maps) that hold the complete instruction set
+ * 
+ * INSTRUCTION_SET_HT -  Lookup String (name) to get value
+ * 
+ * INSTRUCTION_SET_CONV_HT  - Lookup value to get String
+ * 
  * @author PJ
  *
  */
