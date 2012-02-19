@@ -8,7 +8,7 @@ package com.slickpath.mobile.android.simple.vm.instructions;
  * 		1000 - 1999 		: 1 Parameters
  * 		All other values 	: Undefined
  * 
- * @author PJ
+ * @author Pete Procopio
  *
  */
 public interface Instructions {

@@ -7,7 +7,7 @@ import java.util.List;
  * The Command object is the pairing of a commandId to a list of parameters
  * Immutable
  * 
- * @author PJ
+ * @author Pete Procopio
  *
  */
 public class Command{
