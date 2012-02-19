@@ -75,6 +75,7 @@ public class SimpleParserTest extends AndroidTestCase implements IParserListener
 	public void testParse() {
 		_parser.parse();
 		try {
+			// Wait for Callback
 			_signal.await();
 		} catch (final InterruptedException e) {
 			e.printStackTrace();
