@@ -13,7 +13,7 @@ import com.slickpath.mobile.android.simple.vm.util.CommandList;
  * @author Pete Procopio
  *
  */
-public interface ParserListener {
+public interface IParserListener {
 
 	/**
 	 * Called when SimpleParser.parse() is completed so the caller can react to the completion or error state of parse
