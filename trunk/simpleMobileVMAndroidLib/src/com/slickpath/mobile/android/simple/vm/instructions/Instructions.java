@@ -51,6 +51,8 @@ public interface Instructions {
 	public static final int _CONTENTS = 25;
 	public static final int _HALT = 26;
 
+	public static final int NUM_COMMANDS = _HALT + 1;
+
 	public static final String _ADD_STR = "ADD";
 	public static final String _SUB_STR = "SUB";
 	public static final String _MUL_STR = "MUL";

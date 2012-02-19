@@ -53,7 +53,7 @@ public class SimpleParser {
 
 	private static final String TAG = SimpleParser.class.getName();
 
-	private final ParserListener _parserListener;
+	private final IParserListener _parserListener;
 
 	private final String _sInstructionFile;
 	private final Map<String, Integer> _symbols = new Hashtable<String, Integer>();
@@ -63,7 +63,7 @@ public class SimpleParser {
 
 	protected boolean _bDebug = false;
 
-	public SimpleParser(final String sFile, final ParserListener  listener)
+	public SimpleParser(final String sFile, final IParserListener  listener)
 	{
 		_sInstructionFile = sFile;
 		try {

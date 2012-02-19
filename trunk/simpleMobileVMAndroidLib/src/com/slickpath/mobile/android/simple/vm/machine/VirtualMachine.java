@@ -12,8 +12,8 @@ import java.util.List;
 
 import android.content.Context;
 
+import com.slickpath.mobile.android.simple.vm.IVMListener;
 import com.slickpath.mobile.android.simple.vm.VMError;
-import com.slickpath.mobile.android.simple.vm.VMListener;
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet;
 import com.slickpath.mobile.android.simple.vm.instructions.Instructions;
 import com.slickpath.mobile.android.simple.vm.util.Command;
@@ -32,7 +32,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	private static final String TAG = VirtualMachine.class.getName();
 
 	private int _numInstrsRun = 0;
-	private VMListener _vmListener;
+	private IVMListener _vmListener;
 	private final Context _context;
 
 	public VirtualMachine(final PrintStream writer, final InputStream reader, final Context context)
@@ -69,7 +69,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	 * Set a listener to listen to events thrown by VM
 	 * @param listener
 	 */
-	public void setVMListener(final VMListener listener)
+	public void setVMListener(final IVMListener listener)
 	{
 		_vmListener = listener;
 	}
@@ -126,7 +126,7 @@ public class VirtualMachine extends Machine implements Instructions{
 
 	/**
 	 * Launch thread that will add all the Commands in the CommandList to the VM
-	 * will call completedAddingInstructions on VMListener after completion
+	 * will call completedAddingInstructions on IVMListener after completion
 	 * 
 	 * @param commandList
 	 */
@@ -144,7 +144,7 @@ public class VirtualMachine extends Machine implements Instructions{
 
 	/**
 	 * Add all the Commands in the CommandList to the VM
-	 * will call completedAddingInstructions on VMListener after completion
+	 * will call completedAddingInstructions on IVMListener after completion
 	 * 
 	 * @param commands
 	 */
@@ -174,7 +174,7 @@ public class VirtualMachine extends Machine implements Instructions{
 
 	/**
 	 * Launches thread that will run the instruction the program pointer is pointing at
-	 * will call completedRunningInstruction on VMListener after completion
+	 * will call completedRunningInstruction on IVMListener after completion
 	 */
 	public void runNextInstruction()
 	{
@@ -190,7 +190,7 @@ public class VirtualMachine extends Machine implements Instructions{
 
 	/**
 	 * Run the instruction the program pointer is pointing at
-	 * will call completedRunningInstruction on VMListener after completion
+	 * will call completedRunningInstruction on IVMListener after completion
 	 */
 	private void doRunNextInstruction()
 	{
@@ -221,7 +221,7 @@ public class VirtualMachine extends Machine implements Instructions{
 
 	/**
 	 * Launches thread that does - Run all remaining instructions - starting from current program ptr location
-	 * will call completedRunningInstructions on VMListener after completion
+	 * will call completedRunningInstructions on IVMListener after completion
 	 * 
 	 */
 	public void runInstructions()
@@ -238,7 +238,7 @@ public class VirtualMachine extends Machine implements Instructions{
 
 	/**
 	 * Run all remaining instructions - starting from current program ptr location
-	 * will call completedRunningInstructions on VMListener after completion
+	 * will call completedRunningInstructions on IVMListener after completion
 	 */
 	private void doRunInstructions() {
 		VMError vmError = null;
@@ -281,7 +281,7 @@ public class VirtualMachine extends Machine implements Instructions{
 
 	/**
 	 * Launch thread that will Run N number of instructions - starting from current program ptr location
-	 * will call completedRunningInstructions on VMListener after completion
+	 * will call completedRunningInstructions on IVMListener after completion
 	 * 
 	 * @param numInstrsToRun
 	 */
@@ -299,7 +299,7 @@ public class VirtualMachine extends Machine implements Instructions{
 
 	/**
 	 * Run N number of instructions - starting from current program ptr location
-	 * will call completedRunningInstructions on VMListener after completion
+	 * will call completedRunningInstructions on IVMListener after completion
 	 * 
 	 * @param numInstrsToRun
 	 */

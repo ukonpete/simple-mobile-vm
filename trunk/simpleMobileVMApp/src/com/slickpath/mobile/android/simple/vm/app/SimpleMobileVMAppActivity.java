@@ -14,14 +14,14 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.slickpath.mobile.android.simple.vm.IVMListener;
 import com.slickpath.mobile.android.simple.vm.VMError;
-import com.slickpath.mobile.android.simple.vm.VMListener;
 import com.slickpath.mobile.android.simple.vm.machine.VirtualMachine;
-import com.slickpath.mobile.android.simple.vm.parser.ParserListener;
+import com.slickpath.mobile.android.simple.vm.parser.IParserListener;
 import com.slickpath.mobile.android.simple.vm.parser.SimpleParser;
 import com.slickpath.mobile.android.simple.vm.util.CommandList;
 
-public class SimpleMobileVMAppActivity extends Activity implements VMListener, ParserListener{
+public class SimpleMobileVMAppActivity extends Activity implements IVMListener, IParserListener{
 
 	private ProgressDialog _dialog;
 	private VirtualMachine _vm;

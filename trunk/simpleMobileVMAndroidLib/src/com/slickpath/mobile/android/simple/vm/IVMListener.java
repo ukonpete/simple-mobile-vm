@@ -8,7 +8,7 @@ package com.slickpath.mobile.android.simple.vm;
  * @author Pete Procopio
  *
  */
-public interface VMListener {
+public interface IVMListener {
 
 	/**
 	 * Callback - Called when VM is completed adding instructions
