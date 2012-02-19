@@ -10,7 +10,7 @@ import com.slickpath.mobile.android.simple.vm.util.CommandList;
  * 
  * @see com.slickpath.mobile.android.simple.vm.VMError
  * 
- * @author PJ
+ * @author Pete Procopio
  *
  */
 public interface ParserListener {

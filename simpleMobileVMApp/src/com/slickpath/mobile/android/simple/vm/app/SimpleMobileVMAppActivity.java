@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.slickpath.mobile.android.simple.vm.VMError;
 import com.slickpath.mobile.android.simple.vm.VMListener;
-import com.slickpath.mobile.android.simple.vm.VirtualMachine;
+import com.slickpath.mobile.android.simple.vm.machine.VirtualMachine;
 import com.slickpath.mobile.android.simple.vm.parser.ParserListener;
 import com.slickpath.mobile.android.simple.vm.parser.SimpleParser;
 import com.slickpath.mobile.android.simple.vm.util.CommandList;
@@ -55,7 +55,7 @@ public class SimpleMobileVMAppActivity extends Activity implements VMListener, P
 
 			@Override
 			public void onNothingSelected(final AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
+				// Do Nothing
 			}});
 
 
@@ -72,6 +72,9 @@ public class SimpleMobileVMAppActivity extends Activity implements VMListener, P
 
 	}
 
+	/**
+	 * @param file
+	 */
 	public void parseFile(final int file)
 	{
 		final String sSelectedFile = getSelectedFileName(file);
@@ -99,6 +102,9 @@ public class SimpleMobileVMAppActivity extends Activity implements VMListener, P
 		return sSelectedFile;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.slickpath.mobile.android.simple.vm.parser.ParserListener#completedParse(com.slickpath.mobile.android.simple.vm.VMError, com.slickpath.mobile.android.simple.vm.util.CommandList)
+	 */
 	@Override
 	public void completedParse(final VMError vmError, final CommandList commands)
 	{
@@ -110,6 +116,9 @@ public class SimpleMobileVMAppActivity extends Activity implements VMListener, P
 		_vm.addCommands(commands);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.slickpath.mobile.android.simple.vm.VMListener#completedAddingInstructions(com.slickpath.mobile.android.simple.vm.VMError)
+	 */
 	@Override
 	public void completedAddingInstructions(final VMError vmError) {
 		if ( vmError != null)
@@ -120,18 +129,11 @@ public class SimpleMobileVMAppActivity extends Activity implements VMListener, P
 		_vm.runInstructions();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.slickpath.mobile.android.simple.vm.VMListener#completedRunningInstructions(boolean, int, com.slickpath.mobile.android.simple.vm.VMError)
+	 */
 	@Override
-	public void completedRunningInstructions(final int lastLineExecuted, final VMError vmError) {
-		if ( vmError != null)
-		{
-			System.out.println("ERROR RUN INSTS lastLine=" + lastLineExecuted);
-			vmError.printStackTrace();
-		}
-		_dialog.dismiss();
-	}
-
-	@Override
-	public void completedRunningInstruction(final boolean bHalt, final int lineExecuted, final VMError vmError) {
+	public void completedRunningInstructions(final boolean bHalt, final int lineExecuted, final VMError vmError) {
 		if ( vmError != null)
 		{
 			System.out.println("ERROR RUN INST lastLine=" + lineExecuted);

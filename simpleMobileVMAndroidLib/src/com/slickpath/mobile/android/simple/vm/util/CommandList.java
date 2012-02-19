@@ -11,7 +11,7 @@ import java.util.List;
  * 
  * @see com.slickpath.mobile.android.simple.vm.util.Command
  * 
- * @author PJ
+ * @author Pete Procopio
  *
  */
 public class CommandList extends ArrayList<Command>{

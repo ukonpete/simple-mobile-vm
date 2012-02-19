@@ -14,7 +14,7 @@ import java.util.Set;
  * 
  * INSTRUCTION_SET_CONV_HT  - Lookup value to get String
  * 
- * @author PJ
+ * @author Pete Procopio
  *
  */
 public class BaseInstructionSet implements Instructions{

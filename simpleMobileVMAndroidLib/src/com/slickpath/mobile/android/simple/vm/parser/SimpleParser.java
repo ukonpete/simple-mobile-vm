@@ -46,7 +46,7 @@ import com.slickpath.mobile.android.simple.vm.util.CommandList;
  * COMMENT - // This code rocks
  * 
  * @see "Simple VM 1.0 User Manual.doc" for more details
- * @author PJ
+ * @author Pete Procopio
  *
  */
 public class SimpleParser {
@@ -83,6 +83,7 @@ public class SimpleParser {
 	{
 		new Thread(new Runnable()
 		{
+			@Override
 			public void run()
 			{
 				VMError vmError = null;

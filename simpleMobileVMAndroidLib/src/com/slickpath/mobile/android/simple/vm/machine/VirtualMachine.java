@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.slickpath.mobile.android.simple.vm;
+package com.slickpath.mobile.android.simple.vm.machine;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -12,6 +12,8 @@ import java.util.List;
 
 import android.content.Context;
 
+import com.slickpath.mobile.android.simple.vm.VMError;
+import com.slickpath.mobile.android.simple.vm.VMListener;
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet;
 import com.slickpath.mobile.android.simple.vm.instructions.Instructions;
 import com.slickpath.mobile.android.simple.vm.util.Command;
@@ -20,7 +22,7 @@ import com.slickpath.mobile.android.simple.vm.util.CommandList;
 // import android.util.Log;
 
 /**
- * @author PJ
+ * @author Pete Procopio
  *
  */
 public class VirtualMachine extends Machine implements Instructions{
@@ -48,7 +50,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	}
 
 	/**
-	 * Initialize VM Stuff
+	 * Initialize VM
 	 * 
 	 * @param context
 	 */
@@ -118,7 +120,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	 */
 	private void setValAtProgramWtr(final int value) throws VMError
 	{
-		setValAtLocation(value, getProgramWriterPtr());
+		setValueAt(value, getProgramWriterPtr());
 		incProgramWriter();
 	}
 
@@ -132,6 +134,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	{
 		new Thread(new Runnable()
 		{
+			@Override
 			public void run()
 			{
 				doAddInstructions(commands);
@@ -177,6 +180,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	{
 		new Thread(new Runnable()
 		{
+			@Override
 			public void run()
 			{
 				doRunNextInstruction();
@@ -211,7 +215,7 @@ public class VirtualMachine extends Machine implements Instructions{
 		}
 		if ( _vmListener != null)
 		{
-			_vmListener.completedRunningInstruction(bHalt, line , vmError);
+			_vmListener.completedRunningInstructions(bHalt, line , vmError);
 		}
 	}
 
@@ -224,6 +228,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	{
 		new Thread(new Runnable()
 		{
+			@Override
 			public void run()
 			{
 				doRunInstructions();
@@ -247,11 +252,11 @@ public class VirtualMachine extends Machine implements Instructions{
 
 		try
 		{
-			while ((instructionVal != BaseInstructionSet._HALT) && (getProgramCounter() < MAX_MEMORY))
+			while ((instructionVal != BaseInstructionSet._HALT) && (getProgramCounter() < Memory.MAX_MEMORY))
 			{
 				lastProgCtr = getProgramCounter();
 				instructionVal = getValueAt(getProgramCounter());
-				debug(TAG, "-PROG_CTR=" + getProgramCounter() + " line=" + ((getProgramCounter() - STACK_LIMIT)/2) + " inst=" + instructionVal);
+				debug(TAG, "-PROG_CTR=" + getProgramCounter() + " line=" + ((getProgramCounter() - Memory.STACK_LIMIT)/2) + " inst=" + instructionVal);
 				runCommand(instructionVal);
 			}
 			debug(TAG, "PROG_CTR=" + getProgramCounter());
@@ -270,7 +275,7 @@ public class VirtualMachine extends Machine implements Instructions{
 		}
 		if ( _vmListener != null)
 		{
-			_vmListener.completedRunningInstructions(lastLine , vmError);
+			_vmListener.completedRunningInstructions(instructionVal == BaseInstructionSet._HALT , lastLine , vmError);
 		}
 	}
 
@@ -284,6 +289,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	{
 		new Thread(new Runnable()
 		{
+			@Override
 			public void run()
 			{
 				doRunInstructions(numInstrsToRun);
@@ -309,7 +315,7 @@ public class VirtualMachine extends Machine implements Instructions{
 
 		try
 		{
-			while ((instructionVal != BaseInstructionSet._HALT) && (getProgramCounter() < MAX_MEMORY) && (numInstrsRun < numInstrsToRun))
+			while ((instructionVal != BaseInstructionSet._HALT) && (getProgramCounter() < Memory.MAX_MEMORY) && (numInstrsRun < numInstrsToRun))
 			{
 				lastProgCtr = getProgramCounter();
 				numInstrsRun++;
@@ -329,7 +335,7 @@ public class VirtualMachine extends Machine implements Instructions{
 		dumpMem("3");
 		if ( _vmListener != null)
 		{
-			_vmListener.completedRunningInstructions(getLineNumber(), vmError);
+			_vmListener.completedRunningInstructions(instructionVal == BaseInstructionSet._HALT, getLineNumber(), vmError);
 		}
 	}
 
@@ -340,7 +346,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	 * 
 	 */
 	private int getLineNumber() {
-		return (getProgramCounter() - 2 - STACK_LIMIT)/2;
+		return (getProgramCounter() - 2 - Memory.STACK_LIMIT)/2;
 	}
 
 	/**
@@ -353,7 +359,7 @@ public class VirtualMachine extends Machine implements Instructions{
 			final String FILENAME = "memDump" + sAppend + ".txt";
 			final StringBuffer sData = new StringBuffer("");
 
-			for(int i = 1; i < MAX_MEMORY; i+=2)
+			for(int i = 1; i < Memory.MAX_MEMORY; i+=2)
 			{
 				try {
 					final int parm = getValueAt(i);
