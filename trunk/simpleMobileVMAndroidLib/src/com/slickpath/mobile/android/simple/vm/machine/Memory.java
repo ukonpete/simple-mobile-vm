@@ -15,7 +15,7 @@ public class Memory implements IStack {
 	/**
 	 * Location in memory of stack pointer when stack is empty
 	 */
-	private final int STACK_EMPTY_LOC = -1;
+	public static final int STACK_EMPTY_LOC = -1;
 
 	/**
 	 * Value of memory if it is empty (unused)
