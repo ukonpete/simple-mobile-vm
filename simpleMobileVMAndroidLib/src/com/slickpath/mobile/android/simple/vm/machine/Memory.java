@@ -27,10 +27,19 @@ public class Memory {
 	 */
 	public static final int MAX_MEMORY = 500;
 
+	/**
+	 * Memory to store values
+	 */
 	private final List<Integer> _memoryStore;
 
+	/**
+	 * Memory Stack
+	 */
 	private final SimpleStack _stack = new SimpleStack();
 
+	/**
+	 * Manager and store for Program Memory
+	 */
 	private final ProgramManager _programManager = new ProgramManager();
 
 	/**
@@ -46,7 +55,6 @@ public class Memory {
 		}
 	}
 
-
 	/**
 	 * Returns if Stack is empty
 	 * 
@@ -57,10 +65,14 @@ public class Memory {
 		return _stack.isEmpty();
 	}
 
+	/**
+	 * Empty the stack
+	 */
 	public void resetStack()
 	{
 		_stack.reset();
 	}
+
 	/**
 	 * Return memory as a List<Integer>
 	 * 
@@ -134,41 +146,69 @@ public class Memory {
 		return _stack.push(value);
 	}
 
+	/**
+	 * Get current line in program that will execute next
+	 * @return int
+	 */
 	public int getProgramCounter()
 	{
 		return _programManager.getProgramCounter();
 	}
 
+	/**
+	 * Increment program counter location to next line of instruction
+	 */
 	public void incProgramCounter()
 	{
 		_programManager.incProgramCounter();
 	}
 
+	/**
+	 * Decrement program counter location to previous line of instruction
+	 */
 	public void decProgramCounter()
 	{
 		_programManager.decProgramCounter();
 	}
 
+	/**
+	 * Set program counter location to indication location
+	 * Used primarily for JUMP and BRNACH
+	 * @param location
+	 */
 	public void setProgramCounter(final int location)
 	{
 		_programManager.setProgramCounter(location);
 	}
 
+	/**
+	 * program counter location to start of program memory
+	 */
 	public void resetProgramCounter()
 	{
 		_programManager.resetProgramCounter();
 	}
 
+	/**
+	 * Get the current location i program memory where the next instruction will be added
+	 * @return
+	 */
 	public int getProgramWriterPtr()
 	{
 		return _programManager.getProgramWriterPtr();
 	}
 
+	/**
+	 * Increment program writer location to next memory location
+	 */
 	public void incProgramWriter()
 	{
 		_programManager.incProgramWriter();
 	}
 
+	/**
+	 * Decrement program writer location to previous memory location
+	 */
 	public void resetProgramWriter()
 	{
 		_programManager.resetProgramWriter();

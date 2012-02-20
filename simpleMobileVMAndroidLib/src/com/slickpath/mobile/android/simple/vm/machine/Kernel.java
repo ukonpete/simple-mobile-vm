@@ -203,41 +203,67 @@ public class Kernel {
 	 * Abstract memory from other sub-Classes of Kernel
 	 ***************************************************/
 
+	/**
+	 * Get current line in program that will execute next
+	 * @return int
+	 */
 	public int getProgramCounter()
 	{
 		return _memory.getProgramCounter();
 	}
 
+	/**
+	 * Increment program counter location to next line of instruction
+	 */
 	public void incProgramCounter()
 	{
 		_memory.incProgramCounter();
 	}
 
+	/**
+	 * Decrement program counter location to previous line of instruction
+	 */
 	public void decProgramCounter()
 	{
 		_memory.decProgramCounter();
 	}
 
+	/**
+	 * program counter location to start of program memory
+	 */
 	public void resetProgramCounter()
 	{
 		_memory.resetProgramCounter();
 	}
 
+	/**
+	 * Get the current location in program memory where the next instruction will be added
+	 * @return
+	 */
 	public int getProgramWriterPtr()
 	{
 		return _memory.getProgramWriterPtr();
 	}
 
+	/**
+	 * Increment program writer location to next memory location
+	 */
 	public void incProgramWriter()
 	{
 		_memory.incProgramWriter();
 	}
 
+	/**
+	 * Reset program writer location to starting memory location
+	 */
 	public void resetProgramWriter()
 	{
 		_memory.resetProgramWriter();
 	}
 
+	/**
+	 * Empty the stack
+	 */
 	public void resetStack()
 	{
 		_memory.resetStack();
