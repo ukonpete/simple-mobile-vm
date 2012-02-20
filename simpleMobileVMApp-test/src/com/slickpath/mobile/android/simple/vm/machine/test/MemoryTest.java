@@ -14,9 +14,12 @@ import org.junit.Test;
 
 import android.test.AndroidTestCase;
 
-import com.slickpath.mobile.android.simple.vm.VMError;
 import com.slickpath.mobile.android.simple.vm.machine.Memory;
 
+/**
+ * @author PJ
+ *
+ */
 /**
  * @author PJ
  *
@@ -61,11 +64,10 @@ public class MemoryTest extends AndroidTestCase {
 	@Test
 	public void testMemorySetup()
 	{
-		assertEquals(Memory.STACK_EMPTY_LOC, _memory.getStackPointer());
-		assertEquals(Memory.STACK_LIMIT, _memory.getProgramCounter());
-		assertEquals(Memory.STACK_LIMIT, _memory.getProgramWriterPtr());
+		assertTrue(_memory.isStackEmpty());
+		assertEquals(Memory.EMPTY_LOC, _memory.getProgramCounter());
+		assertEquals(Memory.EMPTY_LOC, _memory.getProgramWriterPtr());
 		assertEquals(true, _memory.isStackEmpty());
-		assertEquals(false, _memory.isStackFull());
 		assertEquals(Memory.MAX_MEMORY, _memory.memoryDump().size());
 
 
@@ -77,77 +79,64 @@ public class MemoryTest extends AndroidTestCase {
 	}
 
 	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#getStackPointer()}.
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#incStackPtr()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#push_mem(int);}.
 	 */
 	@Test
-	public void testGetStackPointer() {
+	public void testPush_mem() {
 		final int[] values = {0,10,22,34,45,57};
-		try {
-			assertEquals(Memory.STACK_EMPTY_LOC, _memory.getStackPointer());
+		assertTrue(_memory.isStackEmpty());
 
-			for (int val = 0; val < values.length; val++) {
-				_memory.incStackPtr();
-				_memory.set(_memory.getStackPointer(), values[val]);
-				assertEquals(val, _memory.getStackPointer());
-				assertEquals(values[val], _memory.get(val));
-				assertEquals(Memory.EMPTY_MEMORY_VALUE, _memory.get(val+1));
-			}
-
-			for(int j = 0; j < 100; j++)
-			{
-				_memory.incStackPtr();
-			}
-			assertEquals(Memory.EMPTY_MEMORY_VALUE, _memory.get(_memory.getStackPointer()));
-			assertEquals((values.length + 100) - 1, _memory.getStackPointer());
-
-		} catch (final VMError e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			fail(e.getMessage());
+		for (final int value : values) {
+			_memory.push_mem(value);
+			assertTrue(!_memory.isStackEmpty());
 		}
+
+		for(int j = 0; j < 100; j++)
+		{
+			_memory.push_mem(111);;
+		}
+		for(int j = 0; j < 100; j++)
+		{
+			_memory.pop_mem();;
+		}
+		for (int val = values.length - 1; val >= 0; val--) {
+			assertTrue(!_memory.isStackEmpty());
+			assertEquals(values[val], _memory.pop_mem().intValue());
+		}
+		assertTrue(_memory.isStackEmpty());
 	}
 
+
 	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#decStackPtr()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#testPop_mem;}.
 	 */
 	@Test
-	public void testDecStackPtr() {
+	public void testPop_mem() {
 		final int[] values = {0,10,22,34,45,57};
-		try {
-			assertEquals(Memory.STACK_EMPTY_LOC, _memory.getStackPointer());
+		assertTrue(_memory.isStackEmpty());
 
-			for (final int value : values) {
-				_memory.incStackPtr();
-				_memory.set(_memory.getStackPointer(), value);
-			}
+		for (final int value : values) {
+			_memory.push_mem(value);
+		}
 
-			for(int j = 0; j < 100; j++)
-			{
-				_memory.incStackPtr();
-			}
+		for(int j = 0; j < 100; j++)
+		{
+			_memory.push_mem(111);;
+		}
 
-			for(int j = 0; j < 50; j++)
-			{
-				_memory.decStackPtr();
-			}
-			assertEquals(Memory.EMPTY_MEMORY_VALUE, _memory.get(_memory.getStackPointer()));
-			assertEquals(((values.length + 100) - 50) - 1, _memory.getStackPointer());
+		for(int j = 0; j < 50; j++)
+		{
+			_memory.pop_mem();;
+		}
 
-			for(int j = 0; j < 50; j++)
-			{
-				_memory.decStackPtr();
-			}
+		for(int j = 0; j < 50; j++)
+		{
+			_memory.pop_mem();;
+		}
 
-			for (int val = values.length - 1; val >= 0; val--) {
-				_memory.set(_memory.getStackPointer(), values[val]);
-				assertEquals(val, _memory.getStackPointer());
-				assertEquals(values[val], _memory.get(val));
-				_memory.decStackPtr();
-			}
-		} catch (final VMError e) {
-			e.printStackTrace();
-			fail(e.getMessage());
+		for (int val = values.length - 1; val >= 0; val--) {
+			_memory.push_mem(values[val]);
+			assertEquals(values[val], _memory.pop_mem().intValue());
 		}
 	}
 
@@ -156,65 +145,30 @@ public class MemoryTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testIsStackEmpty() {
-		try {
-			assertTrue(_memory.isStackEmpty());
-			for(int j = 0; j < 100; j++)
-			{
-				_memory.incStackPtr();
-				assertTrue(!_memory.isStackEmpty());
-			}
-			for(int j = 0; j < 50; j++)
-			{
-				_memory.decStackPtr();
-				assertTrue(!_memory.isStackEmpty());
-			}
-			for(int j = 0; j < 49; j++)
-			{
-				_memory.decStackPtr();
-				assertTrue(!_memory.isStackEmpty());
-			}
-			_memory.decStackPtr();
-			assertTrue(_memory.isStackEmpty());
-		} catch (final VMError e) {
-			e.printStackTrace();
-			fail(e.getMessage());
+		assertTrue(_memory.isStackEmpty());
+		for(int j = 0; j < 100; j++)
+		{
+			_memory.push_mem(111);;
+			assertTrue(!_memory.isStackEmpty());
 		}
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#isStackFull()}.
-	 */
-	@Test
-	public void testIsStackFull() {
-		try {
-			assertTrue(!_memory.isStackFull());
-			for(int j = 0; j < 100; j++)
-			{
-				_memory.incStackPtr();
-				assertTrue("Stack should not be full : " + _memory.getStackPointer(), !_memory.isStackFull());
-			}
-			for(int j = 0; j < (Memory.STACK_LIMIT - 100); j++)
-			{
-				_memory.incStackPtr();
-				assertTrue("Memory should not be full yet : " + _memory.getStackPointer(), !_memory.isStackFull());
-			}
-			_memory.incStackPtr();
-			assertTrue(_memory.isStackFull());
-			assertEquals(Memory.STACK_LIMIT,_memory.getStackPointer());
-
-			for(int j = Memory.STACK_LIMIT; j >= 0; j--)
-			{
-				_memory.decStackPtr();
-				assertTrue(!_memory.isStackFull());
-			}
-			assertEquals(Memory.STACK_EMPTY_LOC,_memory.getStackPointer());
-		} catch (final VMError e) {
-			fail("VMError (" + _memory.getStackPointer() + ") " + e.getMessage());
+		for(int j = 0; j < 50; j++)
+		{
+			_memory.pop_mem();;
+			assertTrue(!_memory.isStackEmpty());
 		}
+		for(int j = 0; j < 49; j++)
+		{
+			_memory.pop_mem();;
+			assertTrue(!_memory.isStackEmpty());
+		}
+		_memory.pop_mem();;
+		assertTrue(_memory.isStackEmpty());
 	}
 
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#memoryDump()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#get(int)}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#set(int)}.
 	 */
 	@Test
 	public void testMemoryDump() {
@@ -227,27 +181,86 @@ public class MemoryTest extends AndroidTestCase {
 		assertEquals(Memory.EMPTY_MEMORY_VALUE, memDump.get(Memory.MAX_MEMORY-1).intValue());
 
 		final int[] values = {0,10,22,34,45,57};
-		try {
-			assertEquals(Memory.STACK_EMPTY_LOC, _memory.getStackPointer());
+		assertTrue(_memory.isStackEmpty());
 
-			for (final int value : values) {
-				_memory.incStackPtr();
-				_memory.set(_memory.getStackPointer(), value);
-			}
-
-			memDump = _memory.memoryDump();
-			assertNotNull(memDump);
-			assertEquals(Memory.MAX_MEMORY, memDump.size());
-			assertEquals(values[0], memDump.get(0).intValue());
-			assertEquals(values[1], memDump.get(1).intValue());
-			assertEquals(values[2], memDump.get(2).intValue());
-			assertEquals(values[3], memDump.get(3).intValue());
-			assertEquals(values[4], memDump.get(4).intValue());
-			assertEquals(values[5], memDump.get(5).intValue());
-			assertEquals(Memory.EMPTY_MEMORY_VALUE, memDump.get(Memory.MAX_MEMORY-1).intValue());
-		} catch (final VMError e) {
-			fail("VMError (" + _memory.getStackPointer() + ") " + e.getMessage());
+		for (final int value : values) {
+			_memory.set(value, value);
 		}
+		memDump = _memory.memoryDump();
+		assertNotNull(memDump);
+
+		assertEquals(Memory.MAX_MEMORY, memDump.size());
+
+		for (final int value : values) {
+			// check if our data matched memory dump
+			assertEquals(value, memDump.get(value).intValue());
+			// check if data in memory matches memory dump
+			assertEquals(_memory.get(value), memDump.get(value).intValue());
+		}
+	}
+
+	/**
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#resetStack()}.
+	 */
+	@Test
+	public void testResetStack() {
+		assertTrue(_memory.isStackEmpty());
+		for(int j = 0; j < 100; j++)
+		{
+			_memory.push_mem(111);;
+			assertTrue(!_memory.isStackEmpty());
+		}
+		assertTrue(!_memory.isStackEmpty());
+		_memory.resetStack();
+		assertTrue(_memory.isStackEmpty());
+	}
+
+	/**
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#stackDump()}.
+	 */
+	@Test
+	public void testStackDump() {
+		final int[] values = {0,10,22,34,45,57};
+		assertTrue(_memory.isStackEmpty());
+
+		for (final int value : values) {
+			_memory.push_mem(value);
+		}
+		final List<Integer> stackDump = _memory.stackDump();
+		assertNotNull(stackDump);
+		assertEquals(values.length, stackDump.size());
+		assertEquals(values[0], stackDump.get(0).intValue());
+		assertEquals(values[1], stackDump.get(1).intValue());
+		assertEquals(values[2], stackDump.get(2).intValue());
+		assertEquals(values[3], stackDump.get(3).intValue());
+		assertEquals(values[4], stackDump.get(4).intValue());
+		assertEquals(values[5], stackDump.get(5).intValue());
+	}
+
+	/**
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#getProgramCounter()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#incProgramCounter()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#decProgramCounter()}.
+	 */
+	@Test
+	public void testGetProgramCounter() {
+
+		assertEquals(Memory.EMPTY_LOC, _memory.getProgramCounter());
+		for(int i = 0; i < 100; i++)
+		{
+			_memory.incProgramCounter();
+		}
+		assertEquals(99, _memory.getProgramCounter());
+		for(int i = 0; i < 50; i++)
+		{
+			_memory.decProgramCounter();
+		}
+		assertEquals(49, _memory.getProgramCounter());
+		for(int i = 0; i < 50; i++)
+		{
+			_memory.decProgramCounter();
+		}
+		assertEquals(Memory.EMPTY_LOC, _memory.getProgramCounter());
 	}
 
 	/**
@@ -255,55 +268,15 @@ public class MemoryTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testSetProgramCounter() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#get(int)}.
-	 */
-	@Test
-	public void testGet() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#set(int, int)}.
-	 */
-	@Test
-	public void testSet() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#resetStackPointer()}.
-	 */
-	@Test
-	public void testResetStackPointer() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#getProgramCounter()}.
-	 */
-	@Test
-	public void testGetProgramCounter() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#incProgramCounter()}.
-	 */
-	@Test
-	public void testIncProgramCounter() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#decProgramCounter()}.
-	 */
-	@Test
-	public void testDecProgramCounter() {
-		fail("Not yet implemented");
+		assertEquals(Memory.EMPTY_LOC, _memory.getProgramCounter());
+		_memory.setProgramCounter(100);
+		assertEquals(100, _memory.getProgramCounter());
+		_memory.setProgramCounter(10);
+		assertEquals(10, _memory.getProgramCounter());
+		_memory.setProgramCounter(249);
+		assertEquals(249, _memory.getProgramCounter());
+		_memory.setProgramCounter(Memory.EMPTY_LOC);
+		assertEquals(Memory.EMPTY_LOC, _memory.getProgramCounter());
 	}
 
 	/**
@@ -311,23 +284,25 @@ public class MemoryTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testResetProgramCounter() {
-		fail("Not yet implemented");
+		assertEquals(Memory.EMPTY_LOC, _memory.getProgramCounter());
+		_memory.setProgramCounter(100);
+		assertEquals(100, _memory.getProgramCounter());
+		_memory.resetProgramCounter();
+		assertEquals(Memory.EMPTY_LOC, _memory.getProgramCounter());
 	}
 
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#getProgramWriterPtr()}.
-	 */
-	@Test
-	public void testGetProgramWriterPtr() {
-		fail("Not yet implemented");
-	}
-
-	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#incProgramWriter()}.
 	 */
 	@Test
-	public void testIncProgramWriter() {
-		fail("Not yet implemented");
+	public void testGetProgramWriterPtr() {
+		assertEquals(Memory.EMPTY_LOC, _memory.getProgramWriterPtr());
+		for(int i = 0; i < 100; i++)
+		{
+			_memory.incProgramWriter();
+		}
+		assertEquals(99, _memory.getProgramWriterPtr());
 	}
 
 	/**
@@ -335,7 +310,15 @@ public class MemoryTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testResetProgramWriter() {
-		fail("Not yet implemented");
+		assertEquals(Memory.EMPTY_LOC, _memory.getProgramWriterPtr());
+		for(int i = 0; i < 100; i++)
+		{
+			_memory.incProgramWriter();
+		}
+		assertEquals(99, _memory.getProgramWriterPtr());
+		_memory.resetProgramWriter();
+		assertEquals(Memory.EMPTY_LOC, _memory.getProgramWriterPtr());
 	}
+
 
 }
