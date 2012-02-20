@@ -150,7 +150,7 @@ public class Memory implements IStack {
 	 * @param location
 	 * @return
 	 */
-	protected int get(final int location)
+	public int get(final int location)
 	{
 		return _memoryStore.get(location);
 	}
@@ -164,7 +164,7 @@ public class Memory implements IStack {
 	 * @param value
 	 * @return
 	 */
-	protected Integer set(final int location, final int value)
+	public Integer set(final int location, final int value)
 	{
 		return _memoryStore.set(location, value);
 	}

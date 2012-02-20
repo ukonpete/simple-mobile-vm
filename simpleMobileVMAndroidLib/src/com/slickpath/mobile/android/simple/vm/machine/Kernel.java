@@ -51,7 +51,7 @@ public class Kernel implements IStack{
 	 * @return int - value at specified memory location
 	 * @throws VMError
 	 */
-	protected int getValueAt(final int location) throws VMError
+	public int getValueAt(final int location) throws VMError
 	{
 		int returnVal = 0;
 		if (location < Memory.MAX_MEMORY)
@@ -73,7 +73,7 @@ public class Kernel implements IStack{
 	 * @return Integer (previous value) - @see Java.util.List.set()
 	 * @throws VMError
 	 */
-	protected Integer setValueAt(final int value, final int location) throws VMError
+	public Integer setValueAt(final int value, final int location) throws VMError
 	{
 		if (location < Memory.MAX_MEMORY)
 		{
