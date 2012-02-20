@@ -67,7 +67,7 @@ public class MemoryTest extends AndroidTestCase {
 		assertTrue(_memory.isStackEmpty());
 		assertEquals(Memory.EMPTY_LOC, _memory.getProgramCounter());
 		assertEquals(Memory.EMPTY_LOC, _memory.getProgramWriterPtr());
-		assertEquals(true, _memory.isStackEmpty());
+		assertTrue(_memory.isStackEmpty());
 		assertEquals(Memory.MAX_MEMORY, _memory.memoryDump().size());
 
 
