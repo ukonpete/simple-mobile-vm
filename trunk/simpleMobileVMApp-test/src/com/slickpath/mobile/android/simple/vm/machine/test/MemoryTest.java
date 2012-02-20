@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import android.test.AndroidTestCase;
 
+import com.slickpath.mobile.android.simple.vm.VMError;
 import com.slickpath.mobile.android.simple.vm.machine.Memory;
 
 /**
@@ -77,18 +78,34 @@ public class MemoryTest extends AndroidTestCase {
 
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#getStackPointer()}.
-	 */
-	@Test
-	public void testGetStackPointer() {
-		fail("Not yet implemented");
-	}
-
-	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#incStackPtr()}.
 	 */
 	@Test
-	public void testIncStackPtr() {
-		fail("Not yet implemented");
+	public void testGetStackPointer() {
+		final int[] values = {0,10,22,34,45,57};
+		try {
+			assertEquals(Memory.STACK_EMPTY_LOC, _memory.getStackPointer());
+
+			for (int val = 0; val < values.length; val++) {
+				_memory.incStackPtr();
+				_memory.set(_memory.getStackPointer(), values[val]);
+				assertEquals(val, _memory.getStackPointer());
+				assertEquals(values[val], _memory.get(val));
+				assertEquals(Memory.EMPTY_MEMORY_VALUE, _memory.get(val+1));
+			}
+
+			for(int j = 0; j < 100; j++)
+			{
+				_memory.incStackPtr();
+			}
+			assertEquals(Memory.EMPTY_MEMORY_VALUE, _memory.get(_memory.getStackPointer()));
+			assertEquals((values.length + 100) - 1, _memory.getStackPointer());
+
+		} catch (final VMError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 	}
 
 	/**
@@ -96,7 +113,42 @@ public class MemoryTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testDecStackPtr() {
-		fail("Not yet implemented");
+		final int[] values = {0,10,22,34,45,57};
+		try {
+			assertEquals(Memory.STACK_EMPTY_LOC, _memory.getStackPointer());
+
+			for (final int value : values) {
+				_memory.incStackPtr();
+				_memory.set(_memory.getStackPointer(), value);
+			}
+
+			for(int j = 0; j < 100; j++)
+			{
+				_memory.incStackPtr();
+			}
+
+			for(int j = 0; j < 50; j++)
+			{
+				_memory.decStackPtr();
+			}
+			assertEquals(Memory.EMPTY_MEMORY_VALUE, _memory.get(_memory.getStackPointer()));
+			assertEquals(((values.length + 100) - 50) - 1, _memory.getStackPointer());
+
+			for(int j = 0; j < 50; j++)
+			{
+				_memory.decStackPtr();
+			}
+
+			for (int val = values.length - 1; val >= 0; val--) {
+				_memory.set(_memory.getStackPointer(), values[val]);
+				assertEquals(val, _memory.getStackPointer());
+				assertEquals(values[val], _memory.get(val));
+				_memory.decStackPtr();
+			}
+		} catch (final VMError e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 	}
 
 	/**
@@ -104,7 +156,29 @@ public class MemoryTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testIsStackEmpty() {
-		fail("Not yet implemented");
+		try {
+			assertTrue(_memory.isStackEmpty());
+			for(int j = 0; j < 100; j++)
+			{
+				_memory.incStackPtr();
+				assertTrue(!_memory.isStackEmpty());
+			}
+			for(int j = 0; j < 50; j++)
+			{
+				_memory.decStackPtr();
+				assertTrue(!_memory.isStackEmpty());
+			}
+			for(int j = 0; j < 49; j++)
+			{
+				_memory.decStackPtr();
+				assertTrue(!_memory.isStackEmpty());
+			}
+			_memory.decStackPtr();
+			assertTrue(_memory.isStackEmpty());
+		} catch (final VMError e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 	}
 
 	/**
@@ -112,7 +186,31 @@ public class MemoryTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testIsStackFull() {
-		fail("Not yet implemented");
+		try {
+			assertTrue(!_memory.isStackFull());
+			for(int j = 0; j < 100; j++)
+			{
+				_memory.incStackPtr();
+				assertTrue("Stack should not be full : " + _memory.getStackPointer(), !_memory.isStackFull());
+			}
+			for(int j = 0; j < (Memory.STACK_LIMIT - 100); j++)
+			{
+				_memory.incStackPtr();
+				assertTrue("Memory should not be full yet : " + _memory.getStackPointer(), !_memory.isStackFull());
+			}
+			_memory.incStackPtr();
+			assertTrue(_memory.isStackFull());
+			assertEquals(Memory.STACK_LIMIT,_memory.getStackPointer());
+
+			for(int j = Memory.STACK_LIMIT; j >= 0; j--)
+			{
+				_memory.decStackPtr();
+				assertTrue(!_memory.isStackFull());
+			}
+			assertEquals(Memory.STACK_EMPTY_LOC,_memory.getStackPointer());
+		} catch (final VMError e) {
+			fail("VMError (" + _memory.getStackPointer() + ") " + e.getMessage());
+		}
 	}
 
 	/**
@@ -120,7 +218,36 @@ public class MemoryTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testMemoryDump() {
-		fail("Not yet implemented");
+		List<Integer> memDump = _memory.memoryDump();
+		assertNotNull(memDump);
+		assertEquals(Memory.MAX_MEMORY, memDump.size());
+		assertEquals(Memory.EMPTY_MEMORY_VALUE, memDump.get(0).intValue());
+		assertEquals(Memory.EMPTY_MEMORY_VALUE, memDump.get(5).intValue());
+		assertEquals(Memory.EMPTY_MEMORY_VALUE, memDump.get(124).intValue());
+		assertEquals(Memory.EMPTY_MEMORY_VALUE, memDump.get(Memory.MAX_MEMORY-1).intValue());
+
+		final int[] values = {0,10,22,34,45,57};
+		try {
+			assertEquals(Memory.STACK_EMPTY_LOC, _memory.getStackPointer());
+
+			for (final int value : values) {
+				_memory.incStackPtr();
+				_memory.set(_memory.getStackPointer(), value);
+			}
+
+			memDump = _memory.memoryDump();
+			assertNotNull(memDump);
+			assertEquals(Memory.MAX_MEMORY, memDump.size());
+			assertEquals(values[0], memDump.get(0).intValue());
+			assertEquals(values[1], memDump.get(1).intValue());
+			assertEquals(values[2], memDump.get(2).intValue());
+			assertEquals(values[3], memDump.get(3).intValue());
+			assertEquals(values[4], memDump.get(4).intValue());
+			assertEquals(values[5], memDump.get(5).intValue());
+			assertEquals(Memory.EMPTY_MEMORY_VALUE, memDump.get(Memory.MAX_MEMORY-1).intValue());
+		} catch (final VMError e) {
+			fail("VMError (" + _memory.getStackPointer() + ") " + e.getMessage());
+		}
 	}
 
 	/**
