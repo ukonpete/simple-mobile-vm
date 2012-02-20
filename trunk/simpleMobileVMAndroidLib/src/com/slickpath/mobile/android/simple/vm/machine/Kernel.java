@@ -20,7 +20,7 @@ import com.slickpath.mobile.android.simple.vm.VMError;
  * Kernel level call for the VM
  * 
  */
-public class Kernel implements IStack{
+public class Kernel {
 
 	private static final String TAG = Machine.class.getName();
 
@@ -93,15 +93,11 @@ public class Kernel implements IStack{
 	 * @return int - value at top of stack
 	 * @throws VMError
 	 */
-	protected int pop() throws VMError
+	public int pop() throws VMError
 	{
 		if (!_memory.isStackEmpty())
 		{
-			final int returnVal = _memory.get(_memory.getStackPointer());
-			_memory.decStackPtr();
-			// Reset every memory position we pop to 99999
-			_memory.set((_memory.getStackPointer() + 1), Memory.EMPTY_MEMORY_VALUE);
-			return returnVal;
+			return _memory.pop_mem();
 		}
 		else
 		{
@@ -115,16 +111,15 @@ public class Kernel implements IStack{
 	 * @param value
 	 * @throws VMError
 	 */
-	protected void push(final int value) throws VMError
+	public void push(final int value) throws VMError
 	{
-		if (!_memory.isStackFull())
+		try
 		{
-			_memory.incStackPtr();
-			_memory.set(_memory.getStackPointer(), value);
+			_memory.push_mem(value);
 		}
-		else
+		catch(final Exception e)
 		{
-			throw new VMError("PUSHC", VMError.VM_ERROR_TYPE_STACK_LIMIT);
+			throw new VMError("PUSHC", e, VMError.VM_ERROR_TYPE_STACK_LIMIT);
 		}
 	}
 
@@ -134,17 +129,15 @@ public class Kernel implements IStack{
 	 * @param location
 	 * @throws VMError
 	 */
-	protected void branch(final int location) throws VMError
+	public void branch(final int location) throws VMError
 	{
-		debug("--BR=" + _memory.getProgramCounter());
-		final int tempLocation = (location * 2) + Memory.STACK_LIMIT;
-		if (tempLocation >= Memory.STACK_LIMIT)
+		if (location <= Memory.MAX_MEMORY)
 		{
-			_memory.setProgramCounter(tempLocation);
+			_memory.setProgramCounter(location);
 		}
 		else
 		{
-			throw new VMError("BRANCH : loc=" + location + " temp="+ tempLocation, VMError.VM_ERROR_TYPE_STACK_LIMIT);
+			throw new VMError("BRANCH : loc=" + location, VMError.VM_ERROR_TYPE_STACK_LIMIT);
 		}
 		debug("--BR=" + _memory.getProgramCounter());
 	}
@@ -155,10 +148,10 @@ public class Kernel implements IStack{
 	 * 
 	 * @throws VMError
 	 */
-	protected void jump() throws VMError
+	public void jump() throws VMError
 	{
 		final int location = pop();
-		_memory.setProgramCounter((location * 2) + Memory.STACK_LIMIT);
+		_memory.setProgramCounter((location * 2));
 	}
 
 	/**
@@ -209,101 +202,44 @@ public class Kernel implements IStack{
 	/**************************************************
 	 * Abstract memory from other sub-Classes of Kernel
 	 ***************************************************/
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#getProgramCounter()
-	 */
-	@Override
+
 	public int getProgramCounter()
 	{
 		return _memory.getProgramCounter();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#incProgramCounter()
-	 */
-	@Override
 	public void incProgramCounter()
 	{
 		_memory.incProgramCounter();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#decProgramCounter()
-	 */
-	@Override
 	public void decProgramCounter()
 	{
 		_memory.decProgramCounter();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#resetProgramCounter()
-	 */
-	@Override
 	public void resetProgramCounter()
 	{
 		_memory.resetProgramCounter();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#getProgramWriterPtr()
-	 */
-	@Override
 	public int getProgramWriterPtr()
 	{
 		return _memory.getProgramWriterPtr();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#incProgramWriter()
-	 */
 	public void incProgramWriter()
 	{
 		_memory.incProgramWriter();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#resetProgramWriter()
-	 */
-	@Override
 	public void resetProgramWriter()
 	{
 		_memory.resetProgramWriter();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#getStackPointer()
-	 */
-	@Override
-	public int getStackPointer()
+	public void resetStack()
 	{
-		return _memory.getStackPointer();
-	}
-
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#incStackPtr()
-	 */
-	@Override
-	public void incStackPtr() throws VMError
-	{
-		_memory.incStackPtr();
-	}
-
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#decStackPtr()
-	 */
-	@Override
-	public void decStackPtr() throws VMError
-	{
-		_memory.decStackPtr();
-	}
-
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#resetStackPointer()
-	 */
-	@Override
-	public void resetStackPointer()
-	{
-		_memory.resetStackPointer();
+		_memory.resetStack();
 	}
 }

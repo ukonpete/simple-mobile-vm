@@ -58,6 +58,7 @@ public class KernelTest extends AndroidTestCase {
 
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#getValueAt(int)}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#setValueAt(int, int)}.
 	 */
 	@Test
 	public void testGetValueAt() {
@@ -90,147 +91,133 @@ public class KernelTest extends AndroidTestCase {
 	}
 
 	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#setValueAt(int, int)}.
-	 */
-	@Test
-	public void testSetValueAt() {
-		fail("Not yet implemented");
-	}
-
-	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#pop()}.
-	 */
-	@Test
-	public void testPop() {
-		fail("Not yet implemented");
-	}
-
-	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#push(int)}.
 	 */
 	@Test
-	public void testPush() {
-		fail("Not yet implemented");
+	public void testPop() {
+		try {
+			final int[] values = {0,10,22,34,45,57};
+			for (final int value : values) {
+				_kernel.push(value);
+			}
+			for (int i = 0; i < 100; i++) {
+				_kernel.push(i);
+			}
+			for (int i = 0; i < 100; i++) {
+				_kernel.pop(); // ignore return val
+			}
+			for (int i = values.length-1; i >= 0; i--) {
+				assertEquals(values[i], _kernel.pop());
+			}
+		} catch (final VMError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 	}
 
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#branch(int)}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#resetProgramCounter()}.
 	 */
 	@Test
 	public void testBranch() {
-		fail("Not yet implemented");
+		try {
+			assertEquals(Memory.EMPTY_LOC, _kernel.getProgramCounter());
+			for (int i = 0; i < 100; i++) {
+				_kernel.incProgramCounter();
+			}
+			assertEquals(99, _kernel.getProgramCounter());
+			for (int i = 0; i < 20; i++) {
+				_kernel.decProgramCounter();
+			}
+			assertEquals(79, _kernel.getProgramCounter());
+			_kernel.branch(50);
+			assertEquals(50, _kernel.getProgramCounter());
+			_kernel.branch(249);
+			assertEquals(249, _kernel.getProgramCounter());
+			_kernel.branch(1);
+			assertEquals(1, _kernel.getProgramCounter());
+			_kernel.resetProgramCounter();
+			assertEquals(Memory.EMPTY_LOC, _kernel.getProgramCounter());
+			_kernel.branch(25);
+			assertEquals(25, _kernel.getProgramCounter());
+		} catch (final VMError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+
 	}
 
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#jump()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#getProgramCounter()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#incProgramCounter()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#decProgramCounter()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#resetStack()}.
 	 */
 	@Test
 	public void testJump() {
-		fail("Not yet implemented");
-	}
+		try {
 
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#debug(java.lang.String)}.
-	 */
-	@Test
-	public void testDebugString() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#debug(java.lang.String, java.lang.String)}.
-	 */
-	@Test
-	public void testDebugStringString() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#getProgramCounter()}.
-	 */
-	@Test
-	public void testGetProgramCounter() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#incProgramCounter()}.
-	 */
-	@Test
-	public void testIncProgramCounter() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#decProgramCounter()}.
-	 */
-	@Test
-	public void testDecProgramCounter() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#resetProgramCounter()}.
-	 */
-	@Test
-	public void testResetProgramCounter() {
-		fail("Not yet implemented");
+			assertEquals(Memory.EMPTY_LOC, _kernel.getProgramCounter());
+			for (int i = 0; i < 100; i++) {
+				_kernel.incProgramCounter();
+			}
+			assertEquals(99, _kernel.getProgramCounter());
+			for (int i = 0; i < 20; i++) {
+				_kernel.decProgramCounter();
+			}
+			assertEquals(79, _kernel.getProgramCounter());
+			_kernel.push(2);
+			_kernel.push(12);
+			_kernel.push(72);
+			_kernel.push(99);
+			_kernel.jump();
+			assertEquals(99*2, _kernel.getProgramCounter());
+			_kernel.jump();
+			assertEquals(72*2, _kernel.getProgramCounter());
+			_kernel.jump();
+			assertEquals(12*2, _kernel.getProgramCounter());
+			_kernel.resetStack();
+			_kernel.push(7);
+			assertEquals(12*2, _kernel.getProgramCounter());
+			_kernel.jump();
+			assertEquals(7*2, _kernel.getProgramCounter());
+		} catch (final VMError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 	}
 
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#getProgramWriterPtr()}.
-	 */
-	@Test
-	public void testGetProgramWriterPtr() {
-		fail("Not yet implemented");
-	}
-
-	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#incProgramWriter()}.
-	 */
-	@Test
-	public void testIncProgramWriter() {
-		fail("Not yet implemented");
-	}
-
-	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#resetProgramWriter()}.
 	 */
 	@Test
-	public void testResetProgramWriter() {
-		fail("Not yet implemented");
+	public void testGetProgramWriterPtr() {
+		assertEquals(Memory.EMPTY_LOC, _kernel.getProgramWriterPtr());
+		_kernel.incProgramWriter();
+		_kernel.incProgramWriter();
+		_kernel.incProgramWriter();
+		assertEquals(2, _kernel.getProgramWriterPtr());
+		for (int i = 0; i < 100; i++) {
+			_kernel.incProgramWriter();
+		}
+		assertEquals(102, _kernel.getProgramWriterPtr());
+		_kernel.resetProgramWriter();
+		assertEquals(Memory.EMPTY_LOC, _kernel.getProgramWriterPtr());
+		_kernel.incProgramWriter();
+		_kernel.incProgramWriter();
+		_kernel.incProgramWriter();
+		assertEquals(2, _kernel.getProgramWriterPtr());
+		for (int i = 0; i < 100; i++) {
+			_kernel.incProgramWriter();
+		}
+		assertEquals(102, _kernel.getProgramWriterPtr());
 	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#getStackPointer()}.
-	 */
-	@Test
-	public void testGetStackPointer() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#incStackPtr()}.
-	 */
-	@Test
-	public void testIncStackPtr() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#decStackPtr()}.
-	 */
-	@Test
-	public void testDecStackPtr() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#resetStackPointer()}.
-	 */
-	@Test
-	public void testResetStackPointer() {
-		fail("Not yet implemented");
-	}
-
 }

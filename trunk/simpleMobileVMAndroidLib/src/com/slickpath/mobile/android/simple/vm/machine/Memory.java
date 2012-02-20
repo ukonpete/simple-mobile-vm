@@ -10,12 +10,12 @@ import com.slickpath.mobile.android.simple.vm.VMError;
  * This class is the VM Basic Memory manager
  * 
  */
-public class Memory implements IStack {
+public class Memory {
 
 	/**
 	 * Location in memory of stack pointer when stack is empty
 	 */
-	public static final int STACK_EMPTY_LOC = -1;
+	public static final int EMPTY_LOC = -1;
 
 	/**
 	 * Value of memory if it is empty (unused)
@@ -26,27 +26,12 @@ public class Memory implements IStack {
 	 * Memory consists of N number of sequential Integers
 	 */
 	public static final int MAX_MEMORY = 500;
-	/**
-	 * The stack uses up the lower half of memory
-	 */
-	public static final int STACK_LIMIT = MAX_MEMORY / 2;
-
-	/**
-	 * Keeps track of currently stack location
-	 */
-	private int _stackPtr = STACK_EMPTY_LOC;
-
-	/**
-	 * Keeps track of location of next instruction to run
-	 */
-	private int _programCtr = STACK_LIMIT;
-
-	/**
-	 * Keeps track of next location where an instruction to run can be written to- part of program setup
-	 */
-	private int _programWriter = STACK_LIMIT;
 
 	private final List<Integer> _memoryStore;
+
+	private final SimpleStack _stack = new SimpleStack();
+
+	private final ProgramManager _programManager = new ProgramManager();
 
 	/**
 	 * Constructor
@@ -61,46 +46,6 @@ public class Memory implements IStack {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#getStackPointer()
-	 */
-	@Override
-	public int getStackPointer()
-	{
-		return _stackPtr;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#incStackPtr()
-	 */
-	@Override
-	public void incStackPtr() throws VMError
-	{
-		if ( !isStackFull() )
-		{
-			_stackPtr++;
-		}
-		else
-		{
-			throw new VMError("incStackPtr - Stack is full", VMError.VM_ERROR_TYPE_STACK_LIMIT);
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#decStackPtr()
-	 */
-	@Override
-	public void decStackPtr() throws VMError
-	{
-		if ( !isStackEmpty() )
-		{
-			_stackPtr--;
-		}
-		else
-		{
-			throw new VMError("decStackPtr - Stack is empty", VMError.VM_ERROR_TYPE_STACK_LIMIT);
-		}
-	}
 
 	/**
 	 * Returns if Stack is empty
@@ -109,19 +54,13 @@ public class Memory implements IStack {
 	 */
 	public boolean isStackEmpty()
 	{
-		return _stackPtr <= STACK_EMPTY_LOC;
+		return _stack.isEmpty();
 	}
 
-	/**
-	 * Returns if Stack is full
-	 * 
-	 * @return boolean
-	 */
-	public boolean isStackFull()
+	public void resetStack()
 	{
-		return _stackPtr == STACK_LIMIT;
+		_stack.reset();
 	}
-
 	/**
 	 * Return memory as a List<Integer>
 	 * 
@@ -133,13 +72,13 @@ public class Memory implements IStack {
 	}
 
 	/**
-	 * Sets value of program counter (set it to a position in meory where the next command will be run from)
+	 * Return memory as a List<Integer>
 	 * 
-	 * @param location
+	 * @return
 	 */
-	protected void setProgramCounter(final int location)
+	public List<Integer> stackDump()
 	{
-		_programCtr = location;
+		return _stack.dump();
 	}
 
 	/**
@@ -169,74 +108,69 @@ public class Memory implements IStack {
 		return _memoryStore.set(location, value);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#resetStackPointer()
+	/**
+	 * pop the top value from the stack and return
+	 * clear out the old top
+	 * 
+	 * @return
+	 * @throws VMError
 	 */
-	@Override
-	public void resetStackPointer()
+	public Integer pop_mem()
 	{
-		_stackPtr = STACK_EMPTY_LOC;
+		return _stack.pop();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#getProgramCounter()
+	/**
+	 * pop the value onto the stack
+	 * 
+	 * @see Java.util.List
+	 * 
+	 * @param location
+	 * @param value
+	 * @return
 	 */
-	@Override
+	public Integer push_mem(final int value)
+	{
+		return _stack.push(value);
+	}
+
 	public int getProgramCounter()
 	{
-		return _programCtr;
+		return _programManager.getProgramCounter();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#incProgramCounter()
-	 */
-	@Override
 	public void incProgramCounter()
 	{
-		_programCtr++;
+		_programManager.incProgramCounter();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#decProgramCounter()
-	 */
-	@Override
 	public void decProgramCounter()
 	{
-		_programCtr--;
+		_programManager.decProgramCounter();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#resetProgramCounter()
-	 */
-	@Override
+	public void setProgramCounter(final int location)
+	{
+		_programManager.setProgramCounter(location);
+	}
+
 	public void resetProgramCounter()
 	{
-		_programCtr = STACK_LIMIT;
+		_programManager.resetProgramCounter();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#getProgramWriterPtr()
-	 */
-	@Override
 	public int getProgramWriterPtr()
 	{
-		return _programWriter;
+		return _programManager.getProgramWriterPtr();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#incProgramWriter()
-	 */
 	public void incProgramWriter()
 	{
-		_programWriter++;
+		_programManager.incProgramWriter();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.machine.IStack#resetProgramWriter()
-	 */
-	@Override
 	public void resetProgramWriter()
 	{
-		_programWriter = STACK_LIMIT;
+		_programManager.resetProgramWriter();
 	}
 }

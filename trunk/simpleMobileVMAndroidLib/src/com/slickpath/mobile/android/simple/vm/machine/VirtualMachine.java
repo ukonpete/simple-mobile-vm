@@ -210,7 +210,7 @@ public class VirtualMachine extends Machine implements Instructions{
 		{
 			_numInstrsRun = 0;
 			resetProgramWriter();
-			resetStackPointer();
+			resetStack();
 			bHalt = true;
 		}
 		if ( _vmListener != null)
@@ -256,7 +256,7 @@ public class VirtualMachine extends Machine implements Instructions{
 			{
 				lastProgCtr = getProgramCounter();
 				instructionVal = getValueAt(getProgramCounter());
-				debug(TAG, "-PROG_CTR=" + getProgramCounter() + " line=" + ((getProgramCounter() - Memory.STACK_LIMIT)/2) + " inst=" + instructionVal);
+				debug(TAG, "-PROG_CTR=" + getProgramCounter() + " line=" + (getProgramCounter()/2) + " inst=" + instructionVal);
 				runCommand(instructionVal);
 			}
 			debug(TAG, "PROG_CTR=" + getProgramCounter());
@@ -264,7 +264,7 @@ public class VirtualMachine extends Machine implements Instructions{
 			dumpMem("3");
 			lastLine = getLineNumber();
 			resetProgramCounter();
-			resetStackPointer();
+			resetStack();
 		}
 		catch(final VMError vme)
 		{
@@ -346,7 +346,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	 * 
 	 */
 	private int getLineNumber() {
-		return (getProgramCounter() - 2 - Memory.STACK_LIMIT)/2;
+		return (getProgramCounter() - 2)/2;
 	}
 
 	/**
