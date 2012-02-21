@@ -16,7 +16,7 @@ public class ProgramManager {
 	/**
 	 * Location in memory of stack pointer when stack is empty
 	 */
-	public static final int EMPTY_LOC = -1;
+	public static final int START_LOC = 0;
 
 	/**
 	 * Value of memory if it is empty (unused)
@@ -31,12 +31,12 @@ public class ProgramManager {
 	/**
 	 * Keeps track of location of next instruction to run
 	 */
-	private int _programCtr = EMPTY_LOC;
+	private int _programCtr = START_LOC;
 
 	/**
 	 * Keeps track of next location where an instruction to run can be written to- part of program setup
 	 */
-	private int _programWriter = EMPTY_LOC;
+	private int _programWriter = START_LOC;
 
 	/**
 	 * Actually store we use for memory
@@ -111,7 +111,7 @@ public class ProgramManager {
 	 */
 	public void resetProgramCounter()
 	{
-		_programCtr = EMPTY_LOC;
+		_programCtr = START_LOC;
 	}
 
 	/**
@@ -136,6 +136,16 @@ public class ProgramManager {
 	 */
 	public void resetProgramWriter()
 	{
-		_programWriter = EMPTY_LOC;
+		_programWriter = START_LOC;
+	}
+
+	/**
+	 * Reset program writer location to starting memory location
+	 * NOTE: This makes a copy of the program memory
+	 * @return Copy of memory
+	 */
+	public  List<Integer> dump()
+	{
+		return  new ArrayList<Integer>(_programStore);
 	}
 }
