@@ -124,15 +124,15 @@ public class KernelTest extends AndroidTestCase {
 	@Test
 	public void testBranch() {
 		try {
-			assertEquals(Memory.EMPTY_LOC, _kernel.getProgramCounter());
+			assertEquals(Memory.START_LOC, _kernel.getProgramCounter());
 			for (int i = 0; i < 100; i++) {
 				_kernel.incProgramCounter();
 			}
-			assertEquals(99, _kernel.getProgramCounter());
+			assertEquals(100, _kernel.getProgramCounter());
 			for (int i = 0; i < 20; i++) {
 				_kernel.decProgramCounter();
 			}
-			assertEquals(79, _kernel.getProgramCounter());
+			assertEquals(80, _kernel.getProgramCounter());
 			_kernel.branch(50);
 			assertEquals(50, _kernel.getProgramCounter());
 			_kernel.branch(249);
@@ -140,7 +140,7 @@ public class KernelTest extends AndroidTestCase {
 			_kernel.branch(1);
 			assertEquals(1, _kernel.getProgramCounter());
 			_kernel.resetProgramCounter();
-			assertEquals(Memory.EMPTY_LOC, _kernel.getProgramCounter());
+			assertEquals(Memory.START_LOC, _kernel.getProgramCounter());
 			_kernel.branch(25);
 			assertEquals(25, _kernel.getProgramCounter());
 		} catch (final VMError e) {
@@ -162,15 +162,15 @@ public class KernelTest extends AndroidTestCase {
 	public void testJump() {
 		try {
 
-			assertEquals(Memory.EMPTY_LOC, _kernel.getProgramCounter());
+			assertEquals(Memory.START_LOC, _kernel.getProgramCounter());
 			for (int i = 0; i < 100; i++) {
 				_kernel.incProgramCounter();
 			}
-			assertEquals(99, _kernel.getProgramCounter());
+			assertEquals(100, _kernel.getProgramCounter());
 			for (int i = 0; i < 20; i++) {
 				_kernel.decProgramCounter();
 			}
-			assertEquals(79, _kernel.getProgramCounter());
+			assertEquals(80, _kernel.getProgramCounter());
 			_kernel.push(2);
 			_kernel.push(12);
 			_kernel.push(72);
@@ -200,24 +200,24 @@ public class KernelTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testGetProgramWriterPtr() {
-		assertEquals(Memory.EMPTY_LOC, _kernel.getProgramWriterPtr());
+		assertEquals(Memory.START_LOC, _kernel.getProgramWriterPtr());
 		_kernel.incProgramWriter();
 		_kernel.incProgramWriter();
 		_kernel.incProgramWriter();
-		assertEquals(2, _kernel.getProgramWriterPtr());
+		assertEquals(3, _kernel.getProgramWriterPtr());
 		for (int i = 0; i < 100; i++) {
 			_kernel.incProgramWriter();
 		}
-		assertEquals(102, _kernel.getProgramWriterPtr());
+		assertEquals(103, _kernel.getProgramWriterPtr());
 		_kernel.resetProgramWriter();
-		assertEquals(Memory.EMPTY_LOC, _kernel.getProgramWriterPtr());
+		assertEquals(Memory.START_LOC, _kernel.getProgramWriterPtr());
 		_kernel.incProgramWriter();
 		_kernel.incProgramWriter();
 		_kernel.incProgramWriter();
-		assertEquals(2, _kernel.getProgramWriterPtr());
+		assertEquals(3, _kernel.getProgramWriterPtr());
 		for (int i = 0; i < 100; i++) {
 			_kernel.incProgramWriter();
 		}
-		assertEquals(102, _kernel.getProgramWriterPtr());
+		assertEquals(103, _kernel.getProgramWriterPtr());
 	}
 }

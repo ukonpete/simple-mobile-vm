@@ -61,15 +61,15 @@ public class ProgramManagerTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testSetProgramCounter() {
-		assertEquals(Memory.EMPTY_LOC, _programManager.getProgramCounter());
+		assertEquals(Memory.START_LOC, _programManager.getProgramCounter());
 		_programManager.setProgramCounter(100);
 		assertEquals(100, _programManager.getProgramCounter());
 		_programManager.setProgramCounter(10);
 		assertEquals(10, _programManager.getProgramCounter());
 		_programManager.setProgramCounter(249);
 		assertEquals(249, _programManager.getProgramCounter());
-		_programManager.setProgramCounter(Memory.EMPTY_LOC);
-		assertEquals(Memory.EMPTY_LOC, _programManager.getProgramCounter());
+		_programManager.setProgramCounter(Memory.START_LOC);
+		assertEquals(Memory.START_LOC, _programManager.getProgramCounter());
 	}
 
 	/**
@@ -79,22 +79,22 @@ public class ProgramManagerTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testGetProgramCounter() {
-		assertEquals(Memory.EMPTY_LOC, _programManager.getProgramCounter());
+		assertEquals(Memory.START_LOC, _programManager.getProgramCounter());
 		for(int i = 0; i < 100; i++)
 		{
 			_programManager.incProgramCounter();
 		}
-		assertEquals(99, _programManager.getProgramCounter());
+		assertEquals(100, _programManager.getProgramCounter());
 		for(int i = 0; i < 50; i++)
 		{
 			_programManager.decProgramCounter();
 		}
-		assertEquals(49, _programManager.getProgramCounter());
+		assertEquals(50, _programManager.getProgramCounter());
 		for(int i = 0; i < 50; i++)
 		{
 			_programManager.decProgramCounter();
 		}
-		assertEquals(Memory.EMPTY_LOC, _programManager.getProgramCounter());
+		assertEquals(Memory.START_LOC, _programManager.getProgramCounter());
 	}
 
 	/**
@@ -102,11 +102,11 @@ public class ProgramManagerTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testResetProgramCounter() {
-		assertEquals(Memory.EMPTY_LOC, _programManager.getProgramCounter());
+		assertEquals(Memory.START_LOC, _programManager.getProgramCounter());
 		_programManager.setProgramCounter(100);
 		assertEquals(100, _programManager.getProgramCounter());
 		_programManager.resetProgramCounter();
-		assertEquals(Memory.EMPTY_LOC, _programManager.getProgramCounter());
+		assertEquals(Memory.START_LOC, _programManager.getProgramCounter());
 	}
 
 	/**
@@ -115,12 +115,12 @@ public class ProgramManagerTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testGetProgramWriterPtr() {
-		assertEquals(Memory.EMPTY_LOC, _programManager.getProgramWriterPtr());
+		assertEquals(Memory.START_LOC, _programManager.getProgramWriterPtr());
 		for(int i = 0; i < 100; i++)
 		{
 			_programManager.incProgramWriter();
 		}
-		assertEquals(99, _programManager.getProgramWriterPtr());
+		assertEquals(100, _programManager.getProgramWriterPtr());
 	}
 
 	/**
@@ -128,14 +128,14 @@ public class ProgramManagerTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testResetProgramWriter() {
-		assertEquals(Memory.EMPTY_LOC, _programManager.getProgramWriterPtr());
+		assertEquals(Memory.START_LOC, _programManager.getProgramWriterPtr());
 		for(int i = 0; i < 100; i++)
 		{
 			_programManager.incProgramWriter();
 		}
-		assertEquals(99, _programManager.getProgramWriterPtr());
+		assertEquals(100, _programManager.getProgramWriterPtr());
 		_programManager.resetProgramWriter();
-		assertEquals(Memory.EMPTY_LOC, _programManager.getProgramWriterPtr());
+		assertEquals(Memory.START_LOC, _programManager.getProgramWriterPtr());
 	}
 
 }

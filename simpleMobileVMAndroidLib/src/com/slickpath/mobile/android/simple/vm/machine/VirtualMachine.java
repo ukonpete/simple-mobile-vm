@@ -256,7 +256,7 @@ public class VirtualMachine extends Machine implements Instructions{
 			{
 				lastProgCtr = getProgramCounter();
 				instructionVal = getValueAt(getProgramCounter());
-				debug(TAG, "-PROG_CTR=" + getProgramCounter() + " line=" + (getProgramCounter()/2) + " inst=" + instructionVal);
+				debug(TAG, "-PROG_CTR=" + getProgramCounter() + " line=" + ((getProgramCounter()/2)+1) + " inst=" + instructionVal + "(" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(instructionVal) + ")");
 				runCommand(instructionVal);
 			}
 			debug(TAG, "PROG_CTR=" + getProgramCounter());

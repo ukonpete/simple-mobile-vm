@@ -1,5 +1,6 @@
 package com.slickpath.mobile.android.simple.vm.machine;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -79,10 +80,12 @@ public class SimpleStack{
 	 * The list should be ordered where the 1st element is at the bottom of the stack and the last
 	 * element is at the top of the stack.
 	 * 
+	 * NOTE: This makes a copy of the stack
+	 * 
 	 * @return List<Integer> list of data
 	 */
 	public List<Integer> dump()
 	{
-		return _stack.subList(0, _stack.size());
+		return new ArrayList<Integer>(_stack);
 	}
 }

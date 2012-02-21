@@ -11,6 +11,8 @@
  */
 package com.slickpath.mobile.android.simple.vm.machine;
 
+import java.util.List;
+
 import android.util.Log;
 
 import com.slickpath.mobile.android.simple.vm.VMError;
@@ -133,7 +135,7 @@ public class Kernel {
 	{
 		if (location <= Memory.MAX_MEMORY)
 		{
-			_memory.setProgramCounter(location);
+			_memory.setProgramCounter(location * 2);
 		}
 		else
 		{
@@ -267,5 +269,23 @@ public class Kernel {
 	public void resetStack()
 	{
 		_memory.resetStack();
+	}
+
+	// TODO - Unit tests too
+	public List<Integer> dumpMemory()
+	{
+		return _memory.memoryDump();
+	}
+
+	// TODO - Unit tests too
+	public List<Integer> dumpStack()
+	{
+		return _memory.stackDump();
+	}
+
+	// TODO - Unit tests too
+	public List<Integer> dumpProgramMemory()
+	{
+		return _memory.stackDump();
 	}
 }

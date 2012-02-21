@@ -65,8 +65,8 @@ public class MemoryTest extends AndroidTestCase {
 	public void testMemorySetup()
 	{
 		assertTrue(_memory.isStackEmpty());
-		assertEquals(Memory.EMPTY_LOC, _memory.getProgramCounter());
-		assertEquals(Memory.EMPTY_LOC, _memory.getProgramWriterPtr());
+		assertEquals(Memory.START_LOC, _memory.getProgramCounter());
+		assertEquals(Memory.START_LOC, _memory.getProgramWriterPtr());
 		assertTrue(_memory.isStackEmpty());
 		assertEquals(Memory.MAX_MEMORY, _memory.memoryDump().size());
 
@@ -245,22 +245,22 @@ public class MemoryTest extends AndroidTestCase {
 	@Test
 	public void testGetProgramCounter() {
 
-		assertEquals(Memory.EMPTY_LOC, _memory.getProgramCounter());
+		assertEquals(Memory.START_LOC, _memory.getProgramCounter());
 		for(int i = 0; i < 100; i++)
 		{
 			_memory.incProgramCounter();
 		}
-		assertEquals(99, _memory.getProgramCounter());
+		assertEquals(100, _memory.getProgramCounter());
 		for(int i = 0; i < 50; i++)
 		{
 			_memory.decProgramCounter();
 		}
-		assertEquals(49, _memory.getProgramCounter());
+		assertEquals(50, _memory.getProgramCounter());
 		for(int i = 0; i < 50; i++)
 		{
 			_memory.decProgramCounter();
 		}
-		assertEquals(Memory.EMPTY_LOC, _memory.getProgramCounter());
+		assertEquals(Memory.START_LOC, _memory.getProgramCounter());
 	}
 
 	/**
@@ -268,15 +268,15 @@ public class MemoryTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testSetProgramCounter() {
-		assertEquals(Memory.EMPTY_LOC, _memory.getProgramCounter());
+		assertEquals(Memory.START_LOC, _memory.getProgramCounter());
 		_memory.setProgramCounter(100);
 		assertEquals(100, _memory.getProgramCounter());
 		_memory.setProgramCounter(10);
 		assertEquals(10, _memory.getProgramCounter());
 		_memory.setProgramCounter(249);
 		assertEquals(249, _memory.getProgramCounter());
-		_memory.setProgramCounter(Memory.EMPTY_LOC);
-		assertEquals(Memory.EMPTY_LOC, _memory.getProgramCounter());
+		_memory.setProgramCounter(Memory.START_LOC);
+		assertEquals(Memory.START_LOC, _memory.getProgramCounter());
 	}
 
 	/**
@@ -284,11 +284,11 @@ public class MemoryTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testResetProgramCounter() {
-		assertEquals(Memory.EMPTY_LOC, _memory.getProgramCounter());
+		assertEquals(Memory.START_LOC, _memory.getProgramCounter());
 		_memory.setProgramCounter(100);
 		assertEquals(100, _memory.getProgramCounter());
 		_memory.resetProgramCounter();
-		assertEquals(Memory.EMPTY_LOC, _memory.getProgramCounter());
+		assertEquals(Memory.START_LOC, _memory.getProgramCounter());
 	}
 
 	/**
@@ -297,12 +297,12 @@ public class MemoryTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testGetProgramWriterPtr() {
-		assertEquals(Memory.EMPTY_LOC, _memory.getProgramWriterPtr());
+		assertEquals(Memory.START_LOC, _memory.getProgramWriterPtr());
 		for(int i = 0; i < 100; i++)
 		{
 			_memory.incProgramWriter();
 		}
-		assertEquals(99, _memory.getProgramWriterPtr());
+		assertEquals(100, _memory.getProgramWriterPtr());
 	}
 
 	/**
@@ -310,14 +310,14 @@ public class MemoryTest extends AndroidTestCase {
 	 */
 	@Test
 	public void testResetProgramWriter() {
-		assertEquals(Memory.EMPTY_LOC, _memory.getProgramWriterPtr());
+		assertEquals(Memory.START_LOC, _memory.getProgramWriterPtr());
 		for(int i = 0; i < 100; i++)
 		{
 			_memory.incProgramWriter();
 		}
-		assertEquals(99, _memory.getProgramWriterPtr());
+		assertEquals(100, _memory.getProgramWriterPtr());
 		_memory.resetProgramWriter();
-		assertEquals(Memory.EMPTY_LOC, _memory.getProgramWriterPtr());
+		assertEquals(Memory.START_LOC, _memory.getProgramWriterPtr());
 	}
 
 

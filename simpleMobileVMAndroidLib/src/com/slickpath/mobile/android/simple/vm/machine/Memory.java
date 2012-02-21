@@ -13,9 +13,9 @@ import com.slickpath.mobile.android.simple.vm.VMError;
 public class Memory {
 
 	/**
-	 * Location in memory of stack pointer when stack is empty
+	 * 1st location in memory
 	 */
-	public static final int EMPTY_LOC = -1;
+	public static final int START_LOC = ProgramManager.START_LOC;
 
 	/**
 	 * Value of memory if it is empty (unused)
@@ -75,12 +75,13 @@ public class Memory {
 
 	/**
 	 * Return memory as a List<Integer>
+	 * NOTE: Creates a copy of memory
 	 * 
 	 * @return
 	 */
 	public List<Integer> memoryDump()
 	{
-		return _memoryStore;
+		return  new ArrayList<Integer>(_memoryStore);
 	}
 
 	/**
@@ -93,6 +94,18 @@ public class Memory {
 		return _stack.dump();
 	}
 
+	/**
+	 * Return program memory as a List<Integer>
+	 * NOTE: Returns a Copy of Program Memory
+	 * 
+	 * TODO - UnitTest
+	 * 
+	 * @return
+	 */
+	public List<Integer> programMemoryDump()
+	{
+		return _programManager.dump();
+	}
 	/**
 	 * Return value at location
 	 * 

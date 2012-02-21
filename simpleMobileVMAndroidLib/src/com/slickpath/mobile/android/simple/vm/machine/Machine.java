@@ -277,7 +277,7 @@ public class Machine extends Kernel{
 			val = PUSHC_NO;
 		}
 
-		PUSHC(val == 0?1:0);
+		PUSHC(val);
 	}
 
 	///////////////////////////////////////////////// Command Category : STACK_MANIPULATION
@@ -307,7 +307,7 @@ public class Machine extends Kernel{
 
 	/**
 	 * 1. Pop 1st two values off the top of the stack
-	 * 2. save the 2nd value in memory location indicated by the fist
+	 * 2. save the 2nd value popped off in memory location indicated by the fist
 	 * 
 	 * @throws VMError
 	 */
