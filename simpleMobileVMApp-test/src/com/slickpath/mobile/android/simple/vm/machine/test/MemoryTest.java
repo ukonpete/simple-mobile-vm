@@ -171,7 +171,7 @@ public class MemoryTest extends AndroidTestCase {
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#set(int)}.
 	 */
 	@Test
-	public void testMemoryDump() {
+	public void testProgramMemoryDump() {
 		List<Integer> memDump = _memory.memoryDump();
 		assertNotNull(memDump);
 		assertEquals(Memory.MAX_MEMORY, memDump.size());
@@ -196,6 +196,56 @@ public class MemoryTest extends AndroidTestCase {
 			assertEquals(value, memDump.get(value).intValue());
 			// check if data in memory matches memory dump
 			assertEquals(_memory.get(value), memDump.get(value).intValue());
+		}
+	}
+
+	/**
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#getInstruction()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#setInstruction()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#programMemoryDump()}.
+	 */
+	@Test
+	public void testGetInstruction()
+	{
+		final int [] instruction = new int[]{11,22,35,46,88,99};
+		final int [] location = new int[]{0,1,2,64,101,499};
+
+		for(int i = 0; i < instruction.length; i ++)
+		{
+			_memory.setInstruction(location[i], instruction[i] );
+		}
+
+		final List<Integer> programDump = _memory.programMemoryDump();
+		for(int i = 0; i < instruction.length; i ++)
+		{
+			final int inst = _memory.getInstruction(location[i]);
+			assertEquals(instruction[i], inst);
+			assertEquals(instruction[i], programDump.get(location[i]).intValue());
+		}
+	}
+
+	/**
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#getParameters()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#setParameters()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#parameterMemoryDump()}.
+	 */
+	@Test
+	public void testGetParameters()
+	{
+		final int [] parameters = new int[]{15,27,53,64,60,101};
+		final int [] location = new int[]{0,1,2,64,101,499};
+
+		for(int i = 0; i < parameters.length; i ++)
+		{
+			_memory.setParameters(location[i], parameters[i] );
+		}
+
+		final List<Integer> paramsDump = _memory.parameterMemoryDump();
+		for(int i = 0; i < parameters.length; i ++)
+		{
+			final int inst = _memory.getParameters(location[i]);
+			assertEquals(parameters[i], inst);
+			assertEquals(parameters[i], paramsDump.get(location[i]).intValue());
 		}
 	}
 

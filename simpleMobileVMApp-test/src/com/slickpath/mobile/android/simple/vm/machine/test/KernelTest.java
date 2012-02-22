@@ -4,6 +4,8 @@
 package com.slickpath.mobile.android.simple.vm.machine.test;
 
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -83,7 +85,6 @@ public class KernelTest extends AndroidTestCase {
 				}
 			}
 		} catch (final VMError e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -111,7 +112,6 @@ public class KernelTest extends AndroidTestCase {
 				assertEquals(values[i], _kernel.pop());
 			}
 		} catch (final VMError e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -144,7 +144,6 @@ public class KernelTest extends AndroidTestCase {
 			_kernel.branch(25);
 			assertEquals(25, _kernel.getProgramCounter());
 		} catch (final VMError e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -176,18 +175,17 @@ public class KernelTest extends AndroidTestCase {
 			_kernel.push(72);
 			_kernel.push(99);
 			_kernel.jump();
-			assertEquals(99*2, _kernel.getProgramCounter());
+			assertEquals(99, _kernel.getProgramCounter());
 			_kernel.jump();
-			assertEquals(72*2, _kernel.getProgramCounter());
+			assertEquals(72, _kernel.getProgramCounter());
 			_kernel.jump();
-			assertEquals(12*2, _kernel.getProgramCounter());
+			assertEquals(12, _kernel.getProgramCounter());
 			_kernel.resetStack();
 			_kernel.push(7);
-			assertEquals(12*2, _kernel.getProgramCounter());
+			assertEquals(12, _kernel.getProgramCounter());
 			_kernel.jump();
-			assertEquals(7*2, _kernel.getProgramCounter());
+			assertEquals(7, _kernel.getProgramCounter());
 		} catch (final VMError e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -220,4 +218,62 @@ public class KernelTest extends AndroidTestCase {
 		}
 		assertEquals(103, _kernel.getProgramWriterPtr());
 	}
+
+	/**
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#getIntructionAt(int)}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#setIntructionAt(int, int)}.
+	 */
+	@Test
+	public void testGetIntructionAt(){
+		try {
+			final int [] instruction = new int[]{11,22,35,46,88,99};
+			final int [] parameters = new int[]{15,27,53,64,60,101};
+			final int [] location = new int[]{0,1,2,64,101,499};
+
+			for(int i = 0; i < instruction.length; i ++)
+			{
+				_kernel.setInstructionAt(instruction[i], parameters[i], location[i]);
+			}
+
+			final List<List<Integer>> instructionDump = _kernel.dumpInstructionMemory();
+			for(int i = 0; i < instruction.length; i ++)
+			{
+				final List<Integer> inst = _kernel.getInstructionAt(location[i]);
+				assertEquals(instruction[i], inst.get(Kernel.INSTRUCTION_LOC).intValue());
+				assertEquals(instruction[i], instructionDump.get(location[i]).get(Kernel.INSTRUCTION_LOC).intValue());
+				assertEquals(parameters[i], inst.get(Kernel.PARAMETERS_LOC).intValue());
+				assertEquals(parameters[i], instructionDump.get(location[i]).get(Kernel.PARAMETERS_LOC).intValue());
+			}
+		} catch (final VMError e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
+
+	/**
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#dumpStack()}.
+	 */
+	@Test
+	public void testDumpStack(){
+		try {
+			final int[] values = {0,10,22,34,45,57};
+
+			for (final int value : values) {
+				_kernel.push(value);
+			}
+			final List<Integer> stackDump = _kernel.dumpStack();
+			assertNotNull(stackDump);
+			assertEquals(values.length, stackDump.size());
+			assertEquals(values[0], stackDump.get(0).intValue());
+			assertEquals(values[1], stackDump.get(1).intValue());
+			assertEquals(values[2], stackDump.get(2).intValue());
+			assertEquals(values[3], stackDump.get(3).intValue());
+			assertEquals(values[4], stackDump.get(4).intValue());
+			assertEquals(values[5], stackDump.get(5).intValue());
+		} catch (final VMError e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
+
 }

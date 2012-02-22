@@ -11,11 +11,14 @@
  */
 package com.slickpath.mobile.android.simple.vm.machine;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import android.util.Log;
 
 import com.slickpath.mobile.android.simple.vm.VMError;
+import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet;
 
 /**
  * @author Pete Procopio
@@ -25,6 +28,10 @@ import com.slickpath.mobile.android.simple.vm.VMError;
 public class Kernel {
 
 	private static final String TAG = Machine.class.getName();
+
+	public static final int INSTRUCTION_LOC = 0;
+
+	public static final int PARAMETERS_LOC = 1;
 
 	/**
 	 * Convenience Const.
@@ -36,6 +43,10 @@ public class Kernel {
 	public static final int PUSHC_NO = 0;
 
 	protected boolean _bDebug = false;
+
+	protected boolean _bDebugDump = false;
+
+	protected boolean _bDebugVerbose = false;
 
 	private final  Memory _memory = new Memory();
 
@@ -62,7 +73,7 @@ public class Kernel {
 		}
 		else
 		{
-			throw new VMError("getValueAt", VMError.VM_ERROR_TYPE_MEMORY_LIMIT);
+			throw new VMError("getValueAt : " + location, VMError.VM_ERROR_TYPE_MEMORY_LIMIT);
 		}
 		return returnVal;
 	}
@@ -135,13 +146,13 @@ public class Kernel {
 	{
 		if (location <= Memory.MAX_MEMORY)
 		{
-			_memory.setProgramCounter(location * 2);
+			_memory.setProgramCounter(location);
 		}
 		else
 		{
 			throw new VMError("BRANCH : loc=" + location, VMError.VM_ERROR_TYPE_STACK_LIMIT);
 		}
-		debug("--BR=" + _memory.getProgramCounter());
+		debugVerbose(TAG, "--BR=" + _memory.getProgramCounter());
 	}
 
 	/**
@@ -153,28 +164,29 @@ public class Kernel {
 	public void jump() throws VMError
 	{
 		final int location = pop();
-		_memory.setProgramCounter((location * 2));
+		_memory.setProgramCounter(location);
 	}
 
 	/**
-	 * If debug is enabled write the output to a log
+	 * If debugVerbose is enabled write the output to a log
 	 * 
-	 * Uses this classes TAG
+	 * This allows sub-classes of this class to do logging without having to implement it.
 	 * 
+	 * @param sTag - the Log.d TAG to use
 	 * @param sText
 	 */
-	protected void debug(final String sText)
+	protected void debugVerbose(final String sTag, final String sText)
 	{
-		if ( _bDebug )
+		if ( _bDebugVerbose )
 		{
-			debug(TAG, sText);
+			debug(sTag, sText);
 		}
 	}
 
 	/**
 	 * If debug is enabled write the output to a log
 	 * 
-	 * THis allows callers of this class to do logging without having to implement it.
+	 * This allows sub-classes of this class to do logging without having to implement it.
 	 * 
 	 * @param sTag - the Log.d TAG to use
 	 * @param sText
@@ -271,21 +283,92 @@ public class Kernel {
 		_memory.resetStack();
 	}
 
-	// TODO - Unit tests too
+	/**
+	 * Gets the instruction and parameters at the requested location and puts it in a list
+	 * 
+	 * @param location
+	 * @return
+	 * @throws VMError
+	 */
+	public List<Integer> getInstructionAt(final int location) throws VMError
+	{
+		if (location < Memory.MAX_MEMORY)
+		{
+			final Integer instruction = _memory.getInstruction(location);
+			final Integer parameters = _memory.getParameters(location);
+			if ( _bDebug )
+			{
+				Log.d(TAG, "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(instruction) + ") " + instruction + " param " + parameters + " at " + location);
+			}
+			return new ArrayList<Integer>(Arrays.asList(instruction,parameters));
+		}
+		else
+		{
+			throw new VMError("getValueAt", VMError.VM_ERROR_TYPE_MEMORY_LIMIT);
+		}
+	}
+
+	/**
+	 * Takes an instruction and parameters and stores it in the requested location
+	 * 
+	 * @param instruction
+	 * @param parameters
+	 * @param location
+	 * @throws VMError
+	 */
+	public void setInstructionAt(final int instruction, final int parameters, final int location) throws VMError
+	{
+		if (location < Memory.MAX_MEMORY)
+		{
+			if ( _bDebug )
+			{
+				Log.d(TAG, "Set Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(instruction) + ") " + instruction + " param " + parameters + " at " + location);
+			}
+			_memory.setInstruction(location, instruction);
+			_memory.setParameters(location, parameters);
+			incProgramWriter();
+		}
+	}
+
+	/**
+	 * Dump the memory as a list
+	 * 
+	 * @return
+	 * 
+	 */
 	public List<Integer> dumpMemory()
 	{
 		return _memory.memoryDump();
 	}
 
-	// TODO - Unit tests too
+	/**
+	 * Returns the stack as a List, where the 1st element in the list is at the bottom of the stack
+	 *
+	 * @return
+	 */
 	public List<Integer> dumpStack()
 	{
 		return _memory.stackDump();
 	}
 
-	// TODO - Unit tests too
-	public List<Integer> dumpProgramMemory()
+	/**
+	 * Returns all the Instruction/Parameter lists as one list
+	 * 
+	 * @return
+	 */
+	public List<List<Integer>> dumpInstructionMemory()
 	{
-		return _memory.stackDump();
+		final List<List<Integer>> instructionMemory = new ArrayList<List<Integer>>();
+		final List<Integer> programMemory =  _memory.programMemoryDump();
+		final List<Integer> paramMemory =  _memory.parameterMemoryDump();
+
+		for(int i = 0; i < programMemory.size(); i++)
+		{
+			final List<Integer> instruciton = new ArrayList<Integer>();
+			instruciton.add(programMemory.get(i));
+			instruciton.add(paramMemory.get(i));
+			instructionMemory.add(instruciton);
+		}
+		return instructionMemory;
 	}
 }

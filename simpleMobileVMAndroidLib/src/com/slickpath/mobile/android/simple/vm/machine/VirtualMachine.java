@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import java.util.List;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.slickpath.mobile.android.simple.vm.IVMListener;
 import com.slickpath.mobile.android.simple.vm.VMError;
@@ -89,39 +90,32 @@ public class VirtualMachine extends Machine implements Instructions{
 		final List<Integer> instructionParams = command.getParameters();
 		if (instruction < 1000)
 		{
-			setValAtProgramWtr(instruction);
-			setValAtProgramWtr(0);
-			debug(TAG, "Add ins="+ BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(instruction)+ "(" + instruction + ")" + " params=X");
+			setInstructionAt(instruction, 0, getProgramWriterPtr());
+			debugVerbose(TAG, "Add ins="+ getInstructionString(instruction)+ "(" + instruction + ")" + " params=X at" + getProgramWriterPtr());
 		}
 		if (instruction >= SINGLE_PARAM_COMMAND_START)
 		{
 			if ( instructionParams != null )
 			{
 				final StringBuffer sVal = new StringBuffer("");
-				setValAtProgramWtr(instruction);
+
+				final int instPram = instructionParams.get(0);
+				sVal.append(Integer.toString(instPram)).append(':');
+				setInstructionAt(instruction, instPram, getProgramWriterPtr());
+				debugVerbose(TAG, "Add ins="+ getInstructionString(instruction)+ "(" + instruction + ")" + " params=" + instPram + " at" + getProgramWriterPtr());
+				/* TODO - handle multiple parameters
 				for(final int instPram : instructionParams)
 				{
 					sVal.append(Integer.toString(instPram)).append(':');
 					setValAtProgramWtr(instPram);
 				}
-				debug(TAG, "Add ins="+ BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(instruction)+ "(" + instruction + ")" + " params=" + sVal);
+				 */
 			}
 			else
 			{
 				throw new VMError("addInstruction NULL parameter list", VMError.VM_ERROR_BAD_PARAMS);
 			}
 		}
-	}
-
-	/**
-	 * Write a value at the current location of the programWriter pointer
-	 * @param value
-	 * @throws VMError
-	 */
-	private void setValAtProgramWtr(final int value) throws VMError
-	{
-		setValueAt(value, getProgramWriterPtr());
-		incProgramWriter();
 	}
 
 	/**
@@ -132,6 +126,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	 */
 	public void addCommands(final CommandList commands)
 	{
+		resetProgramWriter();
 		new Thread(new Runnable()
 		{
 			@Override
@@ -196,12 +191,11 @@ public class VirtualMachine extends Machine implements Instructions{
 	{
 		boolean bHalt = false;
 		VMError vmError = null;
-		resetProgramWriter();
 
 		final int line = getLineNumber();
 		int instructionVal = -1;
 		try {
-			instructionVal = getValueAt(getProgramCounter());
+			instructionVal = getParameter();
 			runCommand(instructionVal);
 		} catch (final VMError e) {
 			vmError = e;
@@ -241,42 +235,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	 * will call completedRunningInstructions on IVMListener after completion
 	 */
 	private void doRunInstructions() {
-		VMError vmError = null;
-		dumpMem("1");
-		_numInstrsRun = 0;
-		resetProgramWriter();
-
-		int instructionVal = BaseInstructionSet._BEGIN;
-		int lastLine = -1;
-		int lastProgCtr = -1;
-
-		try
-		{
-			while ((instructionVal != BaseInstructionSet._HALT) && (getProgramCounter() < Memory.MAX_MEMORY))
-			{
-				lastProgCtr = getProgramCounter();
-				instructionVal = getValueAt(getProgramCounter());
-				debug(TAG, "-PROG_CTR=" + getProgramCounter() + " line=" + ((getProgramCounter()/2)+1) + " inst=" + instructionVal + "(" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(instructionVal) + ")");
-				runCommand(instructionVal);
-			}
-			debug(TAG, "PROG_CTR=" + getProgramCounter());
-			debug(TAG, "LAST_PROG_CTR=" + lastProgCtr);
-			dumpMem("3");
-			lastLine = getLineNumber();
-			resetProgramCounter();
-			resetStack();
-		}
-		catch(final VMError vme)
-		{
-			debug(TAG, "+PROG_CTR=" + getProgramCounter());
-			debug(TAG, "+LAST_PROG_CTR=" + lastProgCtr);
-			dumpMem("2");
-			vmError = vme;
-		}
-		if ( _vmListener != null)
-		{
-			_vmListener.completedRunningInstructions(instructionVal == BaseInstructionSet._HALT , lastLine , vmError);
-		}
+		doRunInstructions(-1);
 	}
 
 	/**
@@ -305,38 +264,56 @@ public class VirtualMachine extends Machine implements Instructions{
 	 */
 	private void doRunInstructions(final int numInstrsToRun)
 	{
+		Log.d(TAG, "+START++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		VMError vmError = null;
 		dumpMem("1");
 		int numInstrsRun = 0;
-		resetProgramWriter();
 
 		int lastProgCtr = -1;
 		int instructionVal = BaseInstructionSet._BEGIN;
 
 		try
 		{
-			while ((instructionVal != BaseInstructionSet._HALT) && (getProgramCounter() < Memory.MAX_MEMORY) && (numInstrsRun < numInstrsToRun))
+			while ((instructionVal != BaseInstructionSet._HALT) && (getProgramCounter() < Memory.MAX_MEMORY) && ((numInstrsRun < numInstrsToRun) || (numInstrsToRun == -1)))
 			{
 				lastProgCtr = getProgramCounter();
 				numInstrsRun++;
-				instructionVal = getValueAt(getProgramCounter());
+				instructionVal = getInstruction();
 				runCommand(instructionVal);
 			}
+			debug(TAG, "=============================================================");
+			debug(TAG, "LAST_INSTRUCTION=(" + getInstructionString(instructionVal) + ") " + instructionVal);
+			debug(TAG, "NUM INTRUCTIONS RUN=" + numInstrsRun);
 			debug(TAG, "PROG_CTR=" + getProgramCounter());
 			debug(TAG, "LAST_PROG_CTR=" + lastProgCtr);
+			debug(TAG, "=============================================================");
 		}
 		catch(final VMError vme)
 		{
+			debug(TAG, "=============================================================");
+			debug(TAG, "VMError=(" + vme.getType() + ") " + vme.getMessage());
+			debug(TAG, "LAST_INSTRUCTION=(" + getInstructionString(instructionVal) + ") " + instructionVal);
+			debug(TAG, "NUM INTRUCTIONS RUN=" + numInstrsRun);
 			debug(TAG, "PROG_CTR=" + getProgramCounter());
 			debug(TAG, "LAST_PROG_CTR=" + lastProgCtr);
 			dumpMem("2");
 			vmError = vme;
+			debug(TAG, "=============================================================");
 		}
 		dumpMem("3");
+		Log.d(TAG, "+END++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		if ( _vmListener != null)
 		{
 			_vmListener.completedRunningInstructions(instructionVal == BaseInstructionSet._HALT, getLineNumber(), vmError);
 		}
+	}
+
+	/**
+	 * @param instructionVal
+	 * @return
+	 */
+	private String getInstructionString(final int instructionVal) {
+		return BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(instructionVal);
 	}
 
 	/**
@@ -346,7 +323,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	 * 
 	 */
 	private int getLineNumber() {
-		return (getProgramCounter() - 2)/2;
+		return getProgramCounter() + 1;
 	}
 
 	/**
@@ -354,7 +331,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	 * file name : "memDump<sAppend>.text
 	 */
 	private void dumpMem(final String sAppend) {
-		if ( _bDebug )
+		if ( _bDebugDump )
 		{
 			final String FILENAME = "memDump" + sAppend + ".txt";
 			final StringBuffer sData = new StringBuffer("");
@@ -391,8 +368,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	 */
 	private void runCommand(final int commandId) throws VMError
 	{
-		incProgramCounter();
-		if (_bDebug)
+		if (_bDebugVerbose)
 		{
 			doRunCommandDebug(commandId);
 		}
@@ -484,37 +460,37 @@ public class VirtualMachine extends Machine implements Instructions{
 			break;
 			// 1 PARAM COMMANDS
 		case _PUSHC:
-			PUSHC(getValueAt(getProgramCounter()));
+			PUSHC(getParameter());
 			incProgramCounter();
 			break;
 		case _PUSH:
-			PUSH(getValueAt(getProgramCounter()));
+			PUSH(getParameter());
 			incProgramCounter();
 			break;
 		case _POPC:
-			POPC(getValueAt(getProgramCounter()));
+			POPC(getParameter());
 			incProgramCounter();
 			break;
 		case _BRANCH:
-			BRANCH(getValueAt(getProgramCounter()));
+			BRANCH(getParameter());
 			//incProgramCounter();
 			break;
 		case _BREQL:
-			bBranched = BREQL(getValueAt(getProgramCounter()));
+			bBranched = BREQL(getParameter());
 			if ( !bBranched )
 			{
 				incProgramCounter();
 			}
 			break;
 		case _BRLSS:
-			bBranched = BRLSS(getValueAt(getProgramCounter()));
+			bBranched = BRLSS(getParameter());
 			if ( !bBranched )
 			{
 				incProgramCounter();
 			}
 			break;
 		case _BRGTR:
-			bBranched = BRGTR(getValueAt(getProgramCounter()));
+			bBranched = BRGTR(getParameter());
 			if ( !bBranched )
 			{
 				incProgramCounter();
@@ -525,6 +501,16 @@ public class VirtualMachine extends Machine implements Instructions{
 		}
 	}
 
+	private int getInstruction() throws VMError {
+		final List<Integer> instruction = getInstructionAt(getProgramCounter());
+		return instruction.get(INSTRUCTION_LOC);
+	}
+
+	private int getParameter() throws VMError {
+		final List<Integer> instruction = getInstructionAt(getProgramCounter());
+		return instruction.get(PARAMETERS_LOC);
+	}
+
 	/**
 	 * Debug output of runCommand
 	 * 
@@ -533,16 +519,21 @@ public class VirtualMachine extends Machine implements Instructions{
 	 */
 	private void doRunCommandDebug(final int commandId) throws VMError {
 		final StringBuffer sLineCount = new StringBuffer("[");
-		sLineCount.append(_numInstrsRun).append(']');
-		final StringBuffer sParam = new StringBuffer(" Line=");
-		sParam.append(getProgramCounter() - 1);
-		sLineCount.append("CMD=").append(BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(commandId));
-		debug(TAG, sLineCount.toString());
+		sLineCount.append(_numInstrsRun);
+		sLineCount.append(']');
+		sLineCount.append(" Line=");
+		sLineCount.append((getProgramCounter() - 1));
+		sLineCount.append(" CMD=");
+		sLineCount.append(getInstructionString(commandId));
+		sLineCount.append(" (");
+		sLineCount.append(commandId);
+		sLineCount.append(")");
 		if (commandId >= 1000)
 		{
-			sParam.append(" PARAM=").append(getValueAt(getProgramCounter()));
+			sLineCount.append(" PARAM=");
+			sLineCount.append(getParameter());
 		}
-		debug(TAG, sParam.toString());
+		debug(TAG, sLineCount.toString());
 	}
 }
 
