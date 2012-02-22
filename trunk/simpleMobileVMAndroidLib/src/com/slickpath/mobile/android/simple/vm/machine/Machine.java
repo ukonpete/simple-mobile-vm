@@ -31,8 +31,6 @@ public class Machine extends Kernel{
 	 */
 	private final InputStream _textReader;
 
-	protected boolean _bDebug = false;
-
 	/**
 	 * Constructor
 	 * Allows caller to pass in streams for both input and output
@@ -362,7 +360,7 @@ public class Machine extends Kernel{
 		final int value = pop();
 		final String sVal = Integer.toString(value);
 		_textWriter.print(sVal);
-		debug("WRCHAR: " + sVal);
+		debugVerbose(TAG, "WRCHAR: " + sVal);
 	}
 
 	/**
@@ -390,7 +388,7 @@ public class Machine extends Kernel{
 		final int value = pop();
 		final String sOut = Integer.toString(value);
 		_textWriter.println(sOut);
-		debug("WRINT" + sOut);
+		debugVerbose(TAG, "WRINT" + sOut);
 	}
 
 	////////////////////////////////////////////////////  Command Category : CONTROL
@@ -403,7 +401,7 @@ public class Machine extends Kernel{
 	 */
 	protected void BRANCH(final int location) throws VMError
 	{
-		debug("--BR=" + location);
+		debugVerbose(TAG, "--BR=" + location);
 		branch(location);
 	}
 

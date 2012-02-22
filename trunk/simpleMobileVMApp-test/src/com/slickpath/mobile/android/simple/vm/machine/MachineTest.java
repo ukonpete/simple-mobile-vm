@@ -626,7 +626,6 @@ public class MachineTest extends AndroidTestCase {
 			_machine.branch(25);
 			assertEquals(25, _machine.getProgramCounter());
 		} catch (final VMError e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -653,18 +652,17 @@ public class MachineTest extends AndroidTestCase {
 			_machine.push(72);
 			_machine.push(99);
 			_machine.jump();
-			assertEquals(99*2, _machine.getProgramCounter());
+			assertEquals(99, _machine.getProgramCounter());
 			_machine.jump();
-			assertEquals(72*2, _machine.getProgramCounter());
+			assertEquals(72, _machine.getProgramCounter());
 			_machine.jump();
-			assertEquals(12*2, _machine.getProgramCounter());
+			assertEquals(12, _machine.getProgramCounter());
 			_machine.resetStack();
 			_machine.push(7);
-			assertEquals(12*2, _machine.getProgramCounter());
+			assertEquals(12, _machine.getProgramCounter());
 			_machine.jump();
-			assertEquals(7*2, _machine.getProgramCounter());
+			assertEquals(7, _machine.getProgramCounter());
 		} catch (final VMError e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -855,7 +853,7 @@ public class MachineTest extends AndroidTestCase {
 
 		final List<Integer> memory = _machine.dumpMemory();
 		final List<Integer> stack = _machine.dumpStack();
-		final List<Integer> progMemory = _machine.dumpProgramMemory();
+		final List<List<Integer>> progMemory = _machine.dumpInstructionMemory();
 
 		for (int i = 0; i < 100; i++) {
 			_machine.incProgramCounter();
@@ -873,7 +871,7 @@ public class MachineTest extends AndroidTestCase {
 
 		assertTrue(_machine.dumpMemory().equals(memory));
 		assertTrue(_machine.dumpStack().equals(stack));
-		assertTrue(_machine.dumpProgramMemory().equals(progMemory));
+		assertTrue(_machine.dumpInstructionMemory().equals(progMemory));
 	}
 
 	/**

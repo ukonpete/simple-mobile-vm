@@ -44,32 +44,27 @@ public class ProgramManager {
 	private final List<Integer> _programStore = new ArrayList<Integer>(MAX_MEMORY);
 
 	/**
+	 * Actually store we use for parameters
+	 */
+	private final List<Integer> _parameterStore = new ArrayList<Integer>(MAX_MEMORY);
+
+	/**
 	 * Constructor
 	 */
 	public ProgramManager()
 	{
-		// initialize every piece of memory to EMPTY
+		// initialize every piece of instruction memory to EMPTY
 		for (int i = 0; i < MAX_MEMORY; i++)
 		{
 			_programStore.add(EMPTY_MEMORY_VALUE);
 		}
-	}
 
-	// TODO Wrap in memory / interface
-	/*
-	public void branch(final int location) throws VMError
-	{
-		if (location < MAX_MEMORY)
+		// initialize every piece of parameter memory to EMPTY
+		for (int i = 0; i < MAX_MEMORY; i++)
 		{
-			setProgramCounter(location);
-		}
-		else
-		{
-			throw new VMError("BRANCH : loc=" + location, VMError.VM_ERROR_TYPE_STACK_LIMIT);
+			_parameterStore.add(EMPTY_MEMORY_VALUE);
 		}
 	}
-	 */
-
 
 	/**
 	 * Sets value of program counter (set it to a position in memory where the next command will be run from)
@@ -140,12 +135,67 @@ public class ProgramManager {
 	}
 
 	/**
-	 * Reset program writer location to starting memory location
+	 * Returns the instructions as a list
+	 * 
 	 * NOTE: This makes a copy of the program memory
 	 * @return Copy of memory
 	 */
-	public  List<Integer> dump()
+	public  List<Integer> dumpProgramStore()
 	{
 		return  new ArrayList<Integer>(_programStore);
+	}
+
+	/**
+	 * Returns the parameters as a list
+	 * 
+	 * @return Copy of memory
+	 */
+	public  List<Integer> dumpParameterStore()
+	{
+		return  new ArrayList<Integer>(_parameterStore);
+	}
+
+	/**
+	 * Returns the instruction at the specified location
+	 * 
+	 * @param location
+	 * @return
+	 */
+	public Integer getInstructionAt(final int location)
+	{
+		return _programStore.get(location);
+	}
+
+	/**
+	 * Returns the parameters at the specified location
+	 * 
+	 * @param location
+	 * @return
+	 */
+	public Integer getParametersAt(final int location)
+	{
+		return _parameterStore.get(location);
+	}
+
+	/**
+	 * Set instruction value at the specified location
+	 *
+	 * @param location
+	 * @param value
+	 */
+	public void setInstructionAt(final int location, final int value)
+	{
+		_programStore.set(location, value);
+	}
+
+	/**
+	 * Set parameter values at the specified location
+	 *
+	 * @param location
+	 * @param value
+	 */
+	public void setParametersAt(final int location, final int value)
+	{
+		_parameterStore.set(location, value);
 	}
 }

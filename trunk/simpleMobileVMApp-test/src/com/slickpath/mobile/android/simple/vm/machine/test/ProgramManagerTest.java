@@ -4,6 +4,8 @@
 package com.slickpath.mobile.android.simple.vm.machine.test;
 
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -124,6 +126,54 @@ public class ProgramManagerTest extends AndroidTestCase {
 	}
 
 	/**
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#getInstructionAt()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#setInstructionAt()}.
+	 */
+	@Test
+	public void testGetInstructionAt()
+	{
+		final int [] instruction = new int[]{11,22,35,46,88,99};
+		final int [] location = new int[]{0,1,2,64,101,499};
+
+		for(int i = 0; i < instruction.length; i ++)
+		{
+			_programManager.setInstructionAt(location[i], instruction[i] );
+		}
+
+		final List<Integer> programDump = _programManager.dumpProgramStore();
+		for(int i = 0; i < instruction.length; i ++)
+		{
+			final int inst = _programManager.getInstructionAt(location[i]);
+			assertEquals(instruction[i], inst);
+			assertEquals(instruction[i], programDump.get(location[i]).intValue());
+		}
+	}
+
+	/**
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#getParametersAt()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#setParametersAt()}.
+	 */
+	@Test
+	public void testGetParametersAt()
+	{
+		final int [] parameters = new int[]{15,27,53,64,60,101};
+		final int [] location = new int[]{0,1,2,64,101,499};
+
+		for(int i = 0; i < parameters.length; i ++)
+		{
+			_programManager.setParametersAt(location[i], parameters[i] );
+		}
+
+		final List<Integer> paramsDump = _programManager.dumpParameterStore();
+		for(int i = 0; i < parameters.length; i ++)
+		{
+			final int inst = _programManager.getParametersAt(location[i]);
+			assertEquals(parameters[i], inst);
+			assertEquals(parameters[i], paramsDump.get(location[i]).intValue());
+		}
+	}
+
+	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#resetProgramWriter()}.
 	 */
 	@Test
@@ -137,5 +187,4 @@ public class ProgramManagerTest extends AndroidTestCase {
 		_programManager.resetProgramWriter();
 		assertEquals(Memory.START_LOC, _programManager.getProgramWriterPtr());
 	}
-
 }
