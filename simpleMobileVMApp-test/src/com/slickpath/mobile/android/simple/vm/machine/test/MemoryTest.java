@@ -4,6 +4,7 @@
 package com.slickpath.mobile.android.simple.vm.machine.test;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
@@ -15,6 +16,7 @@ import org.junit.Test;
 import android.test.AndroidTestCase;
 
 import com.slickpath.mobile.android.simple.vm.machine.Memory;
+import com.slickpath.mobile.android.simple.vm.util.Command;
 
 /**
  * @author PJ
@@ -200,53 +202,42 @@ public class MemoryTest extends AndroidTestCase {
 	}
 
 	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#getInstruction()}.
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#setInstruction()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#getCommand()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#setCommand()}.
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#programMemoryDump()}.
 	 */
 	@Test
-	public void testGetInstruction()
+	public void testGetCommand()
 	{
 		final int [] instruction = new int[]{11,22,35,46,88,99};
+		final Integer [] parameters = new Integer[]{15,27,null,64,60,101};
 		final int [] location = new int[]{0,1,2,64,101,499};
 
 		for(int i = 0; i < instruction.length; i ++)
 		{
-			_memory.setInstruction(location[i], instruction[i] );
+			final List<Integer> params = new ArrayList<Integer>();
+			params.add(parameters[i]);
+			final Command command = new Command(instruction[i], params);
+			_memory.setCommand(location[i], command);
 		}
 
-		final List<Integer> programDump = _memory.programMemoryDump();
+		final List<Command> instructionDump = _memory.programMemoryDump();
 		for(int i = 0; i < instruction.length; i ++)
 		{
-			final int inst = _memory.getInstruction(location[i]);
-			assertEquals(instruction[i], inst);
-			assertEquals(instruction[i], programDump.get(location[i]).intValue());
-		}
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#getParameters()}.
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#setParameters()}.
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#parameterMemoryDump()}.
-	 */
-	@Test
-	public void testGetParameters()
-	{
-		final int [] parameters = new int[]{15,27,53,64,60,101};
-		final int [] location = new int[]{0,1,2,64,101,499};
-
-		for(int i = 0; i < parameters.length; i ++)
-		{
-			_memory.setParameters(location[i], parameters[i] );
+			final Command command = _memory.getCommand(location[i]);
+			assertEquals(instruction[i], command.getCommandId().intValue());
+			assertEquals(instruction[i], instructionDump.get(location[i]).getCommandId().intValue());
+			assertEquals(parameters[i], command.getParameters().get(0));
+			if ( parameters[i] == null )
+			{
+				assertNull( instructionDump.get(location[i]).getParameters().get(0));
+			}
+			else
+			{
+				assertEquals(Integer.valueOf(parameters[i]), instructionDump.get(location[i]).getParameters().get(0));
+			}
 		}
 
-		final List<Integer> paramsDump = _memory.parameterMemoryDump();
-		for(int i = 0; i < parameters.length; i ++)
-		{
-			final int inst = _memory.getParameters(location[i]);
-			assertEquals(parameters[i], inst);
-			assertEquals(parameters[i], paramsDump.get(location[i]).intValue());
-		}
 	}
 
 	/**

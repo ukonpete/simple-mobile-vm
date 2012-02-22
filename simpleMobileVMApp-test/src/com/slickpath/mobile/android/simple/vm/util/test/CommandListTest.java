@@ -77,7 +77,7 @@ public class CommandListTest extends AndroidTestCase {
 
 		assertNotNull(testList1.get(2));
 		assertEquals(testList1.get(2).getCommandId(), COMMAND_3);
-		assertNull(testList1.get(2).getParameters());
+		assertNull(testList1.get(2).getParameters().get(0));
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.slickpath.mobile.android.simple.vm.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -18,10 +19,18 @@ public class Command{
 	/**
 	 * Constructor
 	 */
-	public Command(final Integer commandId, final List<Integer> params)
+	public Command(final Integer commandId, List<Integer> params)
 	{
 		_commandId = commandId;
+		if ( params == null )
+		{
+			params = new ArrayList<Integer>();
+		}
 		_parameters = params;
+		if ( _parameters.size() == 0 )
+		{
+			_parameters.add(null);
+		}
 	}
 
 	/**
