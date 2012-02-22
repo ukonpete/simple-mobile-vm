@@ -4,6 +4,7 @@
 package com.slickpath.mobile.android.simple.vm.machine.test;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
@@ -17,6 +18,7 @@ import android.test.AndroidTestCase;
 import com.slickpath.mobile.android.simple.vm.VMError;
 import com.slickpath.mobile.android.simple.vm.machine.Kernel;
 import com.slickpath.mobile.android.simple.vm.machine.Memory;
+import com.slickpath.mobile.android.simple.vm.util.Command;
 
 /**
  * @author PJ
@@ -220,29 +222,39 @@ public class KernelTest extends AndroidTestCase {
 	}
 
 	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#getIntructionAt(int)}.
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#setIntructionAt(int, int)}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#getCommandAt(int)}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#setCommandAt(Command, int)}.
 	 */
 	@Test
-	public void testGetIntructionAt(){
+	public void testGetCommandAt(){
 		try {
 			final int [] instruction = new int[]{11,22,35,46,88,99};
-			final int [] parameters = new int[]{15,27,53,64,60,101};
+			final Integer [] parameters = new Integer[]{15,27,null,64,60,101};
 			final int [] location = new int[]{0,1,2,64,101,499};
 
 			for(int i = 0; i < instruction.length; i ++)
 			{
-				_kernel.setInstructionAt(instruction[i], parameters[i], location[i]);
+				final List<Integer> params = new ArrayList<Integer>();
+				params.add(parameters[i]);
+				final Command command = new Command(instruction[i], params);
+				_kernel.setCommandAt(command, location[i]);
 			}
 
-			final List<List<Integer>> instructionDump = _kernel.dumpInstructionMemory();
+			final List<Command> instructionDump = _kernel.dumpInstructionMemory();
 			for(int i = 0; i < instruction.length; i ++)
 			{
-				final List<Integer> inst = _kernel.getInstructionAt(location[i]);
-				assertEquals(instruction[i], inst.get(Kernel.INSTRUCTION_LOC).intValue());
-				assertEquals(instruction[i], instructionDump.get(location[i]).get(Kernel.INSTRUCTION_LOC).intValue());
-				assertEquals(parameters[i], inst.get(Kernel.PARAMETERS_LOC).intValue());
-				assertEquals(parameters[i], instructionDump.get(location[i]).get(Kernel.PARAMETERS_LOC).intValue());
+				final Command command = _kernel.getCommandAt(location[i]);
+				assertEquals(instruction[i], command.getCommandId().intValue());
+				assertEquals(instruction[i], instructionDump.get(location[i]).getCommandId().intValue());
+				assertEquals(parameters[i], command.getParameters().get(0));
+				if ( parameters[i] == null )
+				{
+					assertNull( instructionDump.get(location[i]).getParameters().get(0));
+				}
+				else
+				{
+					assertEquals(Integer.valueOf(parameters[i]), instructionDump.get(location[i]).getParameters().get(0));
+				}
 			}
 		} catch (final VMError e) {
 			e.printStackTrace();

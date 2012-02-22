@@ -85,7 +85,7 @@ public class CommandTest extends AndroidTestCase {
 	public void testGetParameters() {
 		assertNotNull(_commandWithParam.getParameters());
 		assertEquals(_commandWithParam.getParameters().get(0), COMMAND_PARAM_VAL_1);
-		assertNull(_commandWithOutParam.getParameters());
+		assertNotNull(_commandWithOutParam.getParameters());
 	}
 
 }

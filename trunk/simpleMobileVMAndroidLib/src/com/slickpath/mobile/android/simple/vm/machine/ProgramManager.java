@@ -6,6 +6,8 @@ package com.slickpath.mobile.android.simple.vm.machine;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.slickpath.mobile.android.simple.vm.util.Command;
+
 /**
  * @author PJ
  * This class abstracts the handling of the memory used to store program instructions and parameters
@@ -41,12 +43,7 @@ public class ProgramManager {
 	/**
 	 * Actually store we use for memory
 	 */
-	private final List<Integer> _programStore = new ArrayList<Integer>(MAX_MEMORY);
-
-	/**
-	 * Actually store we use for parameters
-	 */
-	private final List<Integer> _parameterStore = new ArrayList<Integer>(MAX_MEMORY);
+	private final List<Command> _programStore = new ArrayList<Command>(MAX_MEMORY);
 
 	/**
 	 * Constructor
@@ -56,13 +53,7 @@ public class ProgramManager {
 		// initialize every piece of instruction memory to EMPTY
 		for (int i = 0; i < MAX_MEMORY; i++)
 		{
-			_programStore.add(EMPTY_MEMORY_VALUE);
-		}
-
-		// initialize every piece of parameter memory to EMPTY
-		for (int i = 0; i < MAX_MEMORY; i++)
-		{
-			_parameterStore.add(EMPTY_MEMORY_VALUE);
+			_programStore.add(new Command(EMPTY_MEMORY_VALUE,null));
 		}
 	}
 
@@ -140,20 +131,11 @@ public class ProgramManager {
 	 * NOTE: This makes a copy of the program memory
 	 * @return Copy of memory
 	 */
-	public  List<Integer> dumpProgramStore()
+	public  List<Command> dumpProgramStore()
 	{
-		return  new ArrayList<Integer>(_programStore);
+		return  new ArrayList<Command>(_programStore);
 	}
 
-	/**
-	 * Returns the parameters as a list
-	 * 
-	 * @return Copy of memory
-	 */
-	public  List<Integer> dumpParameterStore()
-	{
-		return  new ArrayList<Integer>(_parameterStore);
-	}
 
 	/**
 	 * Returns the instruction at the specified location
@@ -161,20 +143,9 @@ public class ProgramManager {
 	 * @param location
 	 * @return
 	 */
-	public Integer getInstructionAt(final int location)
+	public Command getCommandAt(final int location)
 	{
 		return _programStore.get(location);
-	}
-
-	/**
-	 * Returns the parameters at the specified location
-	 * 
-	 * @param location
-	 * @return
-	 */
-	public Integer getParametersAt(final int location)
-	{
-		return _parameterStore.get(location);
 	}
 
 	/**
@@ -183,19 +154,8 @@ public class ProgramManager {
 	 * @param location
 	 * @param value
 	 */
-	public void setInstructionAt(final int location, final int value)
+	public void setCommandAt(final int location, final Command command)
 	{
-		_programStore.set(location, value);
-	}
-
-	/**
-	 * Set parameter values at the specified location
-	 *
-	 * @param location
-	 * @param value
-	 */
-	public void setParametersAt(final int location, final int value)
-	{
-		_parameterStore.set(location, value);
+		_programStore.set(location, command);
 	}
 }

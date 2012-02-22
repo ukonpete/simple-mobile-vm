@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.slickpath.mobile.android.simple.vm.VMError;
+import com.slickpath.mobile.android.simple.vm.util.Command;
 
 /**
  * @author Pete Procopio
@@ -100,21 +101,11 @@ public class Memory {
 	 * 
 	 * @return
 	 */
-	public List<Integer> programMemoryDump()
+	public List<Command> programMemoryDump()
 	{
 		return _programManager.dumpProgramStore();
 	}
 
-	/**
-	 * Return parameter memory as a List<Integer>
-	 * NOTE: Returns a Copy of parameter Memory
-	 * 
-	 * @return
-	 */
-	public List<Integer> parameterMemoryDump()
-	{
-		return _programManager.dumpParameterStore();
-	}
 
 	/**
 	 * Return value at location
@@ -135,20 +126,9 @@ public class Memory {
 	 * @param location
 	 * @return
 	 */
-	public int getInstruction(final int location)
+	public Command getCommand(final int location)
 	{
-		return _programManager.getInstructionAt(location);
-	}
-
-	/**
-	 * Returns the parameters at the specified location
-	 * 
-	 * @param location
-	 * @return
-	 */
-	public int getParameters(final int location)
-	{
-		return _programManager.getParametersAt(location);
+		return _programManager.getCommandAt(location);
 	}
 
 	/**
@@ -171,20 +151,9 @@ public class Memory {
 	 * @param location
 	 * @param value
 	 */
-	public void setInstruction(final int location, final int value)
+	public void setCommand(final int location, final Command command)
 	{
-		_programManager.setInstructionAt(location, value);
-	}
-
-	/**
-	 * Set parameter values at the specified location
-	 *
-	 * @param location
-	 * @param value
-	 */
-	public void setParameters(final int location, final int value)
-	{
-		_programManager.setParametersAt(location, value);
+		_programManager.setCommandAt(location, command);
 	}
 
 	/**

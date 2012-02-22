@@ -853,7 +853,6 @@ public class MachineTest extends AndroidTestCase {
 
 		final List<Integer> memory = _machine.dumpMemory();
 		final List<Integer> stack = _machine.dumpStack();
-		final List<List<Integer>> progMemory = _machine.dumpInstructionMemory();
 
 		for (int i = 0; i < 100; i++) {
 			_machine.incProgramCounter();
@@ -871,7 +870,6 @@ public class MachineTest extends AndroidTestCase {
 
 		assertTrue(_machine.dumpMemory().equals(memory));
 		assertTrue(_machine.dumpStack().equals(stack));
-		assertTrue(_machine.dumpInstructionMemory().equals(progMemory));
 	}
 
 	/**

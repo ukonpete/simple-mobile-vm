@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.List;
 
 import android.content.Context;
 import android.util.Log;
@@ -75,6 +74,15 @@ public class VirtualMachine extends Machine implements Instructions{
 		_vmListener = listener;
 	}
 
+	/**
+	 * Set a listener to listen to events thrown by VM
+	 * @param listener
+	 */
+	public IVMListener getVMListener()
+	{
+		return _vmListener;
+	}
+
 	//   EXECUTION
 
 	/**
@@ -87,34 +95,15 @@ public class VirtualMachine extends Machine implements Instructions{
 	public void addCommand(final Command command) throws VMError
 	{
 		final int instruction = command.getCommandId();
-		final List<Integer> instructionParams = command.getParameters();
 		if (instruction < 1000)
 		{
-			setInstructionAt(instruction, 0, getProgramWriterPtr());
+			setCommandAt(command, getProgramWriterPtr());
 			debugVerbose(TAG, "Add ins="+ getInstructionString(instruction)+ "(" + instruction + ")" + " params=X at" + getProgramWriterPtr());
 		}
 		if (instruction >= SINGLE_PARAM_COMMAND_START)
 		{
-			if ( instructionParams != null )
-			{
-				final StringBuffer sVal = new StringBuffer("");
-
-				final int instPram = instructionParams.get(0);
-				sVal.append(Integer.toString(instPram)).append(':');
-				setInstructionAt(instruction, instPram, getProgramWriterPtr());
-				debugVerbose(TAG, "Add ins="+ getInstructionString(instruction)+ "(" + instruction + ")" + " params=" + instPram + " at" + getProgramWriterPtr());
-				/* TODO - handle multiple parameters
-				for(final int instPram : instructionParams)
-				{
-					sVal.append(Integer.toString(instPram)).append(':');
-					setValAtProgramWtr(instPram);
-				}
-				 */
-			}
-			else
-			{
-				throw new VMError("addInstruction NULL parameter list", VMError.VM_ERROR_BAD_PARAMS);
-			}
+			setCommandAt(command, getProgramWriterPtr());
+			debugVerbose(TAG, "Add ins="+ getInstructionString(instruction)+ "(" + instruction + ")" + " params=" + command.getParameters().get(0) + " at" + getProgramWriterPtr());
 		}
 	}
 
@@ -502,13 +491,13 @@ public class VirtualMachine extends Machine implements Instructions{
 	}
 
 	private int getInstruction() throws VMError {
-		final List<Integer> instruction = getInstructionAt(getProgramCounter());
-		return instruction.get(INSTRUCTION_LOC);
+		final Command command = getCommandAt(getProgramCounter());
+		return command.getCommandId();
 	}
 
 	private int getParameter() throws VMError {
-		final List<Integer> instruction = getInstructionAt(getProgramCounter());
-		return instruction.get(PARAMETERS_LOC);
+		final Command command = getCommandAt(getProgramCounter());
+		return command.getParameters().get(0);
 	}
 
 	/**

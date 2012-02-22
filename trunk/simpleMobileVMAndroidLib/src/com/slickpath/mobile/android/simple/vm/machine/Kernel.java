@@ -19,6 +19,7 @@ import android.util.Log;
 
 import com.slickpath.mobile.android.simple.vm.VMError;
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet;
+import com.slickpath.mobile.android.simple.vm.util.Command;
 
 /**
  * @author Pete Procopio
@@ -34,19 +35,19 @@ public class Kernel {
 	public static final int PARAMETERS_LOC = 1;
 
 	/**
-	 * Convenience Const.
+	 * Convenience Constant
 	 */
 	public static final int PUSHC_YES = 1;
 	/**
-	 * Convenience Const.
+	 * Convenience Constant
 	 */
 	public static final int PUSHC_NO = 0;
 
-	protected boolean _bDebug = false;
+	protected boolean _bDebug = true;
 
 	protected boolean _bDebugDump = false;
 
-	protected boolean _bDebugVerbose = false;
+	protected boolean _bDebugVerbose = true;
 
 	private final  Memory _memory = new Memory();
 
@@ -290,17 +291,20 @@ public class Kernel {
 	 * @return
 	 * @throws VMError
 	 */
-	public List<Integer> getInstructionAt(final int location) throws VMError
+	public Command getCommandAt(final int location) throws VMError
 	{
 		if (location < Memory.MAX_MEMORY)
 		{
-			final Integer instruction = _memory.getInstruction(location);
-			final Integer parameters = _memory.getParameters(location);
+			final Integer instruction = _memory.getCommand(location).getCommandId();
+			final Integer parameters = _memory.getCommand(location).getParameters().get(0);
 			if ( _bDebug )
 			{
 				Log.d(TAG, "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(instruction) + ") " + instruction + " param " + parameters + " at " + location);
 			}
-			return new ArrayList<Integer>(Arrays.asList(instruction,parameters));
+
+			final List<Integer> params = new ArrayList<Integer>(Arrays.asList(parameters));
+
+			return new Command(instruction,params);
 		}
 		else
 		{
@@ -316,16 +320,23 @@ public class Kernel {
 	 * @param location
 	 * @throws VMError
 	 */
-	public void setInstructionAt(final int instruction, final int parameters, final int location) throws VMError
+	public void setCommandAt(final Command command, final int location) throws VMError
 	{
 		if (location < Memory.MAX_MEMORY)
 		{
 			if ( _bDebug )
 			{
-				Log.d(TAG, "Set Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(instruction) + ") " + instruction + " param " + parameters + " at " + location);
+				if ( command.getParameters().get(0) == null )
+				{
+					Log.d(TAG, "Set Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(command.getCommandId()) + ") " + command.getCommandId() + " param <null> at " + location);
+				}
+				else
+				{
+					Log.d(TAG, "Set Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(command.getCommandId()) + ") " + command.getCommandId() + " param " + command.getParameters().get(0) + " at " + location);
+				}
 			}
-			_memory.setInstruction(location, instruction);
-			_memory.setParameters(location, parameters);
+
+			_memory.setCommand(location, command);
 			incProgramWriter();
 		}
 	}
@@ -356,19 +367,8 @@ public class Kernel {
 	 * 
 	 * @return
 	 */
-	public List<List<Integer>> dumpInstructionMemory()
+	public List<Command> dumpInstructionMemory()
 	{
-		final List<List<Integer>> instructionMemory = new ArrayList<List<Integer>>();
-		final List<Integer> programMemory =  _memory.programMemoryDump();
-		final List<Integer> paramMemory =  _memory.parameterMemoryDump();
-
-		for(int i = 0; i < programMemory.size(); i++)
-		{
-			final List<Integer> instruciton = new ArrayList<Integer>();
-			instruciton.add(programMemory.get(i));
-			instruciton.add(paramMemory.get(i));
-			instructionMemory.add(instruciton);
-		}
-		return instructionMemory;
+		return _memory.programMemoryDump();
 	}
 }
