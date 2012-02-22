@@ -11,8 +11,6 @@
  */
 package com.slickpath.mobile.android.simple.vm.machine;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import android.util.Log;
@@ -302,9 +300,7 @@ public class Kernel {
 				Log.d(TAG, "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(instruction) + ") " + instruction + " param " + parameters + " at " + location);
 			}
 
-			final List<Integer> params = new ArrayList<Integer>(Arrays.asList(parameters));
-
-			return new Command(instruction,params);
+			return  _memory.getCommand(location);
 		}
 		else
 		{

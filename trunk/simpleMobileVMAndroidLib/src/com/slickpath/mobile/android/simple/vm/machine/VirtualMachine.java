@@ -98,12 +98,12 @@ public class VirtualMachine extends Machine implements Instructions{
 		if (instruction < 1000)
 		{
 			setCommandAt(command, getProgramWriterPtr());
-			debugVerbose(TAG, "Add ins="+ getInstructionString(instruction)+ "(" + instruction + ")" + " params=X at" + getProgramWriterPtr());
+			debugVerbose(TAG, "Add ins="+ getInstructionString(instruction)+ "(" + instruction + ")" + " params=X at " + getProgramWriterPtr());
 		}
 		if (instruction >= SINGLE_PARAM_COMMAND_START)
 		{
 			setCommandAt(command, getProgramWriterPtr());
-			debugVerbose(TAG, "Add ins="+ getInstructionString(instruction)+ "(" + instruction + ")" + " params=" + command.getParameters().get(0) + " at" + getProgramWriterPtr());
+			debugVerbose(TAG, "Add ins="+ getInstructionString(instruction)+ "(" + instruction + ")" + " params=" + command.getParameters().get(0) + " at " + getProgramWriterPtr());
 		}
 	}
 
@@ -178,13 +178,13 @@ public class VirtualMachine extends Machine implements Instructions{
 	 */
 	private void doRunNextInstruction()
 	{
+		Log.d(TAG, "+doRunNextInstruction " + getProgramCounter());
 		boolean bHalt = false;
 		VMError vmError = null;
 
-		final int line = getLineNumber();
 		int instructionVal = -1;
 		try {
-			instructionVal = getParameter();
+			instructionVal = getInstruction();
 			runCommand(instructionVal);
 		} catch (final VMError e) {
 			vmError = e;
@@ -198,7 +198,7 @@ public class VirtualMachine extends Machine implements Instructions{
 		}
 		if ( _vmListener != null)
 		{
-			_vmListener.completedRunningInstructions(bHalt, line , vmError);
+			_vmListener.completedRunningInstructions(bHalt, getProgramCounter() , vmError);
 		}
 	}
 
@@ -293,7 +293,7 @@ public class VirtualMachine extends Machine implements Instructions{
 		Log.d(TAG, "+END++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		if ( _vmListener != null)
 		{
-			_vmListener.completedRunningInstructions(instructionVal == BaseInstructionSet._HALT, getLineNumber(), vmError);
+			_vmListener.completedRunningInstructions(instructionVal == BaseInstructionSet._HALT, getProgramCounter(), vmError);
 		}
 	}
 
