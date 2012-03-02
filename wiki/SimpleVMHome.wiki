@@ -12,5 +12,9 @@ Written in Java to run on Android.
 
   * [VMLanguage VM Language]
   * [CommandParameters Command Parameters]
-  * VM Basics
-  * How to Use VM
+  * [VMBasics VM Basics]
+  * [VMUseage How to Use VM]
+
+= Javadoc =
+
+See javadoc directory in the project source directory
