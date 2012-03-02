@@ -79,22 +79,25 @@ public class SimpleParser {
 	 * When finished calls completedParse on the listener which returns any error information and the CommandList
 	 * Synchronized
 	 */
-	public synchronized void parse()
+	public void parse()
 	{
 		new Thread(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				VMError vmError = null;
-				try {
-					doParse();
-				} catch (final VMError e) {
-					vmError = e;
-				}
-				if ( _parserListener != null)
+				synchronized(this)
 				{
-					_parserListener.completedParse(vmError, _commands);
+					VMError vmError = null;
+					try {
+						doParse();
+					} catch (final VMError e) {
+						vmError = e;
+					}
+					if ( _parserListener != null)
+					{
+						_parserListener.completedParse(vmError, _commands);
+					}
 				}
 			}
 		}).start();
@@ -116,10 +119,11 @@ public class SimpleParser {
 			fis.close();
 			fis = new FileInputStream(_sInstructionFile);
 
-			final DataInputStream in = new DataInputStream(fis);
-			final BufferedReader br = new BufferedReader(new InputStreamReader(in), 8192 );
+			final BufferedReader buffReader = getBufferedReader(fis);
 
-			String sLine = br.readLine();
+			String sLine = buffReader.readLine();
+
+			final ArrayList<Integer> emptyList = new ArrayList<Integer>(0);
 
 			while (sLine != null)
 			{
@@ -146,12 +150,13 @@ public class SimpleParser {
 						}
 						else
 						{
-							params = new ArrayList<Integer>(0);
+							// All Empty params point to the same empty List
+							params = emptyList;
 						}
 						_commands.add(commandVal, params);
 					}
 				}
-				sLine = br.readLine();
+				sLine = buffReader.readLine();
 			}
 		}
 		catch(final Exception e)
@@ -235,13 +240,12 @@ public class SimpleParser {
 	{
 		int line = 0;
 
-		final DataInputStream in = new DataInputStream(fis);
-		final BufferedReader br = new BufferedReader(new InputStreamReader(in), 8192 );
+		final BufferedReader buffReader = getBufferedReader(fis);
 
 		String sLine = "";
 		String sSymbol = "";
 		try {
-			sLine = br.readLine();
+			sLine = buffReader.readLine();
 			while (sLine != null)
 			{
 				// If line is not a comment
@@ -259,13 +263,22 @@ public class SimpleParser {
 						line++;
 					}
 				}
-				sLine = br.readLine();
+				sLine = buffReader.readLine();
 			}
 
 		} catch (final IOException e) {
 			debug("[getSymbols] IOException " + sSymbol + "(" + line + ") " + e.getMessage());
 		}
 
+	}
+
+	/**
+	 * @param fis
+	 * @return
+	 */
+	private BufferedReader getBufferedReader(final FileInputStream fis) {
+		final DataInputStream inStream = new DataInputStream(fis);
+		return new BufferedReader(new InputStreamReader(inStream), 8192 );
 	}
 
 	/**
