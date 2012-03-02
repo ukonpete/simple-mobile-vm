@@ -1,5 +1,6 @@
 #summary Sidebar Navigation
 
+  * [SimpleVMHome Home]
   * [VMLanguage VM Language]
   * [CommandParameters Command Parameters]
   * [VMBasics VM Basics]
