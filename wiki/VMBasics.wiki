@@ -1,0 +1,14 @@
+#summary Basic VM Info
+
+= Memory =
+
+Memory is broken into 3 parts.
+  * Temp (Volatile/Free) memory:  This memory is where data for the executing code is stored. Its size is 500 locations, where each location is the size of a Java int.  It is used basically for direct access to a particular memory location, and is often used only for storage by user code via parameters.
+  * Program.(Execution/Instructions) Memory:  This memory is where the actual executable code is stored.  Its size is 500 locations, where each location stores 1 int and an List of parameters. No instruction at this time has more than 1 parameter, some have 0.
+  * Stack memory:  This memory is where data for the executing code is stored.  It is the basic memory for the Virtual machine to execute commands. User code does have access to this memory for reading and writing but must take into consideration the usage by the VM.
+
+= Registers =
+
+Registers:
+  * Program Counter:  Points to the next line of executable code
+  * Stack Pointer: Points to the location of the top of the stack
