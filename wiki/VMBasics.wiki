@@ -10,6 +10,5 @@ Memory is broken into 3 parts.
 
 = Registers =
 
-Registers:
   * Program Counter:  Points to the next line of executable code
   * Stack Pointer: Points to the location of the top of the stack
