@@ -95,16 +95,16 @@ public class VirtualMachine extends Machine implements Instructions{
 	public void addCommand(final Command command) throws VMError
 	{
 		final int instruction = command.getCommandId();
-		if (instruction < 1000)
-		{
-			setCommandAt(command, getProgramWriterPtr());
-			debugVerbose(TAG, "Add ins="+ getInstructionString(instruction)+ "(" + instruction + ")" + " params=X at " + getProgramWriterPtr());
-		}
+		String sParams = "X";
+
 		if (instruction >= SINGLE_PARAM_COMMAND_START)
 		{
-			setCommandAt(command, getProgramWriterPtr());
-			debugVerbose(TAG, "Add ins="+ getInstructionString(instruction)+ "(" + instruction + ")" + " params=" + command.getParameters().get(0) + " at " + getProgramWriterPtr());
+
+			sParams = command.getParameters().get(0).toString();
 		}
+		setCommandAt(command, getProgramWriterPtr());
+		debugVerbose(TAG, "Add ins="+ getInstructionString(instruction)+ "(" + instruction + ")" + " params=" + sParams + " at " + getProgramWriterPtr());
+
 	}
 
 	/**
@@ -271,20 +271,14 @@ public class VirtualMachine extends Machine implements Instructions{
 				runCommand(instructionVal);
 			}
 			debug(TAG, "=============================================================");
-			debug(TAG, "LAST_INSTRUCTION=(" + getInstructionString(instructionVal) + ") " + instructionVal);
-			debug(TAG, "NUM INTRUCTIONS RUN=" + numInstrsRun);
-			debug(TAG, "PROG_CTR=" + getProgramCounter());
-			debug(TAG, "LAST_PROG_CTR=" + lastProgCtr);
+			logAdditionalInfo(numInstrsRun, lastProgCtr, instructionVal);
 			debug(TAG, "=============================================================");
 		}
 		catch(final VMError vme)
 		{
 			debug(TAG, "=============================================================");
 			debug(TAG, "VMError=(" + vme.getType() + ") " + vme.getMessage());
-			debug(TAG, "LAST_INSTRUCTION=(" + getInstructionString(instructionVal) + ") " + instructionVal);
-			debug(TAG, "NUM INTRUCTIONS RUN=" + numInstrsRun);
-			debug(TAG, "PROG_CTR=" + getProgramCounter());
-			debug(TAG, "LAST_PROG_CTR=" + lastProgCtr);
+			logAdditionalInfo(numInstrsRun, lastProgCtr, instructionVal);
 			dumpMem("2");
 			vmError = vme;
 			debug(TAG, "=============================================================");
@@ -295,6 +289,19 @@ public class VirtualMachine extends Machine implements Instructions{
 		{
 			_vmListener.completedRunningInstructions(instructionVal == BaseInstructionSet._HALT, getProgramCounter(), vmError);
 		}
+	}
+
+	/**
+	 * @param numInstrsRun
+	 * @param lastProgCtr
+	 * @param instructionVal
+	 */
+	private void logAdditionalInfo(final int numInstrsRun, final int lastProgCtr,
+			final int instructionVal) {
+		debug(TAG, "LAST_INSTRUCTION=(" + getInstructionString(instructionVal) + ") " + instructionVal);
+		debug(TAG, "NUM INTRUCTIONS RUN=" + numInstrsRun);
+		debug(TAG, "PROG_CTR=" + getProgramCounter());
+		debug(TAG, "LAST_PROG_CTR=" + lastProgCtr);
 	}
 
 	/**

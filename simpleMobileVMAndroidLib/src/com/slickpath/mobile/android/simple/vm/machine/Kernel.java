@@ -322,14 +322,13 @@ public class Kernel {
 		{
 			if ( _bDebug )
 			{
-				if ( command.getParameters().get(0) == null )
+				String sParamInfo = "<null>";
+				if ( command.getParameters().get(0) != null )
 				{
-					Log.d(TAG, "Set Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(command.getCommandId()) + ") " + command.getCommandId() + " param <null> at " + location);
+					sParamInfo = command.getParameters().get(0).toString();
 				}
-				else
-				{
-					Log.d(TAG, "Set Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(command.getCommandId()) + ") " + command.getCommandId() + " param " + command.getParameters().get(0) + " at " + location);
-				}
+				Log.d(TAG, "Set Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(command.getCommandId()) + ") " + command.getCommandId() + " param " + sParamInfo + " at " + location);
+
 			}
 
 			_memory.setCommand(location, command);
