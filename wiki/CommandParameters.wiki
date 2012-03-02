@@ -1,0 +1,15 @@
+#summary One-sentence summary of this page.
+
+= Command Parameters =
+
+Currently all commands can either have 0 or 1 parameters - @see [VMLanguage Commands]
+
+Note: Parameters for the commands can be in 3 forms:
+  * An actual location in memory.  The VM holds 500 memory locations. Each Memory location is the size of a int in Java.  The values of memory that can be used are 0 – 250.
+    * EX: PUSH 50
+  * A Tag.  Tags are named locations in a source file. Similar to Labels for GOTO statements in C#/Basic.  They are formatted using right and right brackets ] and [ as beginning and ending delimiters with any string in-between. NOTE:  The line where the tag is defined is ignored as an actual executable line.  In other words the Tag refers to the next executable line of code
+    * EX Definition: [.TAGNAME.]
+    * Ex Recall: BRANCH [.TAGNAME.]
+  * A variable.  Variables are similar to variables in other programming languages.  There is no need for declaration since all parameters are integers and the 1st use of a variable is its definition.  The compiler will allocate a particular spot in memory for every variable declared.  Each variable starts with a lower case g with a number trailing it.  With the 1st found variable will allocate the 1st location in memory and the nth declared variable will allocate the nth space in memory.
+    * EX : PUSH g1.
+NOTE:  All Memory is initialized to the value 999999.  This is more for visual use of the VM than any design decision.  That means the value 999999 is off limits for use as a value in the system at this time.
