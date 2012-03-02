@@ -306,16 +306,6 @@ public class VirtualMachine extends Machine implements Instructions{
 	}
 
 	/**
-	 * Converts current program pointer to an actual line number
-	 * 
-	 * @return Current line number of the program
-	 * 
-	 */
-	private int getLineNumber() {
-		return getProgramCounter() + 1;
-	}
-
-	/**
 	 * Dump the memory into a file for debugging purposes
 	 * file name : "memDump<sAppend>.text
 	 */
