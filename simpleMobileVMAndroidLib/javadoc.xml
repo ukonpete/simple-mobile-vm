@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="public" author="true" classpath="." destdir="javadoc" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="com.slickpath.mobile.android.simple.vm.instructions,com.slickpath.mobile.android.simple.vm.machine,com.slickpath.mobile.android.simple.vm,com.slickpath.mobile.android.simple.vm.util,com.slickpath.mobile.android.simple.vm.parser" source="1.6" sourcepath="gen;src" splitindex="true" use="true" version="true">
+            <link href="file:/C:/Program Files (x86)/Android/android-sdk/docs/reference"/>
+            <link href="file:/G:/source/java/simpleMobileVMAndroidLib/javadoc/"/>
+        </javadoc>
+    </target>
+</project>
