@@ -13,24 +13,3 @@ Note: Parameters for the commands can be in 3 forms:
   * A variable.  Variables are similar to variables in other programming languages.  There is no need for declaration since all parameters are integers and the 1st use of a variable is its definition.  The compiler will allocate a particular spot in memory for every variable declared.  Each variable starts with a lower case g with a number trailing it.  With the 1st found variable will allocate the 1st location in memory and the nth declared variable will allocate the nth space in memory.
     * EX : PUSH g1.
 NOTE:  All Memory is initialized to the value 999999.  This is more for visual use of the VM than any design decision.  That means the value 999999 is off limits for use as a value in the system at this time.
-
-= Code Example = 
-<code>
-PUSHC 1
-POPC 125
-PUSH 125
-PUSH 125
-WRINT
-PUSHC 1
-ADD
-POPC 125
-PUSH 125
-PUSHC 100
-PUSH 125
-LSSEQL
-BREQL [HALT]
-PUSHC 2
-JUMP
-[HALT]
-HALT
-</code>
