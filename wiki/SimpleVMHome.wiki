@@ -11,6 +11,6 @@ Written in Java to run on Android.
 = Details =
 
   * [VMLanguage VM Language]
-  * Parameters
+  * [CommandParameters Command Parameters]
   * VM Basics
   * How to Use VM
