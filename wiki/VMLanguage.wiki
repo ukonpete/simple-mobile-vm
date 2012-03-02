@@ -7,7 +7,7 @@
 = Details =
 
 ==Arithmetic==
-||Command Keyword||Command||Arguments?||Description||
+|| *Command Keyword* || *Command* || *Arguments?* || *Description* ||
 ||ADD||Add||No||Add the top 2 values of the stack, then put result back onto stack||
 ||SUB||Subtract||No||Subtract the top of the stack from the value below it, then put result back onto stack||
 ||MUL||Multiply||No||Multiply the top 2 values of the stack, then put result back onto stack||
@@ -15,7 +15,7 @@
 ||NEG||Negate||No||Negate the top of the stack||
 
 ==Boolean/Comparetors==
-||Command Keyword||Command||Arguments?||Description||
+|| *Command Keyword* || *Command* || *Arguments?* || *Description* ||
 ||EQUAL||Equal||No||If the top two values on the stack are equal, push a 1; else push a 0||
 ||NOTEQL||Not Equal||No||If the top two values  on the stack are not equal push a 1; else push a 0||
 ||GREATER||Greater Than||No||If the top of the stack is greater than the value below it, push a 1; else push a 0||
@@ -25,7 +25,7 @@
 ||NOT||Not||No||If the top of the stack is 0 replace with a 1; else replace with a 0||
 
 ==Stack Manipulation==
-||Command Keyword||Command||Arguments?||Description||
+|| *Command Keyword* || *Command* || *Arguments?* || *Description* ||
 ||PUSHC||Push Constant||Yes||Put the argument on the stack||
 ||PUSH||Push||Yes||Put the contents of the location specified by the argument on the stack (Argument Can be an actual memory value, a tag that matches a line of code or a variable)||
 ||POPC||Pop Constant||Yes||Put the top of the stack into the location specified by the argument. stack (Argument Can be an actual memory value, a tag that matches a line of code or a variable)||
@@ -33,7 +33,7 @@
 ||CONTENTS||Contents||No||Replace the top of the stack with the contents of the location specified by the top of the stack||
 
 ==Control==
-||Command Keyword||Command||Arguments?||Description||
+|| *Command Keyword* || *Command* || *Arguments?* || *Description* ||
 ||BRANCH||Branch||Yes||Set the program counter to the location specified by the argument. (Argument Can be an actual memory value, a tag that matches a line of code, or a variable)||
 ||JUMP||Jump||No||Set the program counter to the top of the stack||
 ||BREQL||Branch if Equal||Yes||If the top of the stack is 0, branch to the argument (Argument Can be an actual memory value, a tag that matches a line of code, or a variable)||
@@ -43,7 +43,7 @@
 
 ==Input/Output==
 (Currently not fully implemented nor tested)
-||Command Keyword||Command||Arguments?||Description||
+|| *Command Keyword* || *Command* || *Arguments?* || *Description* ||
 ||RDCHAR||Read Character||No||Read a character from the keyboard and out its ASCII value on the stack||
 ||RDINT||Read Integer||No||Read an Integer from the keyboard ad out it on the stack||
 ||WRCHAR||Write Character||No||Write the top of the stack on the screen treating as an ASCII value||
