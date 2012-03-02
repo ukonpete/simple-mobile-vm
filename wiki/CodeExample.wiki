@@ -1,0 +1,22 @@
+#summary Code Example.
+
+= Code Example = 
+<code>
+PUSHC 1
+POPC 125
+PUSH 125
+PUSH 125
+WRINT
+PUSHC 1
+ADD
+POPC 125
+PUSH 125
+PUSHC 100
+PUSH 125
+LSSEQL
+BREQL [HALT]
+PUSHC 2
+JUMP
+[HALT]
+HALT
+</code>
