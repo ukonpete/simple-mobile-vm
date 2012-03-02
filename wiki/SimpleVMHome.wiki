@@ -10,7 +10,7 @@ Written in Java to run on Android.
 
 = Details =
 
-  * VM Language
+  * [VMLanguage VM Language]
   * Parameters
   * VM Basics
   * How to Use VM
