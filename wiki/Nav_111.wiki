@@ -3,5 +3,6 @@
   * [SimpleVMHome Home]
   * [VMLanguage VM Language]
   * [CommandParameters Command Parameters]
+  * [CodeExample Code Example]
   * [VMBasics VM Basics]
   * [VMUseage How to Use VM]
