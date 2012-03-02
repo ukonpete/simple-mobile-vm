@@ -5,7 +5,20 @@
 
 = Details =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+==Arithmetic==
+||Command Keyword||Command||Arguments?||Description||
+||ADD||Add||No||Add the top 2 values of the stack, then put result back onto stack||
+||SUB||Subtract||No||Subtract the top of the stack from the value below it, then put result back onto stack||
+||MUL||Multiply||No||Multiply the top 2 values of the stack, then put result back onto stack||
+||DIV||Divide||No||Divide the 2nd value on the stack by the top one. Truncate and discard the remainder, then put result back onto stack||
+||NEG||Negate||No||Negate the top of the stack||
+
+==Boolean/Comparetors==
+||Command Keyword||Command||Arguments?||Description||
+||EQUAL||Equal||No||If the top two values on the stack are equal, push a 1; else push a 0||
+||NOTEQL||Not Equal||No||If the top two values  on the stack are not equal push a 1; else push a 0||
+||GREATER||Greater Than||No||If the top of the stack is greater than the value below it, push a 1; else push a 0||
+||LESS||Less Than||No||If the top of the stack is less than the value below it, push a 1; else push a 0||
+||GTREQL||Greater Than  or Equal To||No||If the top of the stack is greater than or equal to the value below it, push a 1; else push a 0||
+||LSSEQL||Less than or Equal To||No||If the top of the stack is less than or equal to the value below it, push a 1; else push a 0||
+||NOT||Not||No||If the top of the stack is 0 replace with a 1; else replace with a 0||
