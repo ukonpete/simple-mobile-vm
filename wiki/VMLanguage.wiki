@@ -29,6 +29,7 @@
 ||PUSH||Push||Yes||Put the contents of the location specified by the argument on the stack (Argument Can be an actual memory value, a tag that matches a line of code or a variable)||
 ||POPC||Pop Constant||Yes||Put the top of the stack into the location specified by the argument. stack (Argument Can be an actual memory value, a tag that matches a line of code or a variable)||
 ||POP||Pop||No||Put the second value on the stack into the location specified by the top of the stack||
+||CONTENTS||Contents||No||Replace the top of the stack with the contents of the location specified by the top of the stack||
 
 ==Control==
 ||Command Keyword||Command||Arguments?||Description||
@@ -37,3 +38,12 @@
 ||BREQL||Branch if Equal||Yes||If the top of the stack is 0, branch to the argument (Argument Can be an actual memory value, a tag that matches a line of code, or a variable)||
 ||BRLSS||Branch if Less Than||Yes||If the top of the stack is less than 0, branch to the argument (Argument Can be an actual memory value, a tag that matches a line of code, or a variable)||
 ||BRGTR||Branch if Greater Than||Yes||If the top of the stack is greater than 0, branch to the argument (Argument Can be an actual memory value, a tag that matches a line of code, or a variable)||
+||HALT||Halt||No||Stop the Machine||
+
+==Input/Output==
+(Currently not fully implemented nor tested)
+||Command Keyword||Command||Arguments?||Description||
+||RDCHAR||Read Character||No||Read a character from the keyboard and out its ASCII value on the stack||
+||RDINT||Read Integer||No||Read an Integer from the keyboard ad out it on the stack||
+||WRCHAR||Write Character||No||Write the top of the stack on the screen treating as an ASCII value||
+||WRINT||Write Integer||No||Write the top of the stack on the screen treating as a signed integer||
