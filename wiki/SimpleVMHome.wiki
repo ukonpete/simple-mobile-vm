@@ -1,0 +1,16 @@
+#summary Simple VM Starter.
+#labels Featured
+
+= Simple VM Introduction =
+
+Simple Machine Langauge Virtual Machine. With a small but powerfull Language to excute code. Based on Article by Jonathan Amsterdam in BYTE Magazine.
+
+Written in Java to run on Android.
+
+
+= Details =
+
+* VM Language
+* Parameters
+* VM Basics
+* How to Use VM
