@@ -1,0 +1,11 @@
+#summary how to use the VM
+
+= How to USE the VM =
+
+
+All code must be written in a text editor separate from the VM. It can then be loaded into the VM by using the Demo VM app, (it looks into the default application file storage area).  
+
+Once it is loaded, it will be executed.  If the syntax is incorrect or the code does something that the VM can not handle the loaded program will not complete.  All output will be in the LogCat Window.
+
+== Additional Library Info ==
+You can run one line at a time of the code or N lines. But that functionality is not currently being accessed by the Demo App.
