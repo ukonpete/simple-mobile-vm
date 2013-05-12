@@ -7,7 +7,7 @@ Written by Pete Procopio
 
 = Simple VM Introduction =
 
-Simple Machine Langauge Virtual Machine. With a small but powerfull Language to excute code. Based on Article by Jonathan Amsterdam in BYTE Magazine.
+Simple machine language virtual machine. A small but powerful language to execute code. Based on an article by Jonathan Amsterdam in BYTE Magazine circa 1985.
 
 Written in Java to run on Android.
 
