@@ -19,6 +19,11 @@ Written in Java to run on Android.
   * [VMBasics VM Basics]
   * [VMUseage How to Use VM]
 
+= Notes =
+
+  * To run instructions sets at this time in the app, you will have to manually copy them from simpleMobileVMApp\instructions to the device under /data/data/com.slickpath.mobile.android.simple.vm.app/files
+  * simpleMobileVMLib and simpleMobileVMLib-test are not useful at this time.  They are meant to migrate the code form an AndroidLibrary project into a java jar
+
 = Javadoc =
 
 See javadoc directory in the project source directory
