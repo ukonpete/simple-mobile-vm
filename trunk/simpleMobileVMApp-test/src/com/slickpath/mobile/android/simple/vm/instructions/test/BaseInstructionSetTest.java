@@ -6,42 +6,21 @@ package com.slickpath.mobile.android.simple.vm.instructions.test;
 
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import android.test.AndroidTestCase;
 
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet;
 import com.slickpath.mobile.android.simple.vm.instructions.Instructions;
 
 /**
- * @author PJ
+ * @author Pete Procopio
  *
  */
 public class BaseInstructionSetTest extends AndroidTestCase {
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
 
 	/* (non-Javadoc)
 	 * @see android.test.AndroidTestCase#setUp()
 	 */
 	@Override
-	@Before
 	protected void setUp() throws Exception {
 		super.setUp();
 	}
@@ -50,12 +29,13 @@ public class BaseInstructionSetTest extends AndroidTestCase {
 	 * @see android.test.AndroidTestCase#tearDown()
 	 */
 	@Override
-	@After
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
 
-	@Test
+	/**
+	 * Make sure the internal instruction sets are correct.
+	 */
 	public void testInternals() {
 		assertEquals(BaseInstructionSet.INSTRUCTION_SET_HT.size(), Instructions.NUM_COMMANDS);
 		assertEquals(BaseInstructionSet.INSTRUCTION_SET_CONV_HT.size(), Instructions.NUM_COMMANDS);

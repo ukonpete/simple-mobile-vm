@@ -7,12 +7,6 @@ package com.slickpath.mobile.android.simple.vm.parser.test;
 import java.io.File;
 import java.util.concurrent.CountDownLatch;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import android.test.AndroidTestCase;
 
 import com.slickpath.mobile.android.simple.vm.VMError;
@@ -22,7 +16,7 @@ import com.slickpath.mobile.android.simple.vm.parser.SimpleParser;
 import com.slickpath.mobile.android.simple.vm.util.CommandList;
 
 /**
- * @author PJ
+ * @author Pete Procopio
  *
  */
 public class SimpleParserTest extends AndroidTestCase implements IParserListener{
@@ -33,25 +27,11 @@ public class SimpleParserTest extends AndroidTestCase implements IParserListener
 	private CountDownLatch _signal;
 	private VMError _error;
 	private CommandList _commands;
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
 
 	/* (non-Javadoc)
 	 * @see android.test.AndroidTestCase#setUp()
 	 */
 	@Override
-	@Before
 	protected void setUp() throws Exception {
 
 		final File filesDir = mContext.getFilesDir();
@@ -63,7 +43,6 @@ public class SimpleParserTest extends AndroidTestCase implements IParserListener
 	 * @see android.test.AndroidTestCase#tearDown()
 	 */
 	@Override
-	@After
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
@@ -71,7 +50,6 @@ public class SimpleParserTest extends AndroidTestCase implements IParserListener
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.parser.SimpleParser#parse()}.
 	 */
-	@Test
 	public void testParse() {
 		_parser.parse();
 		try {
@@ -241,6 +219,7 @@ public class SimpleParserTest extends AndroidTestCase implements IParserListener
 		assertEquals(_commands.get(i++).getCommandId().intValue(), BaseInstructionSet._HALT); // 50
 	}
 
+	@Override
 	public void completedParse(final VMError vmError, final CommandList commands) {
 		// Save values on callback and release test thread
 		_error = vmError;

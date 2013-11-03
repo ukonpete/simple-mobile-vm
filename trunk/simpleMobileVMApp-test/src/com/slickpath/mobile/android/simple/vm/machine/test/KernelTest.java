@@ -7,12 +7,6 @@ package com.slickpath.mobile.android.simple.vm.machine.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import android.test.AndroidTestCase;
 
 import com.slickpath.mobile.android.simple.vm.VMError;
@@ -21,31 +15,17 @@ import com.slickpath.mobile.android.simple.vm.machine.Memory;
 import com.slickpath.mobile.android.simple.vm.util.Command;
 
 /**
- * @author PJ
+ * @author Pete Procopio
  *
  */
 public class KernelTest extends AndroidTestCase {
 
 	private Kernel _kernel = null;
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
 
 	/* (non-Javadoc)
 	 * @see android.test.AndroidTestCase#setUp()
 	 */
 	@Override
-	@Before
 	protected void setUp() throws Exception {
 		super.setUp();
 		_kernel = new Kernel();
@@ -55,7 +35,6 @@ public class KernelTest extends AndroidTestCase {
 	 * @see android.test.AndroidTestCase#tearDown()
 	 */
 	@Override
-	@After
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
@@ -64,7 +43,6 @@ public class KernelTest extends AndroidTestCase {
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#getValueAt(int)}.
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#setValueAt(int, int)}.
 	 */
-	@Test
 	public void testGetValueAt() {
 		try {
 			_kernel.setValueAt(0,0);
@@ -97,7 +75,6 @@ public class KernelTest extends AndroidTestCase {
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#pop()}.
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#push(int)}.
 	 */
-	@Test
 	public void testPop() {
 		try {
 			final int[] values = {0,10,22,34,45,57};
@@ -123,7 +100,6 @@ public class KernelTest extends AndroidTestCase {
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#branch(int)}.
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#resetProgramCounter()}.
 	 */
-	@Test
 	public void testBranch() {
 		try {
 			assertEquals(Memory.START_LOC, _kernel.getProgramCounter());
@@ -159,7 +135,6 @@ public class KernelTest extends AndroidTestCase {
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#decProgramCounter()}.
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#resetStack()}.
 	 */
-	@Test
 	public void testJump() {
 		try {
 
@@ -198,7 +173,6 @@ public class KernelTest extends AndroidTestCase {
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#incProgramWriter()}.
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#resetProgramWriter()}.
 	 */
-	@Test
 	public void testGetProgramWriterPtr() {
 		assertEquals(Memory.START_LOC, _kernel.getProgramWriterPtr());
 		_kernel.incProgramWriter();
@@ -225,7 +199,6 @@ public class KernelTest extends AndroidTestCase {
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#getCommandAt(int)}.
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#setCommandAt(Command, int)}.
 	 */
-	@Test
 	public void testGetCommandAt(){
 		try {
 			final int [] instruction = new int[]{11,22,35,46,88,99};
@@ -265,7 +238,6 @@ public class KernelTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#dumpStack()}.
 	 */
-	@Test
 	public void testDumpStack(){
 		try {
 			final int[] values = {0,10,22,34,45,57};

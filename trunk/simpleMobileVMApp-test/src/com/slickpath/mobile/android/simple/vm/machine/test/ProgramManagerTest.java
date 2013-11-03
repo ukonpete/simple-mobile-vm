@@ -7,12 +7,6 @@ package com.slickpath.mobile.android.simple.vm.machine.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import android.test.AndroidTestCase;
 
 import com.slickpath.mobile.android.simple.vm.machine.Memory;
@@ -20,31 +14,17 @@ import com.slickpath.mobile.android.simple.vm.machine.ProgramManager;
 import com.slickpath.mobile.android.simple.vm.util.Command;
 
 /**
- * @author PJ
+ * @author Pete Procopio
  *
  */
 public class ProgramManagerTest extends AndroidTestCase {
 
 	private ProgramManager _programManager = null;
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
 
 	/* (non-Javadoc)
 	 * @see android.test.AndroidTestCase#setUp()
 	 */
 	@Override
-	@Before
 	protected void setUp() throws Exception {
 		super.setUp();
 		_programManager = new ProgramManager();
@@ -55,7 +35,6 @@ public class ProgramManagerTest extends AndroidTestCase {
 	 * @see android.test.AndroidTestCase#tearDown()
 	 */
 	@Override
-	@After
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
@@ -63,7 +42,6 @@ public class ProgramManagerTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#setProgramCounter(int)}.
 	 */
-	@Test
 	public void testSetProgramCounter() {
 		assertEquals(Memory.START_LOC, _programManager.getProgramCounter());
 		_programManager.setProgramCounter(100);
@@ -81,7 +59,6 @@ public class ProgramManagerTest extends AndroidTestCase {
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#incProgramCounter()}.
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#decProgramCounter()}.
 	 */
-	@Test
 	public void testGetProgramCounter() {
 		assertEquals(Memory.START_LOC, _programManager.getProgramCounter());
 		for(int i = 0; i < 100; i++)
@@ -104,7 +81,6 @@ public class ProgramManagerTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#resetProgramCounter()}.
 	 */
-	@Test
 	public void testResetProgramCounter() {
 		assertEquals(Memory.START_LOC, _programManager.getProgramCounter());
 		_programManager.setProgramCounter(100);
@@ -117,7 +93,6 @@ public class ProgramManagerTest extends AndroidTestCase {
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#getProgramWriterPtr()}.
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#incProgramWriter()}.
 	 */
-	@Test
 	public void testGetProgramWriterPtr() {
 		assertEquals(Memory.START_LOC, _programManager.getProgramWriterPtr());
 		for(int i = 0; i < 100; i++)
@@ -131,7 +106,6 @@ public class ProgramManagerTest extends AndroidTestCase {
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#getCommandAt()}.
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#setCommandAt()}.
 	 */
-	@Test
 	public void testGetCommandAt()
 	{
 		final int [] instruction = new int[]{11,22,35,46,88,99};
@@ -169,7 +143,6 @@ public class ProgramManagerTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#resetProgramWriter()}.
 	 */
-	@Test
 	public void testResetProgramWriter() {
 		assertEquals(Memory.START_LOC, _programManager.getProgramWriterPtr());
 		for(int i = 0; i < 100; i++)
