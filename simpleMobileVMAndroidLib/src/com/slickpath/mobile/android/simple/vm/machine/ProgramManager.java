@@ -9,7 +9,7 @@ import java.util.List;
 import com.slickpath.mobile.android.simple.vm.util.Command;
 
 /**
- * @author PJ
+ * @author Pete Procopio
  * This class abstracts the handling of the memory used to store program instructions and parameters
  *
  */

@@ -358,7 +358,7 @@ public class Machine extends Kernel{
 	protected void WRCHAR() throws VMError
 	{
 		final int value = pop();
-		final String sVal = Integer.toString(value);
+		final char sVal = (char)value;
 		_textWriter.print(sVal);
 		debugVerbose(TAG, "WRCHAR: " + sVal);
 	}

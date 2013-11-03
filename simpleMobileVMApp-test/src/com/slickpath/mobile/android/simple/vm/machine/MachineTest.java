@@ -7,18 +7,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import android.test.AndroidTestCase;
 
 import com.slickpath.mobile.android.simple.vm.VMError;
 
 /**
- * @author PJ
+ * @author Pete Procopio
  *
  */
 public class MachineTest extends AndroidTestCase {
@@ -28,41 +22,26 @@ public class MachineTest extends AndroidTestCase {
 	private static final int LOW_VAL = 15;
 	private static final int HIGH_VAL = 17;
 	private Machine _machine = null;
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@Override
-	@Before
 	public void setUp() throws Exception {
 		_machine = new Machine();
 	}
 
-	/**
-	 * @throws java.lang.Exception
+	/* (non-Javadoc)
+	 * @see android.test.AndroidTestCase#tearDown()
 	 */
 	@Override
-	@After
-	public void tearDown() throws Exception {
+	protected void tearDown() throws Exception {
+		super.tearDown();
 	}
 
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#ADD()}.
 	 */
-	@Test
 	public void testADD() {
 		try {
 			_machine.PUSHC(LOW_VAL);
@@ -84,7 +63,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#SUB()}.
 	 */
-	@Test
 	public void testSUB() {
 		try {
 			_machine.PUSHC(LOW_VAL);
@@ -106,7 +84,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#MUL()}.
 	 */
-	@Test
 	public void testMUL() {
 		try {
 			_machine.PUSHC(LOW_VAL);
@@ -128,7 +105,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#DIV()}.
 	 */
-	@Test
 	public void testDIV() {
 		try {
 			_machine.PUSHC(LOW_VAL);
@@ -150,7 +126,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#NEG()}.
 	 */
-	@Test
 	public void testNEG() {
 		try {
 			_machine.PUSHC(LOW_VAL);
@@ -170,7 +145,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#EQUAL()}.
 	 */
-	@Test
 	public void testEQUAL() {
 		try {
 			_machine.PUSHC(LOW_VAL);
@@ -204,7 +178,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#NOTEQL()}.
 	 */
-	@Test
 	public void testNOTEQL() {
 		try
 		{
@@ -239,7 +212,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#GREATER()}.
 	 */
-	@Test
 	public void testGREATER() {
 		try
 		{
@@ -285,7 +257,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#LESS()}.
 	 */
-	@Test
 	public void testLESS() {
 		try
 		{
@@ -331,7 +302,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#GTREQL()}.
 	 */
-	@Test
 	public void testGTREQL() {
 		try
 		{
@@ -377,7 +347,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#LSSEQL()}.
 	 */
-	@Test
 	public void testLSSEQL() {
 		try
 		{
@@ -423,7 +392,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#NOT()}.
 	 */
-	@Test
 	public void testNOT() {
 		try {
 			_machine.PUSHC(0);
@@ -473,7 +441,6 @@ public class MachineTest extends AndroidTestCase {
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#PUSH(int)}.
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#POPC(int)}.
 	 */
-	@Test
 	public void testPUSH() {
 		try {
 			final int [] vals = new int[]{20, 15, 17, 44, 101};
@@ -508,7 +475,6 @@ public class MachineTest extends AndroidTestCase {
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#PUSHC(int)}.
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#POPC(int)}.
 	 */
-	@Test
 	public void testPUSHC() {
 		try {
 			final int [] vals = new int[]{20, 15, 17, 44, 101};
@@ -537,7 +503,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#POP()}.
 	 */
-	@Test
 	public void testPOP() {
 		try {
 			final int [] vals = new int[]{20, 15, 17, 44, 101};
@@ -571,7 +536,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#RDCHAR()}.
 	 */
-	@Test
 	public void testRDCHAR() {
 		// TODO - fail("Not yet implemented");
 	}
@@ -579,7 +543,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#WRCHAR()}.
 	 */
-	@Test
 	public void testWRCHAR() {
 		// TODO - fail("Not yet implemented");
 	}
@@ -587,7 +550,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#RDINT()}.
 	 */
-	@Test
 	public void testRDINT() {
 		// TODO - fail("Not yet implemented");
 	}
@@ -595,7 +557,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#WRINT()}.
 	 */
-	@Test
 	public void testWRINT() {
 		// TODO - fail("Not yet implemented");
 	}
@@ -603,7 +564,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#BRANCH(int)}.
 	 */
-	@Test
 	public void testBRANCH() {
 		try {
 			assertEquals(Memory.START_LOC, _machine.getProgramCounter());
@@ -634,7 +594,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#JUMP()}.
 	 */
-	@Test
 	public void testJUMP() {
 		try {
 
@@ -671,7 +630,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#BREQL(int)}.
 	 */
-	@Test
 	public void testBREQL() {
 		try {
 			assertEquals(Memory.START_LOC, _machine.getProgramCounter());
@@ -712,7 +670,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#BRLSS(int)}.
 	 */
-	@Test
 	public void testBRLSS() {
 		try {
 			assertEquals(Memory.START_LOC, _machine.getProgramCounter());
@@ -758,7 +715,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#BRGTR(int)}.
 	 */
-	@Test
 	public void testBRGTR() {
 		try {
 			assertEquals(Memory.START_LOC, _machine.getProgramCounter());
@@ -804,7 +760,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#CONTENTS()}.
 	 */
-	@Test
 	public void testCONTENTS() {
 		try {
 			final int [] vals = new int[]{20, 15, 17, 44, 101};
@@ -848,7 +803,6 @@ public class MachineTest extends AndroidTestCase {
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#HALT()}.
 	 */
-	@Test
 	public void testHALT() {
 
 		final List<Integer> memory = _machine.dumpMemory();

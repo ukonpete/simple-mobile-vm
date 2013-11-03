@@ -9,12 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import android.test.AndroidTestCase;
 import android.util.Log;
 
@@ -28,7 +22,7 @@ import com.slickpath.mobile.android.simple.vm.util.Command;
 import com.slickpath.mobile.android.simple.vm.util.CommandList;
 
 /**
- * @author PJ
+ * @author Pete Procopio
  *
  */
 public class VirtualMachineTest extends AndroidTestCase implements IVMListener, IParserListener{
@@ -47,25 +41,10 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 	private CommandList _commands;
 	private int _count ;
 
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
 	/* (non-Javadoc)
 	 * @see android.test.AndroidTestCase#setUp()
 	 */
 	@Override
-	@Before
 	protected void setUp() throws Exception {
 		super.setUp();
 		_vm = new VirtualMachine(getContext());
@@ -79,7 +58,6 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 	 * @see android.test.AndroidTestCase#tearDown()
 	 */
 	@Override
-	@After
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
@@ -88,7 +66,6 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#getVMListener()}.
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#setVMListener(com.slickpath.mobile.android.simple.vm.IVMListener)}.
 	 */
-	@Test
 	public void testGetVMListener() {
 		assertNotNull(_vm.getVMListener());
 		_vm.setVMListener(null);
@@ -100,7 +77,6 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#addCommand(com.slickpath.mobile.android.simple.vm.util.Command)}.
 	 */
-	@Test
 	public void testAddCommand() {
 		final int [] instructions = {Instructions._ADD, Instructions._EQUAL, Instructions._NOT, Instructions._PUSHC, Instructions._JUMP, Instructions._POPC};
 		final Integer [] params = {null, null, null, 10, 20, 30};
@@ -131,7 +107,6 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#addCommands(com.slickpath.mobile.android.simple.vm.util.CommandList)}.
 	 */
-	@Test
 	public void testAddCommands() {
 		final int [] instructions = {Instructions._ADD, Instructions._EQUAL, Instructions._NOT, Instructions._PUSHC, Instructions._JUMP, Instructions._POPC};
 		final Integer [] params = {null, null, null, 10, 20, 30};
@@ -175,7 +150,6 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#runNextInstruction()}.
 	 */
-	@Test
 	public void testRunNextInstruction() {
 		int lineTracker = NUM_COMMANDS_TO_RUN;
 		final File filesDir = mContext.getFilesDir();
@@ -246,7 +220,6 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#runInstructions()}.
 	 */
-	@Test
 	public void testRunInstructions() {
 		final File filesDir = mContext.getFilesDir();
 		_parser = new SimpleParser(filesDir.getPath() + File.separator + "fibonacciAndroid.ins.txt", this);
@@ -283,7 +256,6 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#runInstructions(int)}.
 	 */
-	@Test
 	public void testRunInstructionsInt() {
 		final File filesDir = mContext.getFilesDir();
 		_parser = new SimpleParser(filesDir.getPath() + File.separator + "fibonacciAndroid.ins.txt", this);
