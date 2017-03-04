@@ -10,14 +10,11 @@ Written in Java to run on Android.
 
 ## Details
 
-  * [Language](wiki/VMLanguage)
-  * [Memory](wiki/VMMemory)
-  * [How to Use VM](wiki/VMUseage)
+  * More details available on [wiki](https://github.com/ukonpete/simple-mobile-vm/wiki)
 
-## Notes
+## Release Notes
 
-  * To run instructions sets at this time in the app, you will have to manually copy them from simpleMobileVMApp\instructions to the device under /data/data/com.slickpath.mobile.android.simple.vm.app/files
-  * simpleMobileVMLib and simpleMobileVMLib-test are not useful at this time.  They are meant to migrate the code form an AndroidLibrary project into a java jar
+  * 3/4/2017 - Updated to so support Andorid Studio (2.3) and Gradle 
 
 ## Javadoc
 
