@@ -10,9 +10,9 @@ Written in Java to run on Android.
 
 ## Details
 
-  * [Language](VMLanguage)
-  * [Memory](VMMemory)
-  * [How to Use VM](VMUseage)
+  * [Language](wiki/VMLanguage)
+  * [Memory](wiki/VMMemory)
+  * [How to Use VM](wiki/VMUseage)
 
 ## Notes
 
