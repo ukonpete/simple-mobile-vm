@@ -1,11 +1,9 @@
-/**
- * 
- */
-package com.slickpath.mobile.android.simple.vm.parser.test;
+package com.slickpath.mobile.android.simple.vm.parser;
 
 
 import java.util.concurrent.CountDownLatch;
 
+import android.support.annotation.NonNull;
 import android.test.AndroidTestCase;
 
 import com.slickpath.mobile.android.simple.vm.machine.FibonacciInstructions;
@@ -54,7 +52,7 @@ public class SimpleParserTest extends AndroidTestCase implements IParserListener
 		try {
 			// Wait for Callback
 			_signal.await();
-		} catch (final InterruptedException e) {
+		} catch (@NonNull final InterruptedException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}// wait for callback
@@ -215,7 +213,7 @@ public class SimpleParserTest extends AndroidTestCase implements IParserListener
 		assertEquals(FIB_LINE_NUMBER, _commands.get(i++).getParameters().get(0).intValue());
 		// 48 - Comment
 		// 49 [HALT] - Symbol
-		assertEquals(_commands.get(i++).getCommandId().intValue(), BaseInstructionSet._HALT); // 50
+		assertEquals(_commands.get(i).getCommandId().intValue(), BaseInstructionSet._HALT); // 50
 	}
 
 	@Override

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.slickpath.mobile.android.simple.vm.instructions;
 
 import java.util.Hashtable;
@@ -21,11 +18,11 @@ public class BaseInstructionSet implements Instructions{
 	/**
 	 * Lookup table for Command ID (Integer) by Command Name (String)
 	 */
-	public static final Map<String, Integer> INSTRUCTION_SET_HT = new Hashtable<String, Integer>(NUM_COMMANDS);
+	public static final Map<String, Integer> INSTRUCTION_SET_HT = new Hashtable<>(NUM_COMMANDS);
 	/**
 	 * Lookup table for Command Name (String) by Command ID (Integer)
 	 */
-	public static final Map<Integer, String> INSTRUCTION_SET_CONV_HT = new Hashtable<Integer, String>(NUM_COMMANDS);
+	public static final Map<Integer, String> INSTRUCTION_SET_CONV_HT = new Hashtable<>(NUM_COMMANDS);
 
 	static
 	{

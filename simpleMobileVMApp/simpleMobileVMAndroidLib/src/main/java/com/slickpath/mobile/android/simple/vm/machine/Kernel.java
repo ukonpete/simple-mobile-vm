@@ -1,18 +1,8 @@
-/**
- * This class represents the basic functionality of the machine itself
- * for example
- *   -  push/pop stack data
- *   -  stack tracking
- *   -  read/write memory data
- *   -  memory tracking
- *   -  read/write program data
- *
- *   NOTE:  Program memory uses the same space as accessible memory
- */
 package com.slickpath.mobile.android.simple.vm.machine;
 
 import java.util.List;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.slickpath.mobile.android.simple.vm.VMError;
@@ -28,24 +18,14 @@ public class Kernel {
 
 	private static final String TAG = Machine.class.getName();
 
-	public static final int INSTRUCTION_LOC = 0;
-
-	public static final int PARAMETERS_LOC = 1;
-
-	/**
-	 * Convenience Constant
-	 */
 	public static final int PUSHC_YES = 1;
-	/**
-	 * Convenience Constant
-	 */
 	public static final int PUSHC_NO = 0;
 
-	protected boolean _bDebug = true;
+	private boolean _bDebug = true;
 
-	protected boolean _bDebugDump = false;
+	protected final boolean _bDebugDump = false;
 
-	protected boolean _bDebugVerbose = true;
+	protected final boolean _bDebugVerbose = true;
 
 	private final  Memory _memory = new Memory();
 
@@ -61,11 +41,11 @@ public class Kernel {
 	 * 
 	 * @param location - in memory to return
 	 * @return int - value at specified memory location
-	 * @throws VMError
+	 * @throws VMError error in VM
 	 */
 	public int getValueAt(final int location) throws VMError
 	{
-		int returnVal = 0;
+		int returnVal;
 		if (location < Memory.MAX_MEMORY)
 		{
 			returnVal = _memory.get(location);
@@ -80,10 +60,10 @@ public class Kernel {
 	/**
 	 * Set value at location specified
 	 * 
-	 * @param value
-	 * @param location
+	 * @param value value to be set
+	 * @param location location in memory
 	 * @return Integer (previous value) - @see Java.util.List.set()
-	 * @throws VMError
+	 * @throws VMError error in VM
 	 */
 	public Integer setValueAt(final int value, final int location) throws VMError
 	{
@@ -103,7 +83,7 @@ public class Kernel {
 	 * The value at the location of the stack pointer at the time of the call will be cleaned
 	 * 
 	 * @return int - value at top of stack
-	 * @throws VMError
+	 * @throws VMError error in VM
 	 */
 	public int pop() throws VMError
 	{
@@ -120,8 +100,8 @@ public class Kernel {
 	/**
 	 * Push the indicated value to the top of the stack (increment stack pointer then add item at the new stack pointer location)
 	 * 
-	 * @param value
-	 * @throws VMError
+	 * @param value value to push
+	 * @throws VMError error in VM
 	 */
 	public void push(final int value) throws VMError
 	{
@@ -129,7 +109,7 @@ public class Kernel {
 		{
 			_memory.push_mem(value);
 		}
-		catch(final Exception e)
+		catch(@NonNull final Exception e)
 		{
 			throw new VMError("PUSHC", e, VMError.VM_ERROR_TYPE_STACK_LIMIT);
 		}
@@ -138,8 +118,8 @@ public class Kernel {
 	/**
 	 * Set the program counter (the pointer to the next instruction to be run) to the location that is passed in
 	 * 
-	 * @param location
-	 * @throws VMError
+	 * @param location location in memory
+	 * @throws VMError error in VM
 	 */
 	public void branch(final int location) throws VMError
 	{
@@ -158,7 +138,7 @@ public class Kernel {
 	 *  Set the program counter (the pointer to the next instruction to be run) to the location that the top of the stack indicates.
 	 *  The value used is popped from the stack
 	 * 
-	 * @throws VMError
+	 * @throws VMError error in VM
 	 */
 	public void jump() throws VMError
 	{
@@ -172,7 +152,7 @@ public class Kernel {
 	 * This allows sub-classes of this class to do logging without having to implement it.
 	 * 
 	 * @param sTag - the Log.d TAG to use
-	 * @param sText
+	 * @param sText test to log
 	 */
 	protected void debugVerbose(final String sTag, final String sText)
 	{
@@ -205,16 +185,12 @@ public class Kernel {
 	 * 
 	 * Also any output commands (example WRCHR and WRINT) will Log.d the output
 	 * 
-	 * @param bDebug
+	 * @param bDebug set this to be debug
 	 */
 	public void setDebug(final boolean bDebug)
 	{
 		_bDebug = bDebug;
 	}
-
-	/**************************************************
-	 * Abstract memory from other sub-Classes of Kernel
-	 ***************************************************/
 
 	/**
 	 * Get current line in program that will execute next
@@ -251,7 +227,7 @@ public class Kernel {
 
 	/**
 	 * Get the current location in program memory where the next instruction will be added
-	 * @return
+	 * @return current location in program memory where the next instruction will be added
 	 */
 	public int getProgramWriterPtr()
 	{
@@ -285,9 +261,9 @@ public class Kernel {
 	/**
 	 * Gets the instruction and parameters at the requested location and puts it in a list
 	 * 
-	 * @param location
-	 * @return
-	 * @throws VMError
+	 * @param location location in memory
+	 * @return Command at location
+	 * @throws VMError error in VM
 	 */
 	public Command getCommandAt(final int location) throws VMError
 	{
@@ -311,12 +287,11 @@ public class Kernel {
 	/**
 	 * Takes an instruction and parameters and stores it in the requested location
 	 * 
-	 * @param instruction
-	 * @param parameters
-	 * @param location
-	 * @throws VMError
+	 * @param command the command to set
+	 * @param location location in memory
+	 * @throws VMError error in VM
 	 */
-	public void setCommandAt(final Command command, final int location) throws VMError
+	public void setCommandAt(@NonNull final Command command, final int location)
 	{
 		if (location < Memory.MAX_MEMORY)
 		{
@@ -339,9 +314,10 @@ public class Kernel {
 	/**
 	 * Dump the memory as a list
 	 * 
-	 * @return
+	 * @return List<Integer> list of each each value of memory
 	 * 
 	 */
+	@NonNull
 	public List<Integer> dumpMemory()
 	{
 		return _memory.memoryDump();
@@ -350,8 +326,9 @@ public class Kernel {
 	/**
 	 * Returns the stack as a List, where the 1st element in the list is at the bottom of the stack
 	 *
-	 * @return
+	 * @return List<Integer> list of each each value of memory in the stack
 	 */
+	@NonNull
 	public List<Integer> dumpStack()
 	{
 		return _memory.stackDump();
@@ -360,8 +337,9 @@ public class Kernel {
 	/**
 	 * Returns all the Instruction/Parameter lists as one list
 	 * 
-	 * @return
+	 * @return List<Integer> list of each each value of memory for instructions
 	 */
+	@NonNull
 	public List<Command> dumpInstructionMemory()
 	{
 		return _memory.programMemoryDump();

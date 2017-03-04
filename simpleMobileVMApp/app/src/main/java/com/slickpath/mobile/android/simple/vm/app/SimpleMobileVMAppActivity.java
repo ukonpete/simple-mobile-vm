@@ -3,6 +3,7 @@ package com.slickpath.mobile.android.simple.vm.app;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -26,10 +27,9 @@ import java.io.IOException;
 
 public class SimpleMobileVMAppActivity extends Activity implements IVMListener, IParserListener{
 
-	private static final Object object = new Object();
 	private ProgressDialog _dialog;
 	private VirtualMachine _vm;
-	private StringBuilder stringBuilder = new StringBuilder();
+	private final StringBuilder stringBuilder = new StringBuilder();
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
@@ -137,7 +137,7 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
 	 * @see com.slickpath.mobile.android.simple.vm.parser.ParserListener#completedParse(com.slickpath.mobile.android.simple.vm.VMError, com.slickpath.mobile.android.simple.vm.util.CommandList)
 	 */
 	@Override
-	public void completedParse(final VMError vmError, final CommandList commands)
+	public void completedParse(@Nullable final VMError vmError, final CommandList commands)
 	{
 		if ( vmError != null)
 		{
@@ -151,7 +151,7 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
 	 * @see com.slickpath.mobile.android.simple.vm.VMListener#completedAddingInstructions(com.slickpath.mobile.android.simple.vm.VMError)
 	 */
 	@Override
-	public void completedAddingInstructions(final VMError vmError) {
+	public void completedAddingInstructions(@Nullable final VMError vmError) {
 		if ( vmError != null)
 		{
 			Toast.makeText(this, "ERROR ADD INST" + vmError.getMessage(), Toast.LENGTH_LONG).show();
@@ -164,7 +164,7 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
 	 * @see com.slickpath.mobile.android.simple.vm.VMListener#completedRunningInstructions(boolean, int, com.slickpath.mobile.android.simple.vm.VMError)
 	 */
 	@Override
-	public void completedRunningInstructions(final boolean bHalt, final int lineExecuted, final VMError vmError) {
+	public void completedRunningInstructions(final boolean bHalt, final int lineExecuted, @Nullable final VMError vmError) {
 		_dialog.dismiss();
 		if ( vmError != null)
 		{

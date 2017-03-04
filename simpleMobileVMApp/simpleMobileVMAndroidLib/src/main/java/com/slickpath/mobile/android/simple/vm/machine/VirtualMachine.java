@@ -1,6 +1,8 @@
 package com.slickpath.mobile.android.simple.vm.machine;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.slickpath.mobile.android.simple.vm.IVMListener;
@@ -59,7 +61,7 @@ public class VirtualMachine extends Machine implements Instructions{
 		{
 			Class.forName("BaseInstructionSet");
 		}
-		catch (final ClassNotFoundException e)
+		catch (@NonNull final ClassNotFoundException e)
 		{
 			debug(TAG, e.getMessage());
 		}
@@ -93,7 +95,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	 * @param command command to add
 	 * @throws VMError
 	 */
-	public void addCommand(final Command command) throws VMError
+	public void addCommand(@NonNull final Command command) throws VMError
 	{
 		final int instruction = command.getCommandId();
 		String sParams = "X";
@@ -133,7 +135,7 @@ public class VirtualMachine extends Machine implements Instructions{
 	 * 
 	 * @param commands commands to add
 	 */
-	private void doAddInstructions(final CommandList commands) {
+	private void doAddInstructions(@Nullable final CommandList commands) {
 		VMError vmError = null;
 		if (commands != null )
 		{
@@ -142,7 +144,7 @@ public class VirtualMachine extends Machine implements Instructions{
 			{
 				try {
 					addCommand(commands.get(i));
-				} catch (final VMError e) {
+				} catch (@NonNull final VMError e) {
 					vmError = e;
 				}
 			}
@@ -187,7 +189,7 @@ public class VirtualMachine extends Machine implements Instructions{
 		try {
 			instructionVal = getInstruction();
 			runCommand(instructionVal);
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			vmError = e;
 		}
 		if (instructionVal == BaseInstructionSet._HALT)
@@ -275,7 +277,7 @@ public class VirtualMachine extends Machine implements Instructions{
 			logAdditionalInfo(numInstrsRun, lastProgCtr, instructionVal);
 			debug(TAG, "=============================================================");
 		}
-		catch(final VMError vme)
+		catch(@NonNull final VMError vme)
 		{
 			debug(TAG, "=============================================================");
 			debug(TAG, "VMError=(" + vme.getType() + ") " + vme.getMessage());
@@ -330,7 +332,7 @@ public class VirtualMachine extends Machine implements Instructions{
 					final int command = getValueAt(i-1);
 					data.append(command).append(' ').append(parm).append("\r\n");
 				}
-				catch (final VMError e) {
+				catch (@NonNull final VMError e) {
 					e.printStackTrace();
 				}
 			}
@@ -339,7 +341,7 @@ public class VirtualMachine extends Machine implements Instructions{
 				fos = _context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
 				fos.write(data.toString().getBytes());
 				fos.close();
-			} catch (final IOException e) {
+			} catch (@NonNull final IOException e) {
 				e.printStackTrace();
 			}
 		}

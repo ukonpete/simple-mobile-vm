@@ -1,7 +1,4 @@
-/**
- * 
- */
-package com.slickpath.mobile.android.simple.vm.instructions.test;
+package com.slickpath.mobile.android.simple.vm.instructions;
 
 
 import java.util.Set;

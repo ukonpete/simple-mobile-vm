@@ -1,7 +1,9 @@
 package com.slickpath.mobile.android.simple.vm.parser;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.slickpath.mobile.android.simple.vm.BuildConfig;
 import com.slickpath.mobile.android.simple.vm.FileHelper;
 import com.slickpath.mobile.android.simple.vm.VMError;
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet;
@@ -61,9 +63,7 @@ public class SimpleParser {
 	private final CommandList _commands = new CommandList();
 	private int _freeMemoryLoc = 0;
 
-	private boolean _bDebug = false;
-
-	public SimpleParser(final FileHelper fileHelper, final IParserListener  listener)
+	public SimpleParser(@NonNull final FileHelper fileHelper, final IParserListener  listener)
 	{
 		instructions = fileHelper.getInstructionsString();
 		_parserListener = listener;
@@ -86,7 +86,7 @@ public class SimpleParser {
 					VMError vmError = null;
 					try {
 						doParse();
-					} catch (final VMError e) {
+					} catch (@NonNull final VMError e) {
 						vmError = e;
 					}
 					if ( _parserListener != null)
@@ -152,7 +152,7 @@ public class SimpleParser {
 				}
 				sLine = buffReader.readLine();
 			}
-		} catch(final Exception e)
+		} catch(@NonNull final Exception e)
 		{
 			throw new VMError("[runInstructions]" + e.getMessage(), e, VMError.VM_ERROR_TYPE_UNKOWN);
 		}
@@ -162,7 +162,7 @@ public class SimpleParser {
 			{
 				try {
 					stream.close();
-				} catch (final IOException e) {
+				} catch (@NonNull final IOException e) {
 					throw new VMError("[runInstructions] finally " + e.getMessage(), e, VMError.VM_ERROR_TYPE_IO);
 				}
 			}
@@ -175,6 +175,7 @@ public class SimpleParser {
 	 * @param lineWords words on one line
 	 * @return parameters as list
 	 */
+	@NonNull
 	private List<Integer> parseParameters(final String[] lineWords) {
 		final List<Integer> parameters = new ArrayList<>();
 		final String sParams = lineWords[1];
@@ -228,7 +229,7 @@ public class SimpleParser {
 	 * 
 	 * @param fis - FileInputStream
 	 */
-	private void getSymbols(final InputStream fis)
+	private void getSymbols(@NonNull final InputStream fis)
 	{
 		int line = 0;
 
@@ -258,7 +259,7 @@ public class SimpleParser {
 				sLine = buffReader.readLine();
 			}
 
-		} catch (final IOException e) {
+		} catch (@NonNull final IOException e) {
 			debug("[getSymbols] IOException " + sSymbol + "(" + line + ") " + e.getMessage());
 		}
 
@@ -268,7 +269,8 @@ public class SimpleParser {
 	 * @param is input stream
 	 * @return a BufferedReader
 	 */
-	private BufferedReader getBufferedReader(final InputStream is) {
+	@NonNull
+	private BufferedReader getBufferedReader(@NonNull final InputStream is) {
 		final DataInputStream inStream = new DataInputStream(is);
 		return new BufferedReader(new InputStreamReader(inStream), 8192 );
 	}
@@ -280,9 +282,8 @@ public class SimpleParser {
 	 */
 	private void debug(final String sText)
 	{
-		if (!_bDebug) {
-			return;
+		if (BuildConfig.DEBUG) {
+			Log.d(TAG, sText);
 		}
-		Log.d(TAG, sText);
 	}
 }

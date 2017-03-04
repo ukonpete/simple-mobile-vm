@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.slickpath.mobile.android.simple.vm.machine;
 
 
@@ -12,10 +9,6 @@ import android.test.AndroidTestCase;
 import com.slickpath.mobile.android.simple.vm.machine.Memory;
 import com.slickpath.mobile.android.simple.vm.util.Command;
 
-/**
- * @author Pete Procopio
- *
- */
 /**
  * @author Pete Procopio
  *
@@ -71,12 +64,12 @@ public class MemoryTest extends AndroidTestCase {
 
 		for(int j = 0; j < 100; j++)
 		{
-			_memory.push_mem(111);;
-		}
+			_memory.push_mem(111);
+        }
 		for(int j = 0; j < 100; j++)
 		{
-			_memory.pop_mem();;
-		}
+			_memory.pop_mem();
+        }
 		for (int val = values.length - 1; val >= 0; val--) {
 			assertTrue(!_memory.isStackEmpty());
 			assertEquals(values[val], _memory.pop_mem().intValue());
@@ -86,7 +79,7 @@ public class MemoryTest extends AndroidTestCase {
 
 
 	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#testPop_mem;}.
+	 * Test method for {@link Memory#pop_mem()}}.
 	 */
 	public void testPop_mem() {
 		final int[] values = {0,10,22,34,45,57};
@@ -98,18 +91,18 @@ public class MemoryTest extends AndroidTestCase {
 
 		for(int j = 0; j < 100; j++)
 		{
-			_memory.push_mem(111);;
-		}
+			_memory.push_mem(111);
+        }
 
 		for(int j = 0; j < 50; j++)
 		{
-			_memory.pop_mem();;
-		}
+			_memory.pop_mem();
+        }
 
 		for(int j = 0; j < 50; j++)
 		{
-			_memory.pop_mem();;
-		}
+			_memory.pop_mem();
+        }
 
 		for (int val = values.length - 1; val >= 0; val--) {
 			_memory.push_mem(values[val]);
@@ -124,27 +117,27 @@ public class MemoryTest extends AndroidTestCase {
 		assertTrue(_memory.isStackEmpty());
 		for(int j = 0; j < 100; j++)
 		{
-			_memory.push_mem(111);;
-			assertTrue(!_memory.isStackEmpty());
+			_memory.push_mem(111);
+            assertTrue(!_memory.isStackEmpty());
 		}
 		for(int j = 0; j < 50; j++)
 		{
-			_memory.pop_mem();;
-			assertTrue(!_memory.isStackEmpty());
+			_memory.pop_mem();
+            assertTrue(!_memory.isStackEmpty());
 		}
 		for(int j = 0; j < 49; j++)
 		{
-			_memory.pop_mem();;
-			assertTrue(!_memory.isStackEmpty());
+			_memory.pop_mem();
+            assertTrue(!_memory.isStackEmpty());
 		}
-		_memory.pop_mem();;
-		assertTrue(_memory.isStackEmpty());
+		_memory.pop_mem();
+        assertTrue(_memory.isStackEmpty());
 	}
 
 	/**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#memoryDump()}.
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#get(int)}.
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#set(int)}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#set(int, int)}.
 	 */
 	public void testProgramMemoryDump() {
 		List<Integer> memDump = _memory.memoryDump();
@@ -175,8 +168,8 @@ public class MemoryTest extends AndroidTestCase {
 	}
 
 	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#getCommand()}.
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#setCommand()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#getCommand(int)}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#setCommand(int, Command)} )}.
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#programMemoryDump()}.
 	 */
 	public void testGetCommand()
@@ -187,7 +180,7 @@ public class MemoryTest extends AndroidTestCase {
 
 		for(int i = 0; i < instruction.length; i ++)
 		{
-			final List<Integer> params = new ArrayList<Integer>();
+			final List<Integer> params = new ArrayList<>();
 			params.add(parameters[i]);
 			final Command command = new Command(instruction[i], params);
 			_memory.setCommand(location[i], command);
@@ -206,7 +199,7 @@ public class MemoryTest extends AndroidTestCase {
 			}
 			else
 			{
-				assertEquals(Integer.valueOf(parameters[i]), instructionDump.get(location[i]).getParameters().get(0));
+				assertEquals(parameters[i], instructionDump.get(location[i]).getParameters().get(0));
 			}
 		}
 
@@ -219,8 +212,8 @@ public class MemoryTest extends AndroidTestCase {
 		assertTrue(_memory.isStackEmpty());
 		for(int j = 0; j < 100; j++)
 		{
-			_memory.push_mem(111);;
-			assertTrue(!_memory.isStackEmpty());
+			_memory.push_mem(111);
+            assertTrue(!_memory.isStackEmpty());
 		}
 		assertTrue(!_memory.isStackEmpty());
 		_memory.resetStack();

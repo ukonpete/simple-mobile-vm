@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.slickpath.mobile.android.simple.vm;
 
 /**

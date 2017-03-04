@@ -1,7 +1,6 @@
-/**
- * 
- */
 package com.slickpath.mobile.android.simple.vm.machine;
+
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +42,7 @@ public class ProgramManager {
 	/**
 	 * Actually store we use for memory
 	 */
-	private final List<Command> _programStore = new ArrayList<Command>(MAX_MEMORY);
+	private final List<Command> _programStore = new ArrayList<>(MAX_MEMORY);
 
 	/**
 	 * Constructor
@@ -131,9 +130,10 @@ public class ProgramManager {
 	 * NOTE: This makes a copy of the program memory
 	 * @return Copy of memory
 	 */
-	public  List<Command> dumpProgramStore()
+	@NonNull
+    public  List<Command> dumpProgramStore()
 	{
-		return  new ArrayList<Command>(_programStore);
+		return new ArrayList<>(_programStore);
 	}
 
 
@@ -152,7 +152,7 @@ public class ProgramManager {
 	 * Set instruction value at the specified location
 	 *
 	 * @param location
-	 * @param value
+	 * @param command
 	 */
 	public void setCommandAt(final int location, final Command command)
 	{

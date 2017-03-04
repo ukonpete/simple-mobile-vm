@@ -1,12 +1,11 @@
-/**
- * 
- */
 package com.slickpath.mobile.android.simple.vm.machine;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.test.AndroidTestCase;
 
 import com.slickpath.mobile.android.simple.vm.VMError;
@@ -20,7 +19,8 @@ import com.slickpath.mobile.android.simple.vm.util.Command;
  */
 public class KernelTest extends AndroidTestCase {
 
-	private Kernel _kernel = null;
+	@Nullable
+    private Kernel _kernel = null;
 
 	/* (non-Javadoc)
 	 * @see android.test.AndroidTestCase#setUp()
@@ -64,7 +64,7 @@ public class KernelTest extends AndroidTestCase {
 					assertEquals(Memory.EMPTY_MEMORY_VALUE , _kernel.getValueAt(i));
 				}
 			}
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -90,7 +90,7 @@ public class KernelTest extends AndroidTestCase {
 			for (int i = values.length-1; i >= 0; i--) {
 				assertEquals(values[i], _kernel.pop());
 			}
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -121,7 +121,7 @@ public class KernelTest extends AndroidTestCase {
 			assertEquals(Memory.START_LOC, _kernel.getProgramCounter());
 			_kernel.branch(25);
 			assertEquals(25, _kernel.getProgramCounter());
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -162,7 +162,7 @@ public class KernelTest extends AndroidTestCase {
 			assertEquals(12, _kernel.getProgramCounter());
 			_kernel.jump();
 			assertEquals(7, _kernel.getProgramCounter());
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -207,7 +207,7 @@ public class KernelTest extends AndroidTestCase {
 
 			for(int i = 0; i < instruction.length; i ++)
 			{
-				final List<Integer> params = new ArrayList<Integer>();
+				final List<Integer> params = new ArrayList<>();
 				params.add(parameters[i]);
 				final Command command = new Command(instruction[i], params);
 				_kernel.setCommandAt(command, location[i]);
@@ -226,10 +226,10 @@ public class KernelTest extends AndroidTestCase {
 				}
 				else
 				{
-					assertEquals(Integer.valueOf(parameters[i]), instructionDump.get(location[i]).getParameters().get(0));
+					assertEquals(parameters[i], instructionDump.get(location[i]).getParameters().get(0));
 				}
 			}
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -254,7 +254,7 @@ public class KernelTest extends AndroidTestCase {
 			assertEquals(values[3], stackDump.get(3).intValue());
 			assertEquals(values[4], stackDump.get(4).intValue());
 			assertEquals(values[5], stackDump.get(5).intValue());
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}

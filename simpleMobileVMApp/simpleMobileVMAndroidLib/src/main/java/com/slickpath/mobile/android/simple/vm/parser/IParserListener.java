@@ -21,5 +21,5 @@ public interface IParserListener {
 	 * @param vmError - If an error is seen this object contains error information, else returns Null
 	 * @param commands - The CommandList of the parsed data
 	 */
-	abstract public void completedParse(VMError vmError, CommandList commands);
+    void completedParse(VMError vmError, CommandList commands);
 }

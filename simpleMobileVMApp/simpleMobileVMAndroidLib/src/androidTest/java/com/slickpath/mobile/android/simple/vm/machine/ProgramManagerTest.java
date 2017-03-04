@@ -1,12 +1,10 @@
-/**
- * 
- */
 package com.slickpath.mobile.android.simple.vm.machine;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
+import android.support.annotation.Nullable;
 import android.test.AndroidTestCase;
 
 import com.slickpath.mobile.android.simple.vm.machine.Memory;
@@ -19,7 +17,8 @@ import com.slickpath.mobile.android.simple.vm.util.Command;
  */
 public class ProgramManagerTest extends AndroidTestCase {
 
-	private ProgramManager _programManager = null;
+	@Nullable
+    private ProgramManager _programManager = null;
 
 	/* (non-Javadoc)
 	 * @see android.test.AndroidTestCase#setUp()
@@ -103,8 +102,8 @@ public class ProgramManagerTest extends AndroidTestCase {
 	}
 
 	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#getCommandAt()}.
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#setCommandAt()}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#getCommandAt(int)}.
+	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.ProgramManager#setCommandAt(int, Command)}.
 	 */
 	public void testGetCommandAt()
 	{
@@ -114,7 +113,7 @@ public class ProgramManagerTest extends AndroidTestCase {
 
 		for(int i = 0; i < instruction.length; i ++)
 		{
-			final List<Integer> params = new ArrayList<Integer>();
+			final List<Integer> params = new ArrayList<>();
 			params.add(parameters[i]);
 			final Command command = new Command(instruction[i], params);
 			_programManager.setCommandAt(location[i], command);
@@ -133,7 +132,7 @@ public class ProgramManagerTest extends AndroidTestCase {
 			}
 			else
 			{
-				assertEquals(Integer.valueOf(parameters[i]), instructionDump.get(location[i]).getParameters().get(0));
+				assertEquals(parameters[i], instructionDump.get(location[i]).getParameters().get(0));
 			}
 		}
 

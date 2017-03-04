@@ -19,7 +19,7 @@ public interface IVMListener {
 	 * 
 	 * @param vmError
 	 */
-	abstract public void completedAddingInstructions(VMError vmError);
+    void completedAddingInstructions(VMError vmError);
 
 	/**
 	 * Callback - Called when VM has completed running instructions .  Will return the line number of the program that was last executed
@@ -32,6 +32,6 @@ public interface IVMListener {
 	 * @param lastLineExecuted
 	 * @param vmError
 	 */
-	abstract public void completedRunningInstructions(boolean bHalt, int lastLineExecuted, VMError vmError);
+    void completedRunningInstructions(boolean bHalt, int lastLineExecuted, VMError vmError);
 
 }

@@ -1,32 +1,33 @@
-package com.slickpath.mobile.android.simple.vm.util.test;
+package com.slickpath.mobile.android.simple.vm.util;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import android.support.annotation.Nullable;
 import android.test.AndroidTestCase;
 
 import com.slickpath.mobile.android.simple.vm.instructions.Instructions;
-import com.slickpath.mobile.android.simple.vm.util.Command;
-import com.slickpath.mobile.android.simple.vm.util.CommandList;
 
 public class CommandListTest extends AndroidTestCase {
 
 	private static final int TEST_PARAM_VAL1 = 15;
 	private static final int TEST_PARAM_VAL2 = 25;
 
+	@Nullable
 	private CommandList testList1 = null;
 
-	private final Integer COMMAND_1 =  Integer.valueOf(Instructions._PUSHC);
-	private final Integer COMMAND_PARAM_VAL_1 = Integer.valueOf(TEST_PARAM_VAL1);
-	private final List<Integer> COMMAND_PARAM_LIST_1 = new ArrayList<Integer>(Arrays.asList(COMMAND_PARAM_VAL_1));
+	private final Integer COMMAND_1 = Instructions._PUSHC;
+	private final Integer COMMAND_PARAM_VAL_1 = TEST_PARAM_VAL1;
+	private final List<Integer> COMMAND_PARAM_LIST_1 = new ArrayList<>(Collections.singletonList(COMMAND_PARAM_VAL_1));
 
-	private final Integer COMMAND_2 =  Integer.valueOf(Instructions._PUSH);
-	private final Integer COMMAND_PARAM_VAL_2 = Integer.valueOf(TEST_PARAM_VAL2);
-	private final List<Integer> COMMAND_PARAM_LIST_2 = new ArrayList<Integer>(Arrays.asList(COMMAND_PARAM_VAL_2));
+	private final Integer COMMAND_2 = Instructions._PUSH;
+	private final Integer COMMAND_PARAM_VAL_2 = TEST_PARAM_VAL2;
+	private final List<Integer> COMMAND_PARAM_LIST_2 = new ArrayList<>(Collections.singletonList(COMMAND_PARAM_VAL_2));
 
-	private final Integer COMMAND_3 =  Integer.valueOf(Instructions._ADD);
+	private final Integer COMMAND_3 = Instructions._ADD;
+	@Nullable
 	private final List<Integer> COMMAND_PARAM_LIST_3 = null;
 
 	@Override
@@ -44,6 +45,7 @@ public class CommandListTest extends AndroidTestCase {
 	}
 
 	public void testCommands() {
+		assertNotNull(testList1);
 		assertEquals(testList1.size(), 3);
 		assertNotNull(testList1.get(0));
 		assertEquals(testList1.get(0).getCommandId(), COMMAND_1);

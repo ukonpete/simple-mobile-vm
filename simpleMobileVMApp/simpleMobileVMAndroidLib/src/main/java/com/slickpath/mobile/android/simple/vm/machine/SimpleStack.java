@@ -1,5 +1,7 @@
 package com.slickpath.mobile.android.simple.vm.machine;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -15,7 +17,7 @@ public class SimpleStack{
 	/**
 	 * The stack container class
 	 */
-	private final Stack<Integer> _stack = new Stack<Integer>();
+	private final Stack<Integer> _stack = new Stack<>();
 
 	/**
 	 * Is the stack rempty
@@ -84,8 +86,9 @@ public class SimpleStack{
 	 * 
 	 * @return List<Integer> list of data
 	 */
-	public List<Integer> dump()
+	@NonNull
+    public List<Integer> dump()
 	{
-		return new ArrayList<Integer>(_stack);
+		return new ArrayList<>(_stack);
 	}
 }

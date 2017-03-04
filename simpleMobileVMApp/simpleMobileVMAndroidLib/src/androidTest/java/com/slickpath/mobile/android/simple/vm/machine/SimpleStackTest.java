@@ -1,11 +1,9 @@
-/**
- * 
- */
 package com.slickpath.mobile.android.simple.vm.machine;
 
 
 import java.util.List;
 
+import android.support.annotation.Nullable;
 import android.test.AndroidTestCase;
 
 import com.slickpath.mobile.android.simple.vm.machine.SimpleStack;
@@ -16,7 +14,8 @@ import com.slickpath.mobile.android.simple.vm.machine.SimpleStack;
  */
 public class SimpleStackTest extends AndroidTestCase {
 
-	private SimpleStack _stack = null;
+	@Nullable
+    private SimpleStack _stack = null;
 
 	/* (non-Javadoc)
 	 * @see android.test.AndroidTestCase#setUp()
@@ -73,13 +72,13 @@ public class SimpleStackTest extends AndroidTestCase {
 
 		for(int j = 0; j < 100; j++)
 		{
-			_stack.push(111);;
-		}
+			_stack.push(111);
+        }
 
 		for(int j = 0; j < 50; j++)
 		{
-			_stack.pop();;
-		}
+			_stack.pop();
+        }
 
 		for(int j = 0; j < 50; j++)
 		{
@@ -106,12 +105,12 @@ public class SimpleStackTest extends AndroidTestCase {
 
 		for(int j = 0; j < 100; j++)
 		{
-			_stack.push(111);;
-		}
+			_stack.push(111);
+        }
 		for(int j = 0; j < 100; j++)
 		{
-			_stack.pop();;
-		}
+			_stack.pop();
+        }
 		for (int val = values.length - 1; val >= 0; val--) {
 			assertTrue(!_stack.isEmpty());
 			assertEquals(values[val], _stack.pop().intValue());
@@ -140,8 +139,8 @@ public class SimpleStackTest extends AndroidTestCase {
 		assertTrue(_stack.isEmpty());
 		for(int j = 0; j < 100; j++)
 		{
-			_stack.push(111);;
-			assertTrue(!_stack.isEmpty());
+			_stack.push(111);
+            assertTrue(!_stack.isEmpty());
 		}
 		assertTrue(!_stack.isEmpty());
 		_stack.reset();

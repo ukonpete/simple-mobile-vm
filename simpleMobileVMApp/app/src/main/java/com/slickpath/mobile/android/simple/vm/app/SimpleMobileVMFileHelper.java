@@ -14,12 +14,15 @@ import java.io.InputStreamReader;
 
 class SimpleMobileVMFileHelper implements FileHelper{
 
-    private static String LOG_TAG = SimpleMobileVMFileHelper.class.getSimpleName();
+    private static final String LOG_TAG = SimpleMobileVMFileHelper.class.getSimpleName();
 
     private String instructions;
-    private Context context;
-    private String instructionsFile;
-    private String path;
+    @NonNull
+    private final Context context;
+    @NonNull
+    private final String instructionsFile;
+    @NonNull
+    private final String path;
 
     SimpleMobileVMFileHelper(@NonNull Context context, @NonNull String path, @NonNull String instructionsFile) throws IOException {
         this.context = context;
@@ -33,6 +36,7 @@ class SimpleMobileVMFileHelper implements FileHelper{
         return instructions;
     }
 
+    @NonNull
     private BufferedReader getBufferedReader() throws IOException {
         String assetFilePlusPath = path + File.separator + instructionsFile;
         Log.d(LOG_TAG, "attempting getting file from: " + assetFilePlusPath);

@@ -1,5 +1,7 @@
 package com.slickpath.mobile.android.simple.vm.machine;
 
+import android.support.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +33,8 @@ public class Memory {
 	/**
 	 * Memory to store values
 	 */
-	private final List<Integer> _memoryStore;
+	@NonNull
+    private final List<Integer> _memoryStore;
 
 	/**
 	 * Memory Stack
@@ -48,7 +51,7 @@ public class Memory {
 	 */
 	public Memory() {
 		super();
-		_memoryStore = new ArrayList<Integer>(MAX_MEMORY);
+		_memoryStore = new ArrayList<>(MAX_MEMORY);
 		// initialize every piece of memory to EMPTY
 		for (int i = 0; i < MAX_MEMORY; i++)
 		{
@@ -80,9 +83,10 @@ public class Memory {
 	 * 
 	 * @return
 	 */
-	public List<Integer> memoryDump()
+	@NonNull
+    public List<Integer> memoryDump()
 	{
-		return  new ArrayList<Integer>(_memoryStore);
+		return new ArrayList<>(_memoryStore);
 	}
 
 	/**
@@ -90,6 +94,7 @@ public class Memory {
 	 * 
 	 * @return
 	 */
+	@NonNull
 	public List<Integer> stackDump()
 	{
 		return _stack.dump();
@@ -101,6 +106,7 @@ public class Memory {
 	 * 
 	 * @return
 	 */
+	@NonNull
 	public List<Command> programMemoryDump()
 	{
 		return _programManager.dumpProgramStore();
@@ -109,8 +115,6 @@ public class Memory {
 
 	/**
 	 * Return value at location
-	 * 
-	 * @see Java.util.List
 	 * 
 	 * @param location
 	 * @return
@@ -134,8 +138,6 @@ public class Memory {
 	/**
 	 * Set value at location
 	 * 
-	 * @see Java.util.List
-	 * 
 	 * @param location
 	 * @param value
 	 * @return
@@ -149,7 +151,7 @@ public class Memory {
 	 * Set instruction value at the specified location
 	 *
 	 * @param location
-	 * @param value
+	 * @param command
 	 */
 	public void setCommand(final int location, final Command command)
 	{
@@ -170,10 +172,7 @@ public class Memory {
 
 	/**
 	 * pop the value onto the stack
-	 * 
-	 * @see Java.util.List
-	 * 
-	 * @param location
+	 *
 	 * @param value
 	 * @return
 	 */

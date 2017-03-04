@@ -349,9 +349,7 @@ public class Machine extends Kernel{
 	 */
 	protected void RDCHAR() throws VMError
 	{
-		final char ch = inputListener.getChar();
-		final int iAsciiValue = ch;
-		PUSHC(iAsciiValue);
+		PUSHC(inputListener.getChar());
 	}
 
 	/**

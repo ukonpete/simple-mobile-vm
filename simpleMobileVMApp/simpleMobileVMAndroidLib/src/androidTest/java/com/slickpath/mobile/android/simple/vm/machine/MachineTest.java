@@ -1,12 +1,12 @@
-/**
- * 
- */
 package com.slickpath.mobile.android.simple.vm.machine;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.test.AndroidTestCase;
 
 import com.slickpath.mobile.android.simple.vm.VMError;
@@ -21,6 +21,7 @@ public class MachineTest extends AndroidTestCase {
 	private static final int RESULT_LOC = 5;
 	private static final int LOW_VAL = 15;
 	private static final int HIGH_VAL = 17;
+	@Nullable
 	private Machine _machine = null;
 
 	/**
@@ -54,7 +55,7 @@ public class MachineTest extends AndroidTestCase {
 			assertEquals(HIGH_VAL + LOW_VAL, val);
 			assertTrue("POP should have thrown VMError", didPopFail());
 			assertTrue("ADD should have thrown VMError", didMethodFail(_machine, "ADD"));
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -75,7 +76,7 @@ public class MachineTest extends AndroidTestCase {
 			assertEquals(HIGH_VAL - LOW_VAL, val);
 			assertTrue("POP should have thrown VMError", didPopFail());
 			assertTrue("ADD should have thrown VMError", didMethodFail(_machine, "SUB"));
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -96,7 +97,7 @@ public class MachineTest extends AndroidTestCase {
 			assertEquals(HIGH_VAL * LOW_VAL, val);
 			assertTrue("POP should have thrown VMError", didPopFail());
 			assertTrue("MUL should have thrown VMError", didMethodFail(_machine, "MUL"));
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -117,7 +118,7 @@ public class MachineTest extends AndroidTestCase {
 			assertEquals(HIGH_VAL / LOW_VAL, val);
 			assertTrue("POP should have thrown VMError", didPopFail());
 			assertTrue("DIV should have thrown VMError", didMethodFail(_machine, "DIV"));
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -136,7 +137,7 @@ public class MachineTest extends AndroidTestCase {
 			assertEquals(-LOW_VAL, val);
 			assertTrue("POP should have thrown VMError", didPopFail());
 			assertTrue("NEG should have thrown VMError", didMethodFail(_machine, "NEG"));
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -169,7 +170,7 @@ public class MachineTest extends AndroidTestCase {
 			assertTrue("POP should have thrown VMError", didPopFail());
 			assertTrue("EQUAL should have thrown VMError", didMethodFail(_machine, "EQUAL"));
 
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -203,7 +204,7 @@ public class MachineTest extends AndroidTestCase {
 			assertTrue("POP should have thrown VMError", didPopFail());
 			assertTrue("NOTEQL should have thrown VMError", didMethodFail(_machine, "NOTEQL"));
 
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -248,7 +249,7 @@ public class MachineTest extends AndroidTestCase {
 			assertTrue("POP should have thrown VMError", didPopFail());
 			assertTrue("GREATER should have thrown VMError", didMethodFail(_machine, "GREATER"));
 
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -293,7 +294,7 @@ public class MachineTest extends AndroidTestCase {
 			assertTrue("POP should have thrown VMError", didPopFail());
 			assertTrue("LESS should have thrown VMError", didMethodFail(_machine, "LESS"));
 
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -338,7 +339,7 @@ public class MachineTest extends AndroidTestCase {
 			assertTrue("POP should have thrown VMError", didPopFail());
 			assertTrue("GTREQL should have thrown VMError", didMethodFail(_machine, "GTREQL"));
 
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -383,7 +384,7 @@ public class MachineTest extends AndroidTestCase {
 			assertTrue("POP should have thrown VMError", didPopFail());
 			assertTrue("LSSEQL should have thrown VMError", didMethodFail(_machine, "LSSEQL"));
 
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -431,7 +432,7 @@ public class MachineTest extends AndroidTestCase {
 			assertTrue("POP should have thrown VMError", didPopFail());
 			assertTrue("NOT should have thrown VMError", didMethodFail(_machine, "NOT"));
 
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -465,7 +466,7 @@ public class MachineTest extends AndroidTestCase {
 				assertEquals(vals[vals.length - i - 1], poppedVal);
 			}
 
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -494,7 +495,7 @@ public class MachineTest extends AndroidTestCase {
 				assertEquals(vals[vals.length - i - 1], poppedVal);
 			}
 
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -527,41 +528,13 @@ public class MachineTest extends AndroidTestCase {
 				assertEquals(vals[vals.length - i - 1], poppedVal);
 			}
 
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
 	}
 
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#RDCHAR()}.
-	 */
-	public void testRDCHAR() {
-		// TODO - fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#WRCHAR()}.
-	 */
-	public void testWRCHAR() {
-		// TODO - fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#RDINT()}.
-	 */
-	public void testRDINT() {
-		// TODO - fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#WRINT()}.
-	 */
-	public void testWRINT() {
-		// TODO - fail("Not yet implemented");
-	}
-
-	/**
+    /**
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#BRANCH(int)}.
 	 */
 	public void testBRANCH() {
@@ -585,7 +558,7 @@ public class MachineTest extends AndroidTestCase {
 			assertEquals(Memory.START_LOC, _machine.getProgramCounter());
 			_machine.branch(25);
 			assertEquals(25, _machine.getProgramCounter());
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -621,7 +594,7 @@ public class MachineTest extends AndroidTestCase {
 			assertEquals(12, _machine.getProgramCounter());
 			_machine.jump();
 			assertEquals(7, _machine.getProgramCounter());
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -656,12 +629,12 @@ public class MachineTest extends AndroidTestCase {
 				_machine.PUSHC(0);
 				_machine.BREQL(602);
 			}
-			catch(final VMError vmError)
+			catch(@NonNull final VMError vmError)
 			{
 				bFailed = true;
 			}
 			assertTrue("BREQL 602 is out of bounds", bFailed);
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -700,13 +673,13 @@ public class MachineTest extends AndroidTestCase {
 				_machine.PUSHC(-782);
 				_machine.BRLSS(602);
 			}
-			catch(final VMError vmError)
+			catch(@NonNull final VMError vmError)
 			{
 				bFailed = true;
 			}
 			assertTrue("BREQL 602 is out of bounds", bFailed);
 
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -745,13 +718,13 @@ public class MachineTest extends AndroidTestCase {
 				_machine.PUSHC(782);
 				_machine.BRGTR(602);
 			}
-			catch(final VMError vmError)
+			catch(@NonNull final VMError vmError)
 			{
 				bFailed = true;
 			}
 			assertTrue("BRGTR 602 is out of bounds", bFailed);
 
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -769,32 +742,32 @@ public class MachineTest extends AndroidTestCase {
 			{
 				_machine.PUSHC(locs[i]);
 				_machine.setValueAt(vals[i], locs[i]);
-			};
+			}
 
-			for(int i = 0; i < vals.length; i++)
+            for(int i = 0; i < vals.length; i++)
 			{
 				_machine.CONTENTS();
 				_machine.POPC(i);
-			};
+			}
 
-			for(int i = 0; i < vals.length; i++)
+            for(int i = 0; i < vals.length; i++)
 			{
 				final int val = _machine.getValueAt(i);
 				assertEquals(vals[vals.length-i-1], val);
-			};
+			}
 
-			boolean bFailed = false;
+            boolean bFailed = false;
 			try
 			{
 				_machine.CONTENTS();
 			}
-			catch(final VMError vmError)
+			catch(@NonNull final VMError vmError)
 			{
 				bFailed = true;
 			}
 			assertTrue("CONTENTS is out of bounds", bFailed);
 
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -837,7 +810,7 @@ public class MachineTest extends AndroidTestCase {
 		{
 			_machine.POP();
 		}
-		catch (final VMError e)
+		catch (@NonNull final VMError e)
 		{
 			bFailed = true;
 		}
@@ -853,6 +826,7 @@ public class MachineTest extends AndroidTestCase {
 	 * @param sMethod
 	 * @return
 	 */
+	@VisibleForTesting
 	public boolean didMethodFail(final Machine machine, final String sMethod){
 		boolean bFailed = false;
 
@@ -861,7 +835,7 @@ public class MachineTest extends AndroidTestCase {
 			method = Machine.class.getDeclaredMethod(sMethod);
 			method.invoke(machine);
 		}
-		catch (final InvocationTargetException e)
+		catch (@NonNull final InvocationTargetException e)
 		{
 			if ( e.getCause() instanceof VMError )
 			{
@@ -869,13 +843,9 @@ public class MachineTest extends AndroidTestCase {
 			}
 			e.printStackTrace();
 		}
-		catch (final SecurityException e1) {
+		catch (@NonNull final SecurityException | NoSuchMethodException e1) {
 			e1.printStackTrace();
-		}
-		catch (final NoSuchMethodException e1) {
-			e1.printStackTrace();
-		}
-		catch (final Exception e) {
+		} catch (@NonNull final Exception e) {
 			bFailed = true;
 		}
 		return bFailed;

@@ -1,14 +1,8 @@
-/**
- * 
- */
 package com.slickpath.mobile.android.simple.vm.machine;
 
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
@@ -20,6 +14,10 @@ import com.slickpath.mobile.android.simple.vm.parser.SimpleParser;
 import com.slickpath.mobile.android.simple.vm.util.Command;
 import com.slickpath.mobile.android.simple.vm.util.CommandList;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+
 /**
  * @author Pete Procopio
  *
@@ -30,6 +28,7 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 
 	private static final int NUM_COMMANDS_TO_RUN = 10;
 
+	@Nullable
 	private VirtualMachine _vm = null;
 
 	private SimpleParser _parser;
@@ -51,14 +50,6 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 		_bHalt = false;
 		_lastLineExecuted = -1;
 		_count = 0;
-	}
-
-	/* (non-Javadoc)
-	 * @see android.test.AndroidTestCase#tearDown()
-	 */
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
 	}
 
 	/**
@@ -83,7 +74,7 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 		try {
 			for(int i = 0; i < instructions.length; i++)
 			{
-				final List<Integer> paramList = new ArrayList<Integer>();
+				final List<Integer> paramList = new ArrayList<>();
 				final Integer param = params[i];
 				paramList.add(param);
 				final Command command = new Command(instructions[i],paramList);
@@ -97,7 +88,7 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 				assertEquals(params[i], command.getParameters().get(0));
 			}
 
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -115,7 +106,7 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 
 			for(int i = 0; i < instructions.length; i++)
 			{
-				final List<Integer> paramList = new ArrayList<Integer>();
+				final List<Integer> paramList = new ArrayList<>();
 				final Integer param = params[i];
 				paramList.add(param);
 				final Command command = new Command(instructions[i],paramList);
@@ -128,7 +119,7 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 			try {
 				// Wait for Callback
 				_signal.await();
-			} catch (final InterruptedException e) {
+			} catch (@NonNull final InterruptedException e) {
 				e.printStackTrace();
 				fail(e.getMessage());
 			}// wait for callback
@@ -140,7 +131,7 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 				assertEquals(params[i], command.getParameters().get(0));
 			}
 
-		} catch (final VMError e) {
+		} catch (@NonNull final VMError e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -150,7 +141,6 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#runNextInstruction()}.
 	 */
 	public void testRunNextInstruction() {
-		int lineTracker = NUM_COMMANDS_TO_RUN;
 		_parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), this);
 
 		_signal = new CountDownLatch(1);
@@ -161,7 +151,7 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 			Log.d(TAG, "+...........................PARSE WAIT ");
 			_signal.await();
 			Log.d(TAG, "+...........................PARSE DONE WAIT ");
-		} catch (final InterruptedException e) {
+		} catch (@NonNull final InterruptedException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}// wait for callback
@@ -175,7 +165,7 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 			Log.d(TAG, "+...........................VM ADD COMMANDS WAIT ");
 			_signal.await();
 			Log.d(TAG, "+...........................VM ADD COMMANDS DONE WAIT ");
-		} catch (final InterruptedException e) {
+		} catch (@NonNull final InterruptedException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}// wait for callback
@@ -190,13 +180,13 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 			Log.d(TAG, "+...........................VM RUN INSTRS WAIT ");
 			_signal.await();
 			Log.d(TAG, "+...........................VM RUN INSTRS DONE WAIT ");
-		} catch (final InterruptedException e) {
+		} catch (@NonNull final InterruptedException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}// wait for callback
 
 		assertFalse(_bHalt);
-		assertEquals(lineTracker++, _lastLineExecuted);
+		assertEquals(NUM_COMMANDS_TO_RUN, _lastLineExecuted);
 		assertNull(_vmError);
 
 		for(int i =0; i < 100; i++)
@@ -206,7 +196,7 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 			try {
 				// Wait for Callback
 				_signal.await();
-			} catch (final InterruptedException e) {
+			} catch (@NonNull final InterruptedException e) {
 				e.printStackTrace();
 				fail(e.getMessage());
 			}// wait for callback
@@ -219,7 +209,6 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 	 * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#runInstructions()}.
 	 */
 	public void testRunInstructions() {
-		final File filesDir = mContext.getFilesDir();
 		_parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), this);
 		_signal = new CountDownLatch(1);
 
@@ -227,7 +216,7 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 		try {
 			// Wait for Callback
 			_signal.await();
-		} catch (final InterruptedException e) {
+		} catch (@NonNull final InterruptedException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}// wait for callback
@@ -241,7 +230,7 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 		try {
 			// Wait for Callback
 			_signal.await();
-		} catch (final InterruptedException e) {
+		} catch (@NonNull final InterruptedException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}// wait for callback
@@ -262,7 +251,7 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 		try {
 			// Wait for Callback
 			_signal.await();
-		} catch (final InterruptedException e) {
+		} catch (@NonNull final InterruptedException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}// wait for callback
@@ -276,7 +265,7 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
 		try {
 			// Wait for Callback
 			_signal.await();
-		} catch (final InterruptedException e) {
+		} catch (@NonNull final InterruptedException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}// wait for callback
