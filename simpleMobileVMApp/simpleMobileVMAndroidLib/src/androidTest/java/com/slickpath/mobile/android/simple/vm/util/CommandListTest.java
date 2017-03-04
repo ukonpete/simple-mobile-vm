@@ -35,11 +35,6 @@ public class CommandListTest extends AndroidTestCase {
         testList1.add(COMMAND_3, COMMAND_PARAM_LIST_3);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     public void testCommands() {
         assertNotNull(testList1);
         assertEquals(testList1.size(), 3);

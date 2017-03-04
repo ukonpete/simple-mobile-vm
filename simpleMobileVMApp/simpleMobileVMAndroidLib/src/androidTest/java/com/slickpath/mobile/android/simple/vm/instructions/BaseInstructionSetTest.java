@@ -10,22 +10,6 @@ import java.util.Set;
  */
 public class BaseInstructionSetTest extends AndroidTestCase {
 
-    /* (non-Javadoc)
-     * @see android.test.AndroidTestCase#setUp()
-     */
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    /* (non-Javadoc)
-     * @see android.test.AndroidTestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     /**
      * Make sure the internal instruction sets are correct.
      */

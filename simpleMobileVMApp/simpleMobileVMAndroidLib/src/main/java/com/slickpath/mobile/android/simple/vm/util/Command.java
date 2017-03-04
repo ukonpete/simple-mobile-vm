@@ -1,5 +1,6 @@
 package com.slickpath.mobile.android.simple.vm.util;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -14,8 +15,9 @@ import java.util.List;
  */
 public class Command {
 
+    @NonNull
     private final Integer _commandId;
-    @Nullable
+    @NonNull
     private final List<Integer> _parameters;
 
     /**
@@ -35,6 +37,7 @@ public class Command {
     /**
      * @return the command Id
      */
+    @NonNull
     public Integer getCommandId() {
         return _commandId;
     }
@@ -42,7 +45,7 @@ public class Command {
     /**
      * @return the parameters
      */
-    @Nullable
+    @NonNull
     public List<Integer> getParameters() {
         return _parameters;
     }

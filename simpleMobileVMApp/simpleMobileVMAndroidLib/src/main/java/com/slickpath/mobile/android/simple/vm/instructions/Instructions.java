@@ -15,7 +15,7 @@ public interface Instructions {
     int _BEGIN = -1;
 
     // All commands in the 0-999 range are 0 parameter commands
-    // ARITHMATIC
+    // ARITHMETIC
     int _ADD = 0;
     int _SUB = 1;
     int _MUL = 2;

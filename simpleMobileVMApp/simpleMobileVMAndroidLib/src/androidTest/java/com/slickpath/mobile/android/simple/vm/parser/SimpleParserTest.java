@@ -18,27 +18,16 @@ import java.util.concurrent.CountDownLatch;
 public class SimpleParserTest extends AndroidTestCase implements IParserListener {
 
     private static final int FIB_LINE_NUMBER = 15;
-    private static final int HALT_LINE_NUMNBER = 34;
+    private static final int HALT_LINE_NUMBER = 34;
     private SimpleParser _parser;
     private CountDownLatch _signal;
     private VMError _error;
     private CommandList _commands;
 
-    /* (non-Javadoc)
-     * @see android.test.AndroidTestCase#setUp()
-     */
     @Override
     protected void setUp() throws Exception {
         _parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), this);
         _signal = new CountDownLatch(1);
-    }
-
-    /* (non-Javadoc)
-     * @see android.test.AndroidTestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     /**
@@ -60,7 +49,7 @@ public class SimpleParserTest extends AndroidTestCase implements IParserListener
         assertEquals(_commands.get(i).getCommandId().intValue(), BaseInstructionSet._PUSHC); // 1
         assertNotNull(_commands.get(i).getParameters()); // 1
         assertEquals(1, _commands.get(i).getParameters().size()); // 1
-        assertEquals(HALT_LINE_NUMNBER, _commands.get(i++).getParameters().get(0).intValue()); // 1
+        assertEquals(HALT_LINE_NUMBER, _commands.get(i++).getParameters().get(0).intValue()); // 1
 
         assertEquals(_commands.get(i).getCommandId().intValue(), BaseInstructionSet._PUSHC); // 2
         assertNotNull(_commands.get(i).getParameters());
@@ -201,7 +190,7 @@ public class SimpleParserTest extends AndroidTestCase implements IParserListener
         assertEquals(_commands.get(i).getCommandId().intValue(), BaseInstructionSet._BREQL); // 45
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
-        assertEquals(HALT_LINE_NUMNBER, _commands.get(i++).getParameters().get(0).intValue());
+        assertEquals(HALT_LINE_NUMBER, _commands.get(i++).getParameters().get(0).intValue());
         //
         // 46 - Comment
         assertEquals(_commands.get(i).getCommandId().intValue(), BaseInstructionSet._BRANCH); // 47

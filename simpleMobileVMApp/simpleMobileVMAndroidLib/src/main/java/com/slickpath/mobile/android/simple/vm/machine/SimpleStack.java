@@ -19,7 +19,7 @@ public class SimpleStack {
     private final Stack<Integer> _stack = new Stack<>();
 
     /**
-     * Is the stack rempty
+     * Is the stack empty
      *
      * @return boolean - is the stack empty
      */

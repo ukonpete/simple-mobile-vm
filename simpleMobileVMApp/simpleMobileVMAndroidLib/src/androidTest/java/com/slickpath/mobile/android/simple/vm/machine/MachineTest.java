@@ -31,14 +31,6 @@ public class MachineTest extends AndroidTestCase {
         _machine = new Machine();
     }
 
-    /* (non-Javadoc)
-     * @see android.test.AndroidTestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Machine#ADD()}.
      */

@@ -38,9 +38,6 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
     private CommandList _commands;
     private int _count;
 
-    /* (non-Javadoc)
-     * @see android.test.AndroidTestCase#setUp()
-     */
     @Override
     protected void setUp() throws Exception {
         super.setUp();
