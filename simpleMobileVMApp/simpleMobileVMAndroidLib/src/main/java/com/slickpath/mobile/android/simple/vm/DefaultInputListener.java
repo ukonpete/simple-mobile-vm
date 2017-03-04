@@ -8,6 +8,6 @@ public class DefaultInputListener implements InputListener {
 
     @Override
     public char getChar() {
-        return (char)10;
+        return (char) 10;
     }
 }

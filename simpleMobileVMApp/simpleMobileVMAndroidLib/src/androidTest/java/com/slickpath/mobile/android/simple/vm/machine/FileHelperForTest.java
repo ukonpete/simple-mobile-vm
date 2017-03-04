@@ -4,11 +4,12 @@ import com.slickpath.mobile.android.simple.vm.FileHelper;
 
 public class FileHelperForTest implements FileHelper {
 
-    private String instructions;
+    private final String instructions;
 
     public FileHelperForTest(String instructions) {
         this.instructions = instructions;
     }
+
     @Override
     public String getInstructionsString() {
         return instructions;

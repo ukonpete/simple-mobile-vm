@@ -1,7 +1,7 @@
 package com.slickpath.mobile.android.simple.vm.machine;
 
 public class FibonacciInstructions {
-    public static String instructions = "PUSHC [HALT]\n" +
+    public final static String instructions = "PUSHC [HALT]\n" +
             "PUSHC 0\n" +
             "WRINT\n" +
             "PUSHC 1\n" +

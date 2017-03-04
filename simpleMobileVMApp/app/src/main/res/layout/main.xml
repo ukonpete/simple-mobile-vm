@@ -8,9 +8,9 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:padding="5dp"
         android:text="@string/pick_file"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:padding="5dp" />
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Spinner
         android:id="@+id/spinnerFiles"
@@ -22,24 +22,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="5dp" >
+        android:padding="5dp">
+
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/path"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingEnd="5dp"
             android:paddingStart="0dp"
-            android:paddingEnd="5dp" />
+            android:text="@string/path"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
             android:id="@+id/textViewPath"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/not_available"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingEnd="0dp"
             android:paddingStart="5dp"
-            android:paddingEnd="0dp"/>
+            android:text="@string/not_available"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
     </LinearLayout>
 
     <LinearLayout
@@ -47,23 +48,24 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="5dp">
+
         <TextView
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/file"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingEnd="5dp"
             android:paddingStart="0dp"
-            android:paddingEnd="5dp"/>
+            android:text="@string/file"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
             android:id="@+id/textViewFile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/not_available"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingEnd="0dp"
             android:paddingStart="5dp"
-            android:paddingEnd="0dp" />
+            android:text="@string/not_available"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
     </LinearLayout>
 
     <Button
@@ -73,10 +75,10 @@
         android:text="@string/execute" />
 
     <TextView
-        android:labelFor="@+id/editTextOutput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/output"/>
+        android:labelFor="@+id/editTextOutput"
+        android:text="@string/output" />
 
     <EditText
         android:id="@+id/editTextOutput"
