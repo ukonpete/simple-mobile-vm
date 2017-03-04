@@ -15,21 +15,10 @@ public class MemoryTest extends AndroidTestCase {
 
     private Memory _memory;
 
-    /* (non-Javadoc)
-     * @see android.test.AndroidTestCase#setUp()
-     */
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         _memory = new Memory();
-    }
-
-    /* (non-Javadoc)
-     * @see android.test.AndroidTestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     public void testMemorySetup() {

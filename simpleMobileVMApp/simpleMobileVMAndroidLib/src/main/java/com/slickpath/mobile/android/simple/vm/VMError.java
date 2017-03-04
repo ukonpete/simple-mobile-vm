@@ -21,7 +21,7 @@ public class VMError extends Exception {
     /**
      * An unknown error was found
      */
-    public static final int VM_ERROR_TYPE_UNKOWN = 1;
+    public static final int VM_ERROR_TYPE_UNKNOWN = 1;
     /**
      * An action has attempted access to the stack outside of it's limits
      */

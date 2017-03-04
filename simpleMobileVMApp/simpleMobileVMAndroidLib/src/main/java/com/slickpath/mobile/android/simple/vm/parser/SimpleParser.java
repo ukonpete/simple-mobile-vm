@@ -98,6 +98,10 @@ public class SimpleParser {
      */
     private void doParse() throws VMError {
         InputStream stream = null;
+        Exception thrownException = null;
+        int vmErrorType = 0;
+        String additionalExceptionInfo = "[runInstructions] ";
+
         try {
             stream = new ByteArrayInputStream(instructions.getBytes());
             getSymbols(stream);
@@ -138,15 +142,21 @@ public class SimpleParser {
                 sLine = buffReader.readLine();
             }
         } catch (@NonNull final Exception e) {
-            throw new VMError("[runInstructions]" + e.getMessage(), e, VMError.VM_ERROR_TYPE_UNKOWN);
+            thrownException = e;
+            vmErrorType = VMError.VM_ERROR_TYPE_UNKNOWN;
         } finally {
             if (stream != null) {
                 try {
                     stream.close();
                 } catch (@NonNull final IOException e) {
-                    throw new VMError("[runInstructions] finally " + e.getMessage(), e, VMError.VM_ERROR_TYPE_IO);
+                    thrownException = e;
+                    vmErrorType = VMError.VM_ERROR_TYPE_IO;
+                    additionalExceptionInfo += "finally ";
                 }
             }
+        }
+        if(thrownException!=null) {
+            throw new VMError(additionalExceptionInfo + thrownException.getMessage(), thrownException, vmErrorType);
         }
     }
 

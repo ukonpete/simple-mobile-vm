@@ -15,9 +15,6 @@ public class VMErrorTest extends AndroidTestCase {
     @Nullable
     private VMError _vmError = null;
 
-    /* (non-Javadoc)
-     * @see android.test.AndroidTestCase#tearDown()
-     */
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();

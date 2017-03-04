@@ -17,22 +17,11 @@ public class ProgramManagerTest extends AndroidTestCase {
     @Nullable
     private ProgramManager _programManager = null;
 
-    /* (non-Javadoc)
-     * @see android.test.AndroidTestCase#setUp()
-     */
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         _programManager = new ProgramManager();
 
-    }
-
-    /* (non-Javadoc)
-     * @see android.test.AndroidTestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     /**

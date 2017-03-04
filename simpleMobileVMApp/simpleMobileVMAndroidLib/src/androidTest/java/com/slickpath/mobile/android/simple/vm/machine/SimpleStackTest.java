@@ -14,27 +14,17 @@ public class SimpleStackTest extends AndroidTestCase {
     @Nullable
     private SimpleStack _stack = null;
 
-    /* (non-Javadoc)
-     * @see android.test.AndroidTestCase#setUp()
-     */
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         _stack = new SimpleStack();
     }
 
-    /* (non-Javadoc)
-     * @see android.test.AndroidTestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
-
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.SimpleStack#isEmpty()}.
      */
     public void testIsEmpty() {
+        assertNotNull(_stack);
         assertTrue(_stack.isEmpty());
         _stack.push(1);
         _stack.push(2);

@@ -179,7 +179,7 @@ public class Memory {
 
     /**
      * Set program counter location to indication location
-     * Used primarily for JUMP and BRNACH
+     * Used primarily for JUMP and BRANCH
      *
      * @param location
      */

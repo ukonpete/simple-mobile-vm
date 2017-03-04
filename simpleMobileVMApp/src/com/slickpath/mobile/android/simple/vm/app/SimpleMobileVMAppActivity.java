@@ -102,9 +102,6 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
 		return sSelectedFile;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.parser.ParserListener#completedParse(com.slickpath.mobile.android.simple.vm.VMError, com.slickpath.mobile.android.simple.vm.util.CommandList)
-	 */
 	@Override
 	public void completedParse(final VMError vmError, final CommandList commands)
 	{
@@ -116,9 +113,6 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
 		_vm.addCommands(commands);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.VMListener#completedAddingInstructions(com.slickpath.mobile.android.simple.vm.VMError)
-	 */
 	@Override
 	public void completedAddingInstructions(final VMError vmError) {
 		if ( vmError != null)
@@ -129,9 +123,6 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
 		_vm.runInstructions();
 	}
 
-	/* (non-Javadoc)
-	 * @see com.slickpath.mobile.android.simple.vm.VMListener#completedRunningInstructions(boolean, int, com.slickpath.mobile.android.simple.vm.VMError)
-	 */
 	@Override
 	public void completedRunningInstructions(final boolean bHalt, final int lineExecuted, final VMError vmError) {
 		if ( vmError != null)

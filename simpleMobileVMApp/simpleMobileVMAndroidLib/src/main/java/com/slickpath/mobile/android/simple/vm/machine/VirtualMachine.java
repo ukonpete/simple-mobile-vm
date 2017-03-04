@@ -83,9 +83,8 @@ public class VirtualMachine extends Machine implements Instructions {
      * Basically write the command id and its parameter(s) into the program memory space
      *
      * @param command command to add
-     * @throws VMError
      */
-    public void addCommand(@NonNull final Command command) throws VMError {
+    public void addCommand(@NonNull final Command command) {
         final int instruction = command.getCommandId();
         String sParams = "X";
 
@@ -102,7 +101,7 @@ public class VirtualMachine extends Machine implements Instructions {
      * Launch thread that will add all the Commands in the CommandList to the VM
      * will call completedAddingInstructions on IVMListener after completion
      *
-     * @param commands command containter
+     * @param commands command container
      */
     public void addCommands(final CommandList commands) {
         resetProgramWriter();
@@ -125,11 +124,7 @@ public class VirtualMachine extends Machine implements Instructions {
         if (commands != null) {
             final int numCommands = commands.size();
             for (int i = 0; i < numCommands; i++) {
-                try {
-                    addCommand(commands.get(i));
-                } catch (@NonNull final VMError e) {
-                    vmError = e;
-                }
+                addCommand(commands.get(i));
             }
         } else {
             vmError = new VMError("addInstructions instructions", VMError.VM_ERROR_BAD_PARAMS);
@@ -258,12 +253,12 @@ public class VirtualMachine extends Machine implements Instructions {
     /**
      * @param numInstrsRun   number of instructions to run until running stops
      * @param lastProgCtr    last program counter location
-     * @param instructionVal last instrucion value
+     * @param instructionVal last instruction value
      */
     private void logAdditionalInfo(final int numInstrsRun, final int lastProgCtr,
                                    final int instructionVal) {
         debug(TAG, "LAST_INSTRUCTION=(" + getInstructionString(instructionVal) + ") " + instructionVal);
-        debug(TAG, "NUM INTRUCTIONS RUN=" + numInstrsRun);
+        debug(TAG, "NUM INSTRUCTIONS RUN=" + numInstrsRun);
         debug(TAG, "PROG_CTR=" + getProgramCounter());
         debug(TAG, "LAST_PROG_CTR=" + lastProgCtr);
     }
@@ -294,13 +289,19 @@ public class VirtualMachine extends Machine implements Instructions {
                     e.printStackTrace();
                 }
             }
-            FileOutputStream fos;
+
+            FileOutputStream fos = null;
             try {
                 fos = _context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
                 fos.write(data.toString().getBytes());
-                fos.close();
             } catch (@NonNull final IOException e) {
-                e.printStackTrace();
+                if(fos !=null) {
+                    try {
+                        fos.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
             }
         }
     }

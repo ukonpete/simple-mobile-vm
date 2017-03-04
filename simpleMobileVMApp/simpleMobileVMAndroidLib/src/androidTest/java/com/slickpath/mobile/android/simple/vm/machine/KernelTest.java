@@ -19,21 +19,10 @@ public class KernelTest extends AndroidTestCase {
     @Nullable
     private Kernel _kernel = null;
 
-    /* (non-Javadoc)
-     * @see android.test.AndroidTestCase#setUp()
-     */
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         _kernel = new Kernel();
-    }
-
-    /* (non-Javadoc)
-     * @see android.test.AndroidTestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     /**

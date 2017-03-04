@@ -27,22 +27,11 @@ public class CommandTest extends AndroidTestCase {
     @Nullable
     private Command _commandWithOutParam = null;
 
-    /* (non-Javadoc)
-     * @see android.test.AndroidTestCase#setUp()
-     */
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         _commandWithParam = new Command(COMMAND_1, COMMAND_PARAM_LIST_1);
         _commandWithOutParam = new Command(COMMAND_2, COMMAND_PARAM_LIST_2);
-    }
-
-    /* (non-Javadoc)
-     * @see android.test.AndroidTestCase#tearDown()
-     */
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     /**

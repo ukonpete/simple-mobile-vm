@@ -1,7 +1,7 @@
 package com.slickpath.mobile.android.simple.vm;
 
 /**
- * Interface - Callback interface for Listeners to VirrualMachaince Instruction Events
+ * Interface - Callback interface for Listeners to VirtualMachine Instruction Events
  * - completedAddingInstructions
  * - completedRunningInstructions
  *
