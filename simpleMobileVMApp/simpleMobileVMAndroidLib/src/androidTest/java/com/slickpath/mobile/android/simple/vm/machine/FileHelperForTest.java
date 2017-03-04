@@ -9,6 +9,7 @@ public class FileHelperForTest implements FileHelper {
     public FileHelperForTest(String instructions) {
         this.instructions = instructions;
     }
+
     @Override
     public String getInstructionsString() {
         return instructions;
