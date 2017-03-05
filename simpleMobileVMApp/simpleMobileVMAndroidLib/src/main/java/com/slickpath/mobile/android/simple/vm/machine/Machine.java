@@ -1,9 +1,14 @@
 package com.slickpath.mobile.android.simple.vm.machine;
 
+import android.support.annotation.Nullable;
+
 import com.slickpath.mobile.android.simple.vm.DefaultInputListener;
 import com.slickpath.mobile.android.simple.vm.InputListener;
 import com.slickpath.mobile.android.simple.vm.OutputListener;
 import com.slickpath.mobile.android.simple.vm.VMError;
+import com.slickpath.mobile.android.simple.vm.VMErrorType;
+
+import java.io.IOException;
 
 /**
  * @author Pete Procopio
@@ -24,42 +29,51 @@ public class Machine extends Kernel {
 
     /**
      * Constructor
-     * Allows caller to pass in streams for both input and output
-     */
-    public Machine(OutputListener outputListener, InputListener inputListener) {
-        super();
-        this.outputListener = outputListener;
-        this.inputListener = inputListener;
-    }
-
-    /**
-     * Constructor
-     * Allows caller to pass in streams for both input and output
-     */
-    public Machine(final OutputListener outputListener) {
-        super();
-        this.outputListener = outputListener;
-        inputListener = new DefaultInputListener();
-    }
-
-    /**
-     * Constructor
-     * Uses default System.in and System.out form input and output
+     * - output will be added to log is debugVerbose is set
+     * - input will be attempted to be retrieved from the console System.in
      */
     public Machine() {
+        this(null, null);
+    }
+
+    /**
+     * Constructor
+     * Allows caller to pass in streams for both input and output
+     *
+     * If outputListener is null output will be added to log is debugVerbose is set
+     * If inputListener is null input will be attempted to be retrieved from the console System.in
+     *
+     * @param outputListener listener for output events
+     * @param inputListener listener to return input on input events
+     */
+    public Machine(@Nullable OutputListener outputListener, @Nullable InputListener inputListener) {
         super();
-        this.outputListener = new OutputListener() {
+        if(outputListener== null) {
+            this.outputListener = getDefaultOutputListener();
+        } else {
+            this.outputListener = outputListener;
+        }
+        if(inputListener==null) {
+            this.inputListener = new DefaultInputListener();
+        } else {
+            this.inputListener = inputListener;
+        }
+    }
+
+    /**
+     * @return default output listener that send output to log if debugVerbose is set
+     */
+    private OutputListener getDefaultOutputListener() {
+        return new OutputListener() {
             @Override
             public void charOutput(char c) {
                 debugVerbose(LOG_TAG, "char of output: " + c);
             }
-
             @Override
             public void lineOutput(String line) {
                 debugVerbose(LOG_TAG, "line of output: " + line);
             }
         };
-        inputListener = new DefaultInputListener();
     }
 
     /////////////////////////////////////////////////  Command Category : ARITHMATIC
@@ -319,7 +333,11 @@ public class Machine extends Kernel {
      * @throws VMError on vm error
      */
     protected void RDCHAR() throws VMError {
-        PUSHC(inputListener.getChar());
+        try {
+            PUSHC(inputListener.getChar());
+        } catch (IOException e) {
+            throw new VMError("Exception in RDCHAR : " + e.getMessage(), e, VMErrorType.VM_ERROR_TYPE_IO);
+        }
     }
 
     /**
@@ -344,8 +362,13 @@ public class Machine extends Kernel {
      * @throws VMError on vm error
      */
     protected void RDINT() throws VMError {
-        final int val = inputListener.getInt();
-        PUSHC(val);
+        final int val;
+        try {
+            val = inputListener.getInt();
+            PUSHC(val);
+        } catch (IOException e) {
+            throw new VMError("Exception in RDINT : " + e.getMessage(), e, VMErrorType.VM_ERROR_TYPE_IO);
+        }
     }
 
     /**

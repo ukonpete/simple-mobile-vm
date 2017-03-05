@@ -2,7 +2,6 @@ package com.slickpath.mobile.android.simple.vm.machine;
 
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
@@ -27,36 +26,18 @@ public class VirtualMachineTest extends AndroidTestCase {
 
     private static final int NUM_COMMANDS_TO_RUN = 10;
 
-    @Nullable
-    private VirtualMachine _vm = null;
-
-    private SimpleParser _parser;
-    private CountDownLatch _signal;
     private VMError _vmError;
     private boolean _bHalt;
     private int _lastLineExecuted;
     private CommandList _commands;
-    private int _count;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        _vm = new VirtualMachine(getContext());
-        _vm.setVMListener(new IVMListener() {
-
-            @Override
-            public void completedAddingInstructions(VMError vmError) {
-                VirtualMachineTest.this.completedAddingInstructions(vmError);
-            }
-
-            @Override
-            public void completedRunningInstructions(boolean bHalt, int lastLineExecuted, VMError vmError) {
-                VirtualMachineTest.this.completedRunningInstructions(bHalt, lastLineExecuted, vmError);
-            }
-        });
         _bHalt = false;
         _lastLineExecuted = -1;
-        _count = 0;
+        _vmError = null;
+        _commands = null;
     }
 
     /**
@@ -64,10 +45,11 @@ public class VirtualMachineTest extends AndroidTestCase {
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#setVMListener(com.slickpath.mobile.android.simple.vm.IVMListener)}.
      */
     public void testGetVMListener() {
-        assertNotNull(_vm.getVMListener());
-        _vm.setVMListener(null);
-        assertNull(_vm.getVMListener());
-        _vm.setVMListener(new IVMListener() {
+        VirtualMachine virtualMachine = new VirtualMachine(getContext());
+        assertNull(virtualMachine.getVMListener());
+        virtualMachine.setVMListener(null);
+        assertNull(virtualMachine.getVMListener());
+        virtualMachine.setVMListener(new IVMListener() {
             @Override
             public void completedAddingInstructions(VMError vmError) {
                 VirtualMachineTest.this.completedAddingInstructions(vmError);
@@ -78,13 +60,14 @@ public class VirtualMachineTest extends AndroidTestCase {
                 VirtualMachineTest.this.completedRunningInstructions(bHalt, lastLineExecuted, vmError);
             }
         });
-        assertNotNull(_vm.getVMListener());
+        assertNotNull(virtualMachine.getVMListener());
     }
 
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#addCommand(com.slickpath.mobile.android.simple.vm.util.Command)}.
      */
     public void testAddCommand() {
+        VirtualMachine virtualMachine = new VirtualMachine(getContext());
         final int[] instructions = {Instructions._ADD, Instructions._EQUAL, Instructions._NOT, Instructions._PUSHC, Instructions._JUMP, Instructions._POPC};
         final Integer[] params = {null, null, null, 10, 20, 30};
 
@@ -94,18 +77,17 @@ public class VirtualMachineTest extends AndroidTestCase {
                 final Integer param = params[i];
                 paramList.add(param);
                 final Command command = new Command(instructions[i], paramList);
-                _vm.addCommand(command);
+                virtualMachine.addCommand(command);
             }
 
             for (int i = 0; i < instructions.length; i++) {
-                final Command command = _vm.getCommandAt(i);
+                final Command command = virtualMachine.getCommandAt(i);
                 assertEquals(instructions[i], command.getCommandId().intValue());
                 assertEquals(params[i], command.getParameters().get(0));
             }
 
         } catch (@NonNull final VMError e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            fail(e.getMessage());
         }
     }
 
@@ -113,6 +95,7 @@ public class VirtualMachineTest extends AndroidTestCase {
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#addCommands(com.slickpath.mobile.android.simple.vm.util.CommandList)}.
      */
     public void testAddCommands() {
+        VirtualMachine virtualMachine = new VirtualMachine(getContext());
         final int[] instructions = {Instructions._ADD, Instructions._EQUAL, Instructions._NOT, Instructions._PUSHC, Instructions._JUMP, Instructions._POPC};
         final Integer[] params = {null, null, null, 10, 20, 30};
 
@@ -126,27 +109,28 @@ public class VirtualMachineTest extends AndroidTestCase {
                 final Command command = new Command(instructions[i], paramList);
                 commandList.add(command);
             }
-            _signal = new CountDownLatch(1);
-            _vm.addCommands(commandList);
+
+            final CountDownLatch signalAddCommands =new CountDownLatch(1);
+            addVMListenerAdding(virtualMachine, signalAddCommands);
+            virtualMachine.addCommands(commandList);
             assertNull(_vmError);
 
             try {
                 // Wait for Callback
-                _signal.await();
+                signalAddCommands.await();
             } catch (@NonNull final InterruptedException e) {
                 e.printStackTrace();
                 fail(e.getMessage());
             }// wait for callback
 
             for (int i = 0; i < instructions.length; i++) {
-                final Command command = _vm.getCommandAt(i);
+                final Command command = virtualMachine.getCommandAt(i);
                 assertEquals(instructions[i], command.getCommandId().intValue());
                 assertEquals(params[i], command.getParameters().get(0));
             }
 
         } catch (@NonNull final VMError e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            fail(e.getMessage());
         }
     }
 
@@ -154,34 +138,38 @@ public class VirtualMachineTest extends AndroidTestCase {
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#runNextInstruction()}.
      */
     public void testRunNextInstruction() {
-        _parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), new IParserListener() {
+        VirtualMachine virtualMachine = new VirtualMachine(getContext());
+        final CountDownLatch signalParser = new CountDownLatch(1);
+
+        SimpleParser parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), new IParserListener() {
             @Override
             public void completedParse(VMError vmError, CommandList commands) {
                 VirtualMachineTest.this.completedParse(vmError, commands);
+                signalParser.countDown();// notify the count down latch
             }
         });
 
-        _signal = new CountDownLatch(1);
         Log.d(TAG, "+...........................PARSE START ");
-        _parser.parse();
+        parser.parse();
         try {
             // Wait for Callback
             Log.d(TAG, "+...........................PARSE WAIT ");
-            _signal.await();
+            signalParser.await();
             Log.d(TAG, "+...........................PARSE DONE WAIT ");
         } catch (@NonNull final InterruptedException e) {
             e.printStackTrace();
             fail(e.getMessage());
         }// wait for callback
 
-        _signal = new CountDownLatch(1);
         Log.d(TAG, "+...........................VM ADD COMMANDS START");
-        _vm.addCommands(_commands);
+        final CountDownLatch signalAddCommands = new CountDownLatch(1);
+        addVMListenerAdding(virtualMachine, signalAddCommands);
+        virtualMachine.addCommands(_commands);
 
         try {
             // Wait for Callback
             Log.d(TAG, "+...........................VM ADD COMMANDS WAIT ");
-            _signal.await();
+            signalAddCommands.await();
             Log.d(TAG, "+...........................VM ADD COMMANDS DONE WAIT ");
         } catch (@NonNull final InterruptedException e) {
             e.printStackTrace();
@@ -189,14 +177,15 @@ public class VirtualMachineTest extends AndroidTestCase {
         }// wait for callback
         assertNull(_vmError);
 
-        _signal = new CountDownLatch(1);
         Log.d(TAG, "+...........................VM RUN INSTRS START");
-        _vm.runInstructions(NUM_COMMANDS_TO_RUN);
+        final CountDownLatch signalRunInstructions = new CountDownLatch(1);
+        addVMListenerRunning(virtualMachine, signalRunInstructions);
+        virtualMachine.runInstructions(NUM_COMMANDS_TO_RUN);
 
         try {
             // Wait for Callback
             Log.d(TAG, "+...........................VM RUN INSTRS WAIT ");
-            _signal.await();
+            signalRunInstructions.await();
             Log.d(TAG, "+...........................VM RUN INSTRS DONE WAIT ");
         } catch (@NonNull final InterruptedException e) {
             e.printStackTrace();
@@ -208,57 +197,95 @@ public class VirtualMachineTest extends AndroidTestCase {
         assertNull(_vmError);
 
         for (int i = 0; i < 100; i++) {
-            _signal = new CountDownLatch(1);
-            _vm.runNextInstruction();
             try {
-                // Wait for Callback
-                _signal.await();
-            } catch (@NonNull final InterruptedException e) {
-                e.printStackTrace();
-                fail(e.getMessage());
-            }// wait for callback
-            assertFalse("(" + _count + ")LINE=" + _lastLineExecuted, _bHalt);
-            assertNull("(" + _count + ")LINE=" + _lastLineExecuted, _vmError);
+                boolean halt = virtualMachine.runNextInstruction();
+                assertFalse("(" + i + ") Halt= ", halt);
+            } catch (VMError vmError) {
+                assertNull("(" + i + ") LINE=" + _lastLineExecuted + " --> " + vmError.getMessage(), _vmError);
+            }
         }
+    }
+
+    private void addVMListenerAdding(final VirtualMachine virtualMachine, final CountDownLatch signal) {
+        virtualMachine.setVMListener(new IVMListener() {
+
+            @Override
+            public void completedAddingInstructions(VMError vmError) {
+                VirtualMachineTest.this.completedAddingInstructions(vmError);
+                signal.countDown();// notify the count down latch
+            }
+
+            @Override
+            public void completedRunningInstructions(boolean bHalt, int lastLineExecuted, VMError vmError) {
+                // Do Nothing
+            }
+        });
+    }
+
+    private void addVMListenerRunning(final VirtualMachine virtualMachine, final CountDownLatch signal) {
+        virtualMachine.setVMListener(new IVMListener() {
+
+            @Override
+            public void completedAddingInstructions(VMError vmError) {
+                // Do Nothing
+            }
+
+            @Override
+            public void completedRunningInstructions(boolean bHalt, int lastLineExecuted, VMError vmError) {
+                VirtualMachineTest.this.completedRunningInstructions(bHalt, lastLineExecuted, vmError);
+                signal.countDown();// notify the count down latch
+            }
+        });
     }
 
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#runInstructions()}.
      */
     public void testRunInstructions() {
-        _parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), new IParserListener() {
+        VirtualMachine virtualMachine = new VirtualMachine(getContext());
+        final CountDownLatch signalParse = new CountDownLatch(1);
+        SimpleParser parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), new IParserListener() {
             @Override
             public void completedParse(VMError vmError, CommandList commands) {
                 VirtualMachineTest.this.completedParse(vmError, commands);
+                signalParse.countDown();
             }
         });
-        _signal = new CountDownLatch(1);
 
-        _parser.parse();
+        parser.parse();
         try {
             // Wait for Callback
-            _signal.await();
+            signalParse.await();
         } catch (@NonNull final InterruptedException e) {
             e.printStackTrace();
             fail(e.getMessage());
         }// wait for callback
 
-        _vm.addCommands(_commands);
+        final CountDownLatch signalAddCommands =new CountDownLatch(1);
+        addVMListenerAdding(virtualMachine, signalAddCommands);
+        virtualMachine.addCommands(_commands);
         assertNull(_vmError);
-
-        _signal = new CountDownLatch(1);
-
-        _vm.runInstructions();
         try {
             // Wait for Callback
-            _signal.await();
+            signalAddCommands.await();
         } catch (@NonNull final InterruptedException e) {
             e.printStackTrace();
             fail(e.getMessage());
         }// wait for callback
 
-        assertFalse(_bHalt);
-        assertEquals(-1, _lastLineExecuted);
+        final CountDownLatch signalRunInstructions = new CountDownLatch(1);
+        addVMListenerRunning(virtualMachine, signalRunInstructions);
+        virtualMachine.runInstructions();
+        try {
+            // Wait for Callback
+            signalRunInstructions.await();
+        } catch (@NonNull final InterruptedException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }// wait for callback
+
+        assertTrue(_bHalt);
+        assertEquals(35, _lastLineExecuted);
         assertNull(_vmError);
     }
 
@@ -266,68 +293,77 @@ public class VirtualMachineTest extends AndroidTestCase {
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#runInstructions(int)}.
      */
     public void testRunInstructionsInt() {
-        _parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), new IParserListener() {
+        Log.d(TAG, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+        VirtualMachine virtualMachine = new VirtualMachine(getContext());
+        final CountDownLatch signalParse = new CountDownLatch(1);
+        SimpleParser parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), new IParserListener() {
             @Override
             public void completedParse(VMError vmError, CommandList commands) {
                 VirtualMachineTest.this.completedParse(vmError, commands);
+                signalParse.countDown();
             }
         });
-        _signal = new CountDownLatch(1);
 
-        _parser.parse();
+        parser.parse();
         try {
             // Wait for Callback
-            _signal.await();
+            signalParse.await();
         } catch (@NonNull final InterruptedException e) {
             e.printStackTrace();
             fail(e.getMessage());
         }// wait for callback
 
-        _vm.addCommands(_commands);
+        final CountDownLatch signalAddCommands =new CountDownLatch(1);
+        addVMListenerAdding(virtualMachine, signalAddCommands);
+        virtualMachine.addCommands(_commands);
         assertNull(_vmError);
+        try {
+            // Wait for Callback
+            signalAddCommands.await();
+        } catch (@NonNull final InterruptedException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }// wait for callback
 
-        _signal = new CountDownLatch(1);
-        _vm.runInstructions(10);
+        final CountDownLatch signalRunInstructions = new CountDownLatch(1);
+        addVMListenerRunning(virtualMachine, signalRunInstructions);
+        virtualMachine.runInstructions(10);
 
         try {
             // Wait for Callback
-            _signal.await();
+            signalRunInstructions.await();
         } catch (@NonNull final InterruptedException e) {
             e.printStackTrace();
             fail(e.getMessage());
         }// wait for callback
 
         assertFalse(_bHalt);
+        Log.d(TAG, "+......... checking  last line executed");
         assertEquals(10, _lastLineExecuted);
         assertNull(_vmError);
+        Log.d(TAG, "??????????????????????????????");
     }
 
-    public void completedAddingInstructions(final VMError vmError) {
-        // TODO Auto-generated method stub
-        Log.d(TAG, "+...........................completedAddingInstructions ");
+    private void completedAddingInstructions(final VMError vmError) {
+        Log.d(TAG, "+..........completedAddingInstructions ");
         _vmError = vmError;
-        _signal.countDown();// notify the count down latch
-        Log.d(TAG, "+...........................completedAddingInstructions CountDown");
+        Log.d(TAG, "+..........completedAddingInstructions CountDown");
     }
 
-    public void completedRunningInstructions(final boolean bHalt,
+    private void completedRunningInstructions(final boolean bHalt,
                                              final int lastLineExecuted, final VMError vmError) {
-        // TODO Auto-generated method stub
-        Log.d(TAG, "+...........................CompletedRunningInstructions " + lastLineExecuted);
+        Log.d(TAG, "+..........CompletedRunningInstructions " + lastLineExecuted + " halt = " + bHalt + "vmError = " + vmError);
         _vmError = vmError;
         _bHalt = bHalt;
         _lastLineExecuted = lastLineExecuted;
-        _count++;
-        _signal.countDown();// notify the count down latch
-        Log.d(TAG, "+...........................CompletedRunningInstructions CountDown");
+        Log.d(TAG, "+..........CompletedRunningInstructions CountDown");
     }
 
-    public void completedParse(final VMError vmError, final CommandList commands) {
+    private void completedParse(final VMError vmError, final CommandList commands) {
         // Save values on callback and release test thread
-        Log.d(TAG, "+...........................completedParse ");
+        Log.d(TAG, "+..........completedParse ");
         _vmError = vmError;
         _commands = commands;
-        _signal.countDown();// notify the count down latch
-        Log.d(TAG, "+...........................completedParse CountDown");
+        Log.d(TAG, "+..........completedParse CountDown");
     }
 }

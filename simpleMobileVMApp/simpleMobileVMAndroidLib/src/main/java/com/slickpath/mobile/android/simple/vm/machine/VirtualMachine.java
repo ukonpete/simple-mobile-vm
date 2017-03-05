@@ -32,22 +32,34 @@ public class VirtualMachine extends Machine implements Instructions {
     private int numInstructionsRun = 0;
     private IVMListener vmListener;
 
-    ThreadPoolExecutor executorPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+    private static ThreadPoolExecutor executorPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
-    public VirtualMachine(final Context context, OutputListener outputListener, InputListener inputListener) {
+    /**
+     * Constructor
+     * - output will be added to log is debugVerbose is set
+     * - input will be attempted to be retrieved from the console System.in
+     *
+     * @param context context object
+     */
+    public VirtualMachine(final @NonNull Context context) {
+        super(null, null);
+        init();
+        this.context = context;
+    }
+
+    /**
+     * Constructor
+     * Allows caller to pass in streams for both input and output
+     *
+     * If outputListener is null output will be added to log is debugVerbose is set
+     * If inputListener is null input will be attempted to be retrieved from the console System.in
+     *
+     * @param context context object
+     * @param outputListener listener for output events
+     * @param inputListener listener to return input on input events
+     */
+    public VirtualMachine(final @NonNull Context context, @Nullable OutputListener outputListener, @Nullable InputListener inputListener) {
         super(outputListener, inputListener);
-        init();
-        this.context = context;
-    }
-
-    public VirtualMachine(Context context, OutputListener outputListener) {
-        super(outputListener);
-        init();
-        this.context = context;
-    }
-
-    public VirtualMachine(final Context context) {
-        super();
         init();
         this.context = context;
     }
@@ -141,23 +153,26 @@ public class VirtualMachine extends Machine implements Instructions {
     }
 
     /**
-     * Launches thread that will run the instruction the program pointer is pointing at
-     * will call completedRunningInstruction on IVMListener after completion
+     * Will run the instruction the program pointer is pointing at.
+     * This is a synchronous call and will not call into the completedAddingInstructions
+     *
+     * @return instruction was a halt
+     * @throws VMError on a VM error
      */
-    public void runNextInstruction() {
-        executorPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                doRunNextInstruction();
-            }
-        });
+    public boolean runNextInstruction() throws VMError {
+        Results results = doRunNextInstruction();
+
+        if(results.vmError != null) {
+            throw results.vmError;
+        }
+        return results.halt;
     }
 
     /**
      * Run the instruction the program pointer is pointing at
      * will call completedRunningInstruction on IVMListener after completion
      */
-    private void doRunNextInstruction() {
+    private Results doRunNextInstruction() {
         Log.d(LOG_TAG, "+doRunNextInstruction " + getProgramCounter());
         boolean bHalt = false;
         VMError vmError = null;
@@ -175,8 +190,19 @@ public class VirtualMachine extends Machine implements Instructions {
             resetStack();
             bHalt = true;
         }
-        if (vmListener != null) {
-            vmListener.completedRunningInstructions(bHalt, getProgramCounter(), vmError);
+
+        return new Results(bHalt, getProgramCounter(), vmError);
+    }
+
+    private static class Results {
+        boolean halt;
+        int programCounter;
+        VMError vmError;
+
+        public Results(boolean halt, int programCounter, VMError vmError) {
+            this.halt = halt;
+            this.programCounter = programCounter;
+            this.vmError = vmError;
         }
     }
 
@@ -223,7 +249,7 @@ public class VirtualMachine extends Machine implements Instructions {
      * @param numInstrsToRun number of instructions to run until running stops
      */
     private void doRunInstructions(final int numInstrsToRun) {
-        Log.d(LOG_TAG, "+START++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        Log.d(LOG_TAG, "+START++++++++++++++++++");
         VMError vmError = null;
         dumpMem("1");
         int numInstrsRun = 0;
@@ -238,22 +264,25 @@ public class VirtualMachine extends Machine implements Instructions {
                 instructionVal = getInstruction();
                 runCommand(instructionVal);
             }
-            debug(LOG_TAG, "=============================================================");
+            debug(LOG_TAG, "=========================");
             logAdditionalInfo(numInstrsRun, lastProgCtr, instructionVal);
-            debug(LOG_TAG, "=============================================================");
+            debug(LOG_TAG, "=========================");
         } catch (@NonNull final VMError vme) {
-            debug(LOG_TAG, "=============================================================");
+            debug(LOG_TAG, "=========================");
             debug(LOG_TAG, "VMError=(" + vme.getType() + ") " + vme.getMessage());
             logAdditionalInfo(numInstrsRun, lastProgCtr, instructionVal);
             dumpMem("2");
             vmError = vme;
-            debug(LOG_TAG, "=============================================================");
+            debug(LOG_TAG, "=========================");
         }
         dumpMem("3");
-        Log.d(LOG_TAG, "+END++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        Log.d(LOG_TAG, "+DONE PROCESSING+++++++++");
         if (vmListener != null) {
             vmListener.completedRunningInstructions(instructionVal == BaseInstructionSet._HALT, getProgramCounter(), vmError);
+        } else {
+            debug(LOG_TAG, "NO VMListener");
         }
+        Log.d(LOG_TAG, "+END+++++++++++++++++++++");
     }
 
     /**
@@ -454,7 +483,15 @@ public class VirtualMachine extends Machine implements Instructions {
 
     private int getParameter() throws VMError {
         final Command command = getCommandAt(getProgramCounter());
-        return command.getParameters().get(0);
+        if (command.getParameters().size() == 0) {
+            throw new VMError("No Parameters", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS);
+        } else {
+            try {
+                return command.getParameters().get(0);
+            } catch(Throwable t) {
+                throw new VMError(t.getMessage(), VMErrorType.VM_ERROR_TYPE_BAD_PARAMS);
+            }
+        }
     }
 
     /**

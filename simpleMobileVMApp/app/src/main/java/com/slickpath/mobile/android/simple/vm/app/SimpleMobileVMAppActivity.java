@@ -79,7 +79,7 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
             public void lineOutput(String line) {
                 stringBuilder.append(line);
             }
-        });
+        }, null);
         _vm.setVMListener(SimpleMobileVMAppActivity.this);
         parseFile((int) spinnerFiles.getSelectedItemId());
     }
