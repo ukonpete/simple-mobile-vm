@@ -14,7 +14,8 @@ Written in Java to run on Android.
 
 ## Release Notes
 
-  * 3/4/2017 - Updated to so support Andorid Studio (2.3) and Gradle 
+  * 3/5/2017 - Added Butterknife to App, also add use of ThreadPoolExecutor as needed
+  * 3/4/2017 - Updated to support Andorid Studio (2.3) and Gradle 
 
 ## Javadoc
 
