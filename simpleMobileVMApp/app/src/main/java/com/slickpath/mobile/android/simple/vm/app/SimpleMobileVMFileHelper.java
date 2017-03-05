@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 class SimpleMobileVMFileHelper implements FileHelper {
 
     private static final String LOG_TAG = SimpleMobileVMFileHelper.class.getSimpleName();
+
     @NonNull
     private final Context context;
     @NonNull

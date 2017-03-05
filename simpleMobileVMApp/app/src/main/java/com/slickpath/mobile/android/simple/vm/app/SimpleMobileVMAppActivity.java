@@ -5,11 +5,9 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -25,63 +23,65 @@ import com.slickpath.mobile.android.simple.vm.util.CommandList;
 
 import java.io.IOException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnItemSelected;
+
+import static butterknife.OnItemSelected.Callback.NOTHING_SELECTED;
+
 public class SimpleMobileVMAppActivity extends Activity implements IVMListener, IParserListener {
 
     private final StringBuilder stringBuilder = new StringBuilder();
     private ProgressDialog progressDialog;
     private VirtualMachine _vm;
 
+    @BindView(R.id.textViewPath)
+    TextView textViewPath;
+
+    @BindView(R.id.spinnerFiles)
+    Spinner spinnerFiles;
+
+    @BindView(R.id.editTextOutput)
+    EditText editTextOutput;
+
+    @BindView(R.id.textViewFile)
+    TextView textViewFile;
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        ButterKnife.bind(this);
 
-        final TextView textView = (TextView) findViewById(R.id.textViewPath);
-        textView.setText(getInstructionPath());
+        textViewPath.setText(getInstructionPath());
 
-        final Spinner spinner = (Spinner) findViewById(R.id.spinnerFiles);
         final ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, getInstructionFiles());
-        spinner.setAdapter(adapter);
+        spinnerFiles.setAdapter(adapter);
+    }
 
-        spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+    @OnItemSelected(R.id.spinnerFiles)
+    public void spinnerFilesItemSelected(int position) {
+        getSelectedFileName(position);
+    }
 
+    @OnClick(R.id.buttonExe)
+    public void onClickExeButton(View view) {
+        editTextOutput.setText("");
+        _vm = new VirtualMachine(SimpleMobileVMAppActivity.this.getApplicationContext(), new OutputListener() {
             @Override
-            public void onItemSelected(final AdapterView<?> arg0, final View arg1,
-                                       final int arg2, final long arg3) {
-                getSelectedFileName(arg2);
+            public void charOutput(char c) {
+                stringBuilder.append(c);
             }
 
             @Override
-            public void onNothingSelected(final AdapterView<?> arg0) {
-                // Do Nothing
-            }
-        });
-
-
-        final Button exeButton = (Button) findViewById(R.id.buttonExe);
-        exeButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(final View v) {
-                final EditText editTextOutput = (EditText) findViewById(R.id.editTextOutput);
-                editTextOutput.setText("");
-                _vm = new VirtualMachine(SimpleMobileVMAppActivity.this.getApplicationContext(), new OutputListener() {
-                    @Override
-                    public void charOutput(char c) {
-                        stringBuilder.append(c);
-                    }
-
-                    @Override
-                    public void lineOutput(String line) {
-                        stringBuilder.append(line);
-                    }
-                });
-                _vm.setVMListener(SimpleMobileVMAppActivity.this);
-                parseFile((int) spinner.getSelectedItemId());
+            public void lineOutput(String line) {
+                stringBuilder.append(line);
             }
         });
-
+        _vm.setVMListener(SimpleMobileVMAppActivity.this);
+        parseFile((int) spinnerFiles.getSelectedItemId());
     }
 
     /**
@@ -128,8 +128,7 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
         String[] files = getInstructionFiles();
         if (files != null && index < files.length) {
             selectedFile = files[index];
-            final TextView textView = (TextView) findViewById(R.id.textViewFile);
-            textView.setText(files[index]);
+            textViewFile.setText(files[index]);
         }
         return selectedFile;
     }
@@ -159,7 +158,6 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
             Toast.makeText(this, "ERROR RUN INST lastLine=" + lineExecuted, Toast.LENGTH_LONG).show();
             vmError.printStackTrace();
         } else {
-            final EditText editTextOutput = (EditText) findViewById(R.id.editTextOutput);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

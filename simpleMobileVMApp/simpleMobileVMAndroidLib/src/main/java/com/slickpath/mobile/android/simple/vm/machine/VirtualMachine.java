@@ -17,6 +17,8 @@ import com.slickpath.mobile.android.simple.vm.util.CommandList;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author Pete Procopio
@@ -29,6 +31,8 @@ public class VirtualMachine extends Machine implements Instructions {
     private final Context context;
     private int numInstructionsRun = 0;
     private IVMListener vmListener;
+
+    ThreadPoolExecutor executorPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
     public VirtualMachine(final Context context, OutputListener outputListener, InputListener inputListener) {
         super(outputListener, inputListener);
@@ -106,12 +110,13 @@ public class VirtualMachine extends Machine implements Instructions {
      */
     public void addCommands(final CommandList commands) {
         resetProgramWriter();
-        new Thread(new Runnable() {
+
+        executorPool.execute(new Runnable() {
             @Override
             public void run() {
                 doAddInstructions(commands);
             }
-        }).start();
+        });
     }
 
     /**
@@ -140,12 +145,12 @@ public class VirtualMachine extends Machine implements Instructions {
      * will call completedRunningInstruction on IVMListener after completion
      */
     public void runNextInstruction() {
-        new Thread(new Runnable() {
+        executorPool.execute(new Runnable() {
             @Override
             public void run() {
                 doRunNextInstruction();
             }
-        }).start();
+        });
     }
 
     /**
@@ -180,12 +185,12 @@ public class VirtualMachine extends Machine implements Instructions {
      * will call completedRunningInstructions on IVMListener after completion
      */
     public void runInstructions() {
-        new Thread(new Runnable() {
+        executorPool.execute(new Runnable() {
             @Override
             public void run() {
                 doRunInstructions();
             }
-        }).start();
+        });
     }
 
     /**
@@ -203,12 +208,12 @@ public class VirtualMachine extends Machine implements Instructions {
      * @param numInstrsToRun number of instructions to run until running stops
      */
     protected void runInstructions(final int numInstrsToRun) {
-        new Thread(new Runnable() {
+        executorPool.execute(new Runnable() {
             @Override
             public void run() {
                 doRunInstructions(numInstrsToRun);
             }
-        }).start();
+        });
     }
 
     /**
