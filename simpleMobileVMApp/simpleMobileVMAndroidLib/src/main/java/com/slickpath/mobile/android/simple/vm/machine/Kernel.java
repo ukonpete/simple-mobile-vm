@@ -52,7 +52,7 @@ public class Kernel {
     /**
      * Set value at location specified
      *
-     * @param value    value to be set
+     * @param value value to be set
      * @param location location in memory
      * @return Integer (previous value) - @see Java.util.List.set()
      * @throws VMError error in VM
