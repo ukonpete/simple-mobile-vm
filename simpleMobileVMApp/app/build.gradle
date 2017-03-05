@@ -26,6 +26,9 @@ android {
 }
 
 dependencies {
-    compile project(':simpleMobileVMAndroidLib')
+    compile project (':simpleMobileVMAndroidLib')
     compile 'com.android.support:support-annotations:25.2.0'
+
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 }
