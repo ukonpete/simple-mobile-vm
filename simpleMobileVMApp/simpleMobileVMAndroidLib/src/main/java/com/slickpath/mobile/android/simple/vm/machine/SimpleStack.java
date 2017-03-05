@@ -48,7 +48,7 @@ public class SimpleStack {
     /**
      * Push value to top of stack
      *
-     * @param value
+     * @param value value to push onto top of stack
      * @return Integer - value pushed onto top of stack
      */
     public Integer push(final Integer value) {

@@ -77,11 +77,11 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
 	 */
 	public void parseFile(final int file)
 	{
-		final String sSelectedFile = getSelectedFileName(file);
+		final String selectedFile = getSelectedFileName(file);
 
 		final File filesDir = this.getApplicationContext().getFilesDir();
 
-		final SimpleParser parser = new SimpleParser(filesDir.getPath() + File.separator + sSelectedFile, this);
+		final SimpleParser parser = new SimpleParser(filesDir.getPath() + File.separator + selectedFile, this);
 
 		_dialog = ProgressDialog.show(SimpleMobileVMAppActivity.this, "",
 				"Please wait for few seconds...", true);
@@ -94,7 +94,7 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
 	 * @return
 	 */
 	private String getSelectedFileName(final int file) {
-		String sSelectedFile = "N/A";
+		String selectedFile = "N/A";
 		final String[] sFiles = this.getApplicationContext().fileList();
 		sSelectedFile = sFiles[file];
 		final TextView textView = (TextView)findViewById(R.id.textViewFile);

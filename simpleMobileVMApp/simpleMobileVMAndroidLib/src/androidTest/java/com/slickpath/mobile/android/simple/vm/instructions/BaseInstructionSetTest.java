@@ -29,9 +29,9 @@ public class BaseInstructionSetTest extends AndroidTestCase {
         for (final String key : keys) {
             final int val = BaseInstructionSet.INSTRUCTION_SET_HT.get(key);
 
-            final String sKey = BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(val);
+            final String value = BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(val);
 
-            assertEquals(sKey, key);
+            assertEquals(key, value);
         }
     }
 

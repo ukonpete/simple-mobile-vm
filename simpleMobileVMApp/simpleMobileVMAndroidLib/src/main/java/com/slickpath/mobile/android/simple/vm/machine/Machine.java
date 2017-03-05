@@ -11,7 +11,7 @@ import com.slickpath.mobile.android.simple.vm.VMError;
  */
 public class Machine extends Kernel {
 
-    private static final String TAG = Machine.class.getName();
+    private static final String LOG_TAG = Machine.class.getName();
 
     /**
      * Listener where output can be written to
@@ -51,12 +51,12 @@ public class Machine extends Kernel {
         this.outputListener = new OutputListener() {
             @Override
             public void charOutput(char c) {
-                debugVerbose(TAG, "char of output: " + c);
+                debugVerbose(LOG_TAG, "char of output: " + c);
             }
 
             @Override
             public void lineOutput(String line) {
-                debugVerbose(TAG, "line of output: " + line);
+                debugVerbose(LOG_TAG, "line of output: " + line);
             }
         };
         inputListener = new DefaultInputListener();
@@ -301,7 +301,7 @@ public class Machine extends Kernel {
      * 1. Pop 1st value at top of the stack
      * 2. Set the value popped at the location in memory indicated by passed in value.
      *
-     * @param location
+     * @param location location in memory
      * @throws VMError on vm error
      */
     protected void POPC(final int location) throws VMError {
@@ -333,7 +333,7 @@ public class Machine extends Kernel {
         final int value = pop();
         final char sVal = (char) value;
         outputListener.charOutput(sVal);
-        debugVerbose(TAG, "WRCHAR: " + sVal);
+        debugVerbose(LOG_TAG, "WRCHAR: " + sVal);
     }
 
     /**
@@ -357,9 +357,9 @@ public class Machine extends Kernel {
      */
     protected void WRINT() throws VMError {
         final int value = pop();
-        final String sOut = Integer.toString(value);
-        outputListener.lineOutput(sOut + "\n");
-        debugVerbose(TAG, "WRINT " + sOut);
+        final String out = Integer.toString(value);
+        outputListener.lineOutput(out + "\n");
+        debugVerbose(LOG_TAG, "WRINT " + out);
     }
 
     ////////////////////////////////////////////////////  Command Category : CONTROL
@@ -371,7 +371,7 @@ public class Machine extends Kernel {
      * @throws VMError on vm error
      */
     protected void BRANCH(final int location) throws VMError {
-        debugVerbose(TAG, "--BR=" + location);
+        debugVerbose(LOG_TAG, "--BR=" + location);
         branch(location);
     }
 
@@ -462,6 +462,6 @@ public class Machine extends Kernel {
      * This will send info to Log if debug is enabled
      */
     protected void HALT() {
-        debug(TAG, "HALT");
+        debug(LOG_TAG, "HALT");
     }
 }

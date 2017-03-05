@@ -15,41 +15,9 @@ package com.slickpath.mobile.android.simple.vm;
 public class VMError extends Exception {
 
     /**
-     * Creator of this object was lazy and did not set the type
-     */
-    public static final int VM_ERROR_TYPE_LAZY_UNSET = 0;
-    /**
-     * An unknown error was found
-     */
-    public static final int VM_ERROR_TYPE_UNKNOWN = 1;
-    /**
-     * An action has attempted access to the stack outside of it's limits
-     */
-    public static final int VM_ERROR_TYPE_STACK_LIMIT = 2;
-    /**
-     * An action has attempted access to the memory outside of it's limits
-     */
-    public static final int VM_ERROR_TYPE_MEMORY_LIMIT = 3;
-    /**
-     * An I/O Exception
-     */
-    public static final int VM_ERROR_TYPE_IO = 4;
-    /**
-     * A caller has passed in incorrect parameters
-     */
-    public static final int VM_ERROR_BAD_PARAMS = 5;
-    /**
-     * VM has been asked to run an unknown command/instruction
-     */
-    public static final int VM_ERROR_BAD_UNKNOWN_COMMAND = 6;
-    /**
-     *
-     */
-    private static final long serialVersionUID = -5024041809373211169L;
-    /**
      * The type of VMError
      */
-    private final int _type;
+    private final VMErrorType _type;
 
     /**
      * Constructor - Private so that it can not be called
@@ -57,15 +25,15 @@ public class VMError extends Exception {
     @SuppressWarnings("unused")
     private VMError() {
         super();
-        _type = VM_ERROR_TYPE_LAZY_UNSET;
+        _type = VMErrorType.VM_ERROR_TYPE_LAZY_UNSET;
     }
 
     /**
      * Constructor
      *
-     * @param type
+     * @param type VM error type
      */
-    public VMError(final int type) {
+    public VMError(final VMErrorType type) {
         super();
         _type = type;
     }
@@ -76,7 +44,7 @@ public class VMError extends Exception {
      * @param detailMessage
      * @param type
      */
-    public VMError(final String detailMessage, final int type) {
+    public VMError(final String detailMessage, final VMErrorType type) {
         super(detailMessage);
         _type = type;
     }
@@ -87,7 +55,7 @@ public class VMError extends Exception {
      * @param throwable
      * @param type
      */
-    public VMError(final Throwable throwable, final int type) {
+    public VMError(final Throwable throwable, final VMErrorType type) {
         super(throwable);
         _type = type;
     }
@@ -99,7 +67,7 @@ public class VMError extends Exception {
      * @param throwable
      * @param type
      */
-    public VMError(final String detailMessage, final Throwable throwable, final int type) {
+    public VMError(final String detailMessage, final Throwable throwable, final VMErrorType type) {
         super(detailMessage, throwable);
         _type = type;
     }
@@ -107,7 +75,7 @@ public class VMError extends Exception {
     /**
      * @return int VMError type
      */
-    public int getType() {
+    public VMErrorType getType() {
         return _type;
     }
 
