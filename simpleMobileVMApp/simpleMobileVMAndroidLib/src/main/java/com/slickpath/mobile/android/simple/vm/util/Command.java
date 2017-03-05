@@ -16,21 +16,21 @@ import java.util.List;
 public class Command {
 
     @NonNull
-    private final Integer _commandId;
+    private final Integer commandId;
     @NonNull
-    private final List<Integer> _parameters;
+    private final List<Integer> parameters;
 
     /**
      * Constructor
      */
-    public Command(final Integer commandId, @Nullable List<Integer> params) {
-        _commandId = commandId;
+    public Command(final @NonNull Integer commandId, @Nullable List<Integer> params) {
+        this.commandId = commandId;
         if (params == null) {
             params = new ArrayList<>();
         }
-        _parameters = params;
-        if (_parameters.size() == 0) {
-            _parameters.add(null);
+        parameters = params;
+        if (parameters.size() == 0) {
+            parameters.add(null);
         }
     }
 
@@ -39,7 +39,7 @@ public class Command {
      */
     @NonNull
     public Integer getCommandId() {
-        return _commandId;
+        return commandId;
     }
 
     /**
@@ -47,7 +47,7 @@ public class Command {
      */
     @NonNull
     public List<Integer> getParameters() {
-        return _parameters;
+        return parameters;
     }
 
 }

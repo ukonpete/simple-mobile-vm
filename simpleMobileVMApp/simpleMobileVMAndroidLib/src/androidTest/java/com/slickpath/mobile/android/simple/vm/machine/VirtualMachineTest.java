@@ -21,7 +21,7 @@ import java.util.concurrent.CountDownLatch;
 /**
  * @author Pete Procopio
  */
-public class VirtualMachineTest extends AndroidTestCase implements IVMListener, IParserListener {
+public class VirtualMachineTest extends AndroidTestCase {
 
     private static final String TAG = VirtualMachineTest.class.getName();
 
@@ -42,7 +42,18 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
     protected void setUp() throws Exception {
         super.setUp();
         _vm = new VirtualMachine(getContext());
-        _vm.setVMListener(this);
+        _vm.setVMListener(new IVMListener() {
+
+            @Override
+            public void completedAddingInstructions(VMError vmError) {
+                VirtualMachineTest.this.completedAddingInstructions(vmError);
+            }
+
+            @Override
+            public void completedRunningInstructions(boolean bHalt, int lastLineExecuted, VMError vmError) {
+                VirtualMachineTest.this.completedRunningInstructions(bHalt, lastLineExecuted, vmError);
+            }
+        });
         _bHalt = false;
         _lastLineExecuted = -1;
         _count = 0;
@@ -56,7 +67,17 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
         assertNotNull(_vm.getVMListener());
         _vm.setVMListener(null);
         assertNull(_vm.getVMListener());
-        _vm.setVMListener(this);
+        _vm.setVMListener(new IVMListener() {
+            @Override
+            public void completedAddingInstructions(VMError vmError) {
+                VirtualMachineTest.this.completedAddingInstructions(vmError);
+            }
+
+            @Override
+            public void completedRunningInstructions(boolean bHalt, int lastLineExecuted, VMError vmError) {
+                VirtualMachineTest.this.completedRunningInstructions(bHalt, lastLineExecuted, vmError);
+            }
+        });
         assertNotNull(_vm.getVMListener());
     }
 
@@ -133,7 +154,12 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#runNextInstruction()}.
      */
     public void testRunNextInstruction() {
-        _parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), this);
+        _parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), new IParserListener() {
+            @Override
+            public void completedParse(VMError vmError, CommandList commands) {
+                VirtualMachineTest.this.completedParse(vmError, commands);
+            }
+        });
 
         _signal = new CountDownLatch(1);
         Log.d(TAG, "+...........................PARSE START ");
@@ -200,7 +226,12 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#runInstructions()}.
      */
     public void testRunInstructions() {
-        _parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), this);
+        _parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), new IParserListener() {
+            @Override
+            public void completedParse(VMError vmError, CommandList commands) {
+                VirtualMachineTest.this.completedParse(vmError, commands);
+            }
+        });
         _signal = new CountDownLatch(1);
 
         _parser.parse();
@@ -235,7 +266,12 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#runInstructions(int)}.
      */
     public void testRunInstructionsInt() {
-        _parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), this);
+        _parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), new IParserListener() {
+            @Override
+            public void completedParse(VMError vmError, CommandList commands) {
+                VirtualMachineTest.this.completedParse(vmError, commands);
+            }
+        });
         _signal = new CountDownLatch(1);
 
         _parser.parse();
@@ -266,7 +302,6 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
         assertNull(_vmError);
     }
 
-    @Override
     public void completedAddingInstructions(final VMError vmError) {
         // TODO Auto-generated method stub
         Log.d(TAG, "+...........................completedAddingInstructions ");
@@ -275,7 +310,6 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
         Log.d(TAG, "+...........................completedAddingInstructions CountDown");
     }
 
-    @Override
     public void completedRunningInstructions(final boolean bHalt,
                                              final int lastLineExecuted, final VMError vmError) {
         // TODO Auto-generated method stub
@@ -288,7 +322,6 @@ public class VirtualMachineTest extends AndroidTestCase implements IVMListener, 
         Log.d(TAG, "+...........................CompletedRunningInstructions CountDown");
     }
 
-    @Override
     public void completedParse(final VMError vmError, final CommandList commands) {
         // Save values on callback and release test thread
         Log.d(TAG, "+...........................completedParse ");

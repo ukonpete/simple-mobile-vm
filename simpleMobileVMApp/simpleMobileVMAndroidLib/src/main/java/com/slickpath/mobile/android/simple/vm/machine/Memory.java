@@ -77,7 +77,7 @@ public class Memory {
      * Return memory as a List<Integer>
      * NOTE: Creates a copy of memory
      *
-     * @return
+     * @return value at every line of memory
      */
     @NonNull
     public List<Integer> memoryDump() {
@@ -85,9 +85,9 @@ public class Memory {
     }
 
     /**
-     * Return memory as a List<Integer>
+     * Return stack memory as a List<Integer>
      *
-     * @return
+     * @return value at every line of stack memory
      */
     @NonNull
     public List<Integer> stackDump() {
@@ -96,9 +96,9 @@ public class Memory {
 
     /**
      * Return program memory as a List<Integer>
-     * NOTE: Returns a Copy of Program Memory
+     * NOTE: Returns a copy of Program Memory
      *
-     * @return
+     * @return Copy of every line of program Memory
      */
     @NonNull
     public List<Command> programMemoryDump() {
@@ -109,8 +109,8 @@ public class Memory {
     /**
      * Return value at location
      *
-     * @param location
-     * @return
+     * @param location location in memory
+     * @return value at location
      */
     public int get(final int location) {
         return _memoryStore.get(location);
@@ -119,8 +119,8 @@ public class Memory {
     /**
      * Returns the instruction at the specified location
      *
-     * @param location
-     * @return
+     * @param location location of command in program memory
+     * @return command at location
      */
     public Command getCommand(final int location) {
         return _programManager.getCommandAt(location);
@@ -129,9 +129,9 @@ public class Memory {
     /**
      * Set value at location
      *
-     * @param location
-     * @param value
-     * @return
+     * @param location location in memory
+     * @param value value to set
+     * @return value that was set
      */
     public Integer set(final int location, final int value) {
         return _memoryStore.set(location, value);
@@ -140,8 +140,8 @@ public class Memory {
     /**
      * Set instruction value at the specified location
      *
-     * @param location
-     * @param command
+     * @param location location in program memory
+     * @param command command to set
      */
     public void setCommand(final int location, final Command command) {
         _programManager.setCommandAt(location, command);
@@ -151,8 +151,7 @@ public class Memory {
      * pop the top value from the stack and return
      * clear out the old top
      *
-     * @return
-     * @throws VMError
+     * @return value at top of stack
      */
     public Integer pop_mem() {
         return _stack.pop();
@@ -161,8 +160,8 @@ public class Memory {
     /**
      * pop the value onto the stack
      *
-     * @param value
-     * @return
+     * @param value value to push
+     * @return value pushed on the stack
      */
     public Integer push_mem(final int value) {
         return _stack.push(value);
@@ -178,10 +177,10 @@ public class Memory {
     }
 
     /**
-     * Set program counter location to indication location
+     * Set program counter location to indicated location
      * Used primarily for JUMP and BRANCH
      *
-     * @param location
+     * @param location location the program counter points to
      */
     public void setProgramCounter(final int location) {
         _programManager.setProgramCounter(location);
@@ -209,9 +208,9 @@ public class Memory {
     }
 
     /**
-     * Get the current location i program memory where the next instruction will be added
+     * Get the current location in program memory where the next instruction will be added
      *
-     * @return
+     * @return current location in program memory where the next instruction will be added
      */
     public int getProgramWriterPtr() {
         return _programManager.getProgramWriterPtr();

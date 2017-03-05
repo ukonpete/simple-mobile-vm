@@ -3,9 +3,9 @@ package com.slickpath.mobile.android.simple.vm.parser;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.slickpath.mobile.android.simple.vm.BuildConfig;
 import com.slickpath.mobile.android.simple.vm.FileHelper;
 import com.slickpath.mobile.android.simple.vm.VMError;
+import com.slickpath.mobile.android.simple.vm.VMErrorType;
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet;
 import com.slickpath.mobile.android.simple.vm.util.CommandList;
 
@@ -34,7 +34,7 @@ import java.util.Map;
  * Definitions:
  * COMMAND - string
  * PARAMETER - string (typically an integer, but can be VAR OR SYMBOL)
- * VAR - string starting with 'g'  - Variable memory location reference
+ * VAR - String starting with 'g'  - Variable memory location reference
  * SYMBOL - [string] - note if a SYMBOL is used in a parameter it is a reference to an existing SYMBOL, that SYMBOL represents the line it is defined on. It MUST be defined somewhere on a line by itself
  * COMMENT - Ignore this line during parsing - user wants to leave a compiler ignored note at this line
  * <p>
@@ -52,15 +52,16 @@ import java.util.Map;
  */
 public class SimpleParser {
 
-    private static final String TAG = SimpleParser.class.getName();
+    private static final String LOG_TAG = SimpleParser.class.getName();
 
     private final IParserListener _parserListener;
 
     private final String instructions;
     private final Map<String, Integer> _symbols = new Hashtable<>();
     private final Map<String, Integer> _addresses = new Hashtable<>();
-    private final CommandList _commands = new CommandList();
-    private int _freeMemoryLoc = 0;
+    private final CommandList commands = new CommandList();
+    private int freeMemoryLoc = 0;
+    private boolean parserDebug = false;
 
     public SimpleParser(@NonNull final FileHelper fileHelper, final IParserListener listener) {
         instructions = fileHelper.getInstructionsString();
@@ -84,7 +85,7 @@ public class SimpleParser {
                         vmError = e;
                     }
                     if (_parserListener != null) {
-                        _parserListener.completedParse(vmError, _commands);
+                        _parserListener.completedParse(vmError, commands);
                     }
                 }
             }
@@ -99,7 +100,7 @@ public class SimpleParser {
     private void doParse() throws VMError {
         InputStream stream = null;
         Exception thrownException = null;
-        int vmErrorType = 0;
+        VMErrorType vmErrorType = VMErrorType.VM_ERROR_TYPE_LAZY_UNSET;
         String additionalExceptionInfo = "[runInstructions] ";
 
         try {
@@ -110,23 +111,23 @@ public class SimpleParser {
 
             final BufferedReader buffReader = getBufferedReader(stream);
 
-            String sLine = buffReader.readLine();
+            String line = buffReader.readLine();
 
             final ArrayList<Integer> emptyList = new ArrayList<>(0);
 
-            while (sLine != null) {
-                debug("LINE : " + sLine);
+            while (line != null) {
+                debug("LINE : " + line);
 
                 // If line is not a comment
-                if (!sLine.startsWith("//")) {
-                    debug("-Line " + sLine);
-                    final String[] lineWords = sLine.split(" ");
-                    final String sInstruction = lineWords[0];
+                if (!line.startsWith("//")) {
+                    debug("-Line " + line);
+                    final String[] lineWords = line.split(" ");
+                    final String instructionWord = lineWords[0];
 
-                    debug("-RAW " + sInstruction);
+                    debug("-RAW " + instructionWord);
                     // If the line does not start with a symbol
-                    if (!(sInstruction.startsWith("[") && sInstruction.contains("]"))) {
-                        final int commandVal = BaseInstructionSet.INSTRUCTION_SET_HT.get(sInstruction);
+                    if (!(instructionWord.startsWith("[") && instructionWord.contains("]"))) {
+                        final int commandVal = BaseInstructionSet.INSTRUCTION_SET_HT.get(instructionWord);
                         debug("INST : " + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(commandVal) + "(" + commandVal + ")");
 
                         List<Integer> params;
@@ -136,21 +137,21 @@ public class SimpleParser {
                             // All Empty params point to the same empty List
                             params = emptyList;
                         }
-                        _commands.add(commandVal, params);
+                        commands.add(commandVal, params);
                     }
                 }
-                sLine = buffReader.readLine();
+                line = buffReader.readLine();
             }
         } catch (@NonNull final Exception e) {
             thrownException = e;
-            vmErrorType = VMError.VM_ERROR_TYPE_UNKNOWN;
+            vmErrorType = VMErrorType.VM_ERROR_TYPE_UNKNOWN;
         } finally {
             if (stream != null) {
                 try {
                     stream.close();
                 } catch (@NonNull final IOException e) {
                     thrownException = e;
-                    vmErrorType = VMError.VM_ERROR_TYPE_IO;
+                    vmErrorType = VMErrorType.VM_ERROR_TYPE_IO;
                     additionalExceptionInfo += "finally ";
                 }
             }
@@ -169,34 +170,34 @@ public class SimpleParser {
     @NonNull
     private List<Integer> parseParameters(final String[] lineWords) {
         final List<Integer> parameters = new ArrayList<>();
-        final String sParams = lineWords[1];
-        final String[] InstrParams = sParams.split(",");
+        final String params = lineWords[1];
+        final String[] InstrParams = params.split(",");
         int paramVal;
 
-        for (final String sParamTemp : InstrParams) {
-            final String sParam = sParamTemp.trim();
+        for (final String paramTemp : InstrParams) {
+            final String param = paramTemp.trim();
 
             // We found a symbol parameter, replace with line number from symbol table
-            if (sParam.startsWith("[") && sParam.contains("]")) {
-                final int locEnd = sParam.indexOf(']');
-                final String sSymbol = sParam.substring(1, locEnd);
+            if (param.startsWith("[") && param.contains("]")) {
+                final int locEnd = param.indexOf(']');
+                final String symbol = param.substring(1, locEnd);
 
-                paramVal = _symbols.get(sSymbol);
-                debug("  SYMBOL : " + sSymbol + "(" + paramVal + ")");
-            } else if (sParam.startsWith("g")) {
+                paramVal = _symbols.get(symbol);
+                debug("  SYMBOL : " + symbol + "(" + paramVal + ")");
+            } else if (param.startsWith("g")) {
                 // Handle Variable
-                int memLoc = _freeMemoryLoc;
-                if (_addresses.containsKey(sParam)) {
-                    memLoc = _addresses.get(sParam);
+                int memLoc = freeMemoryLoc;
+                if (_addresses.containsKey(param)) {
+                    memLoc = _addresses.get(param);
                 } else {
-                    _addresses.put(sParam, memLoc);
-                    _freeMemoryLoc++;
+                    _addresses.put(param, memLoc);
+                    freeMemoryLoc++;
                 }
                 paramVal = memLoc;
-                debug("  G-PARAM : " + sParam + "(" + paramVal + ")");
+                debug("  G-PARAM : " + param + "(" + paramVal + ")");
             } else {
-                paramVal = Integer.parseInt(sParam);
-                debug("  PARAM : " + sParam);
+                paramVal = Integer.parseInt(param);
+                debug("  PARAM : " + param);
             }
             parameters.add(paramVal);
         }
@@ -212,31 +213,31 @@ public class SimpleParser {
      * @param fis - FileInputStream
      */
     private void getSymbols(@NonNull final InputStream fis) {
-        int line = 0;
+        int lineNum = 0;
 
         final BufferedReader buffReader = getBufferedReader(fis);
 
-        String sLine;
-        String sSymbol = "";
+        String line;
+        String symbol = "";
         try {
-            sLine = buffReader.readLine();
-            while (sLine != null) {
+            line = buffReader.readLine();
+            while (line != null) {
                 // If line is not a comment
-                if (!sLine.startsWith("//")) {
-                    if (sLine.startsWith("[") && sLine.contains("]")) {
-                        final int locEnd = sLine.indexOf(']');
-                        sSymbol = sLine.substring(1, locEnd);
-                        debug("--NEW SYM : " + sSymbol + "(" + line + ")");
-                        _symbols.put(sSymbol, line);
+                if (!line.startsWith("//")) {
+                    if (line.startsWith("[") && line.contains("]")) {
+                        final int locEnd = line.indexOf(']');
+                        symbol = line.substring(1, locEnd);
+                        debug("--NEW SYM : " + symbol + "(" + line + ")");
+                        _symbols.put(symbol, lineNum);
                     } else {
-                        line++;
+                        lineNum++;
                     }
                 }
-                sLine = buffReader.readLine();
+                line = buffReader.readLine();
             }
 
         } catch (@NonNull final IOException e) {
-            debug("[getSymbols] IOException " + sSymbol + "(" + line + ") " + e.getMessage());
+            debug("[getSymbols] IOException " + symbol + "(" + lineNum + ") " + e.getMessage());
         }
 
     }
@@ -251,14 +252,17 @@ public class SimpleParser {
         return new BufferedReader(new InputStreamReader(inStream), 8192);
     }
 
+    public void setParserDebug(boolean debug) {
+         parserDebug = debug;
+    }
     /**
      * Central location for logging / debugging statements
      *
-     * @param sText text to log
+     * @param text text to log
      */
-    private void debug(final String sText) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, sText);
+    private void debug(final String text) {
+        if (parserDebug) {
+            Log.d(LOG_TAG, text);
         }
     }
 }

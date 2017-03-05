@@ -59,8 +59,8 @@ public class BaseInstructionSet implements Instructions {
         INSTRUCTION_SET_HT.put(_HALT_STR, _HALT);
 
         final Set<String> keys = INSTRUCTION_SET_HT.keySet();
-        for (final String sName : keys) {
-            INSTRUCTION_SET_CONV_HT.put(INSTRUCTION_SET_HT.get(sName), sName);
+        for (final String name : keys) {
+            INSTRUCTION_SET_CONV_HT.put(INSTRUCTION_SET_HT.get(name), name);
         }
     }
 

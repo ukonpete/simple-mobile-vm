@@ -15,11 +15,6 @@ import java.util.List;
 public class CommandList extends ArrayList<Command> {
 
     /**
-     *
-     */
-    private static final long serialVersionUID = 4872607580951103277L;
-
-    /**
      * Constructor
      */
     public CommandList() {
@@ -28,8 +23,8 @@ public class CommandList extends ArrayList<Command> {
     /**
      * takes commandId and parameters and adds an equivalent Command
      *
-     * @param commandId
-     * @param parameters
+     * @param commandId id of command
+     * @param parameters parameters for command
      */
     public void add(final Integer commandId, final List<Integer> parameters) {
         final Command tempCommand = new Command(commandId, parameters);

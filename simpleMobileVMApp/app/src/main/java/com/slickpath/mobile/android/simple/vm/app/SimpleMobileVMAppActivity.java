@@ -28,7 +28,7 @@ import java.io.IOException;
 public class SimpleMobileVMAppActivity extends Activity implements IVMListener, IParserListener {
 
     private final StringBuilder stringBuilder = new StringBuilder();
-    private ProgressDialog _dialog;
+    private ProgressDialog progressDialog;
     private VirtualMachine _vm;
 
     @Override
@@ -88,18 +88,18 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
      * @param index index into file list
      */
     private void parseFile(final int index) {
-        final String sSelectedFile = getSelectedFileName(index);
+        final String selectedFile = getSelectedFileName(index);
 
         try {
-            SimpleMobileVMFileHelper simpleMobileVMFileHelper = new SimpleMobileVMFileHelper(getApplicationContext(), getInstructionPath(), sSelectedFile);
+            SimpleMobileVMFileHelper simpleMobileVMFileHelper = new SimpleMobileVMFileHelper(getApplicationContext(), getInstructionPath(), selectedFile);
             final SimpleParser parser = new SimpleParser(simpleMobileVMFileHelper, this);
 
-            _dialog = ProgressDialog.show(SimpleMobileVMAppActivity.this, "",
+            progressDialog = ProgressDialog.show(SimpleMobileVMAppActivity.this, "",
                     "Please wait for few seconds...", true);
 
             parser.parse();
         } catch (IOException e) {
-            Toast.makeText(this, "Unable to find file " + sSelectedFile, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Unable to find file " + selectedFile, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -124,14 +124,14 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
      * @return String file Name
      */
     private String getSelectedFileName(final int index) {
-        String sSelectedFile = "N/A";
+        String selectedFile = "N/A";
         String[] files = getInstructionFiles();
         if (files != null && index < files.length) {
-            sSelectedFile = files[index];
+            selectedFile = files[index];
             final TextView textView = (TextView) findViewById(R.id.textViewFile);
             textView.setText(files[index]);
         }
-        return sSelectedFile;
+        return selectedFile;
     }
 
     @Override
@@ -154,7 +154,7 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
 
     @Override
     public void completedRunningInstructions(final boolean bHalt, final int lineExecuted, @Nullable final VMError vmError) {
-        _dialog.dismiss();
+        progressDialog.dismiss();
         if (vmError != null) {
             Toast.makeText(this, "ERROR RUN INST lastLine=" + lineExecuted, Toast.LENGTH_LONG).show();
             vmError.printStackTrace();

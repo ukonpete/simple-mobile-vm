@@ -786,16 +786,16 @@ public class MachineTest extends AndroidTestCase {
      * method.
      *
      * @param machine
-     * @param sMethod
+     * @param methodName
      * @return
      */
     @VisibleForTesting
-    public boolean didMethodFail(final Machine machine, final String sMethod) {
+    public boolean didMethodFail(final Machine machine, final String methodName) {
         boolean bFailed = false;
 
         Method method;
         try {
-            method = Machine.class.getDeclaredMethod(sMethod);
+            method = Machine.class.getDeclaredMethod(methodName);
             method.invoke(machine);
         } catch (@NonNull final InvocationTargetException e) {
             if (e.getCause() instanceof VMError) {
