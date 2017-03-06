@@ -56,7 +56,7 @@ public class SimpleParser {
 
     private static final String LOG_TAG = SimpleParser.class.getName();
 
-    private static ThreadPoolExecutor executorPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+    private static final ThreadPoolExecutor executorPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
     private final IParserListener _parserListener;
 
@@ -257,6 +257,7 @@ public class SimpleParser {
         return new BufferedReader(new InputStreamReader(inStream), 8192);
     }
 
+    @SuppressWarnings("unused")
     public void setParserDebug(boolean debug) {
          parserDebug = debug;
     }

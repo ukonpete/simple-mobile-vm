@@ -41,8 +41,8 @@ public class VMError extends Exception {
     /**
      * Constructor
      *
-     * @param detailMessage
-     * @param type
+     * @param detailMessage message to add to this VMError
+     * @param type VMErrorType
      */
     public VMError(final String detailMessage, final VMErrorType type) {
         super(detailMessage);
@@ -52,23 +52,23 @@ public class VMError extends Exception {
     /**
      * Constructor
      *
-     * @param throwable
-     * @param type
+     * @param cause throwable that was the cause of this VMError
+     * @param type VMErrorType
      */
-    public VMError(final Throwable throwable, final VMErrorType type) {
-        super(throwable);
+    public VMError(final Throwable cause, final VMErrorType type) {
+        super(cause);
         _type = type;
     }
 
     /**
      * Constructor
      *
-     * @param detailMessage
-     * @param throwable
-     * @param type
+     * @param detailMessage message to add to this VMError
+     * @param cause throwable that was the cause of this VMError
+     * @param type VMErrorType
      */
-    public VMError(final String detailMessage, final Throwable throwable, final VMErrorType type) {
-        super(detailMessage, throwable);
+    public VMError(final String detailMessage, final Throwable cause, final VMErrorType type) {
+        super(detailMessage, cause);
         _type = type;
     }
 

@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -27,8 +24,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemSelected;
-
-import static butterknife.OnItemSelected.Callback.NOTHING_SELECTED;
 
 public class SimpleMobileVMAppActivity extends Activity implements IVMListener, IParserListener {
 
@@ -67,7 +62,7 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
     }
 
     @OnClick(R.id.buttonExe)
-    public void onClickExeButton(View view) {
+    public void onClickExeButton() {
         editTextOutput.setText("");
         _vm = new VirtualMachine(SimpleMobileVMAppActivity.this.getApplicationContext(), new OutputListener() {
             @Override
