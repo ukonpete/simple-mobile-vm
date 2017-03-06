@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'pmd'
+apply plugin: 'findbugs'
 
 android {
     compileSdkVersion 25
@@ -21,6 +23,72 @@ android {
     dexOptions {
         javaMaxHeapSize "3g"
     }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+        htmlOutput file("$project.buildDir/reports/lint/lint-report.html")
+        xmlOutput file("$project.buildDir/reports/lint/lint-report.xml")
+    }
+
+    task vmAnalyze (dependsOn: ['lint', 'findBugs', 'pmd']) doLast {
+    }
+}
+
+task pmdBase(type: Pmd) {
+    outputs.upToDateWhen { false }
+    ruleSetFiles = files("${project.rootDir}/config/pmd/vm-pmd-ruleset.xml")
+    ignoreFailures = false
+    ruleSets = []
+
+    source 'src'
+    include '**/*.java'
+    exclude '**/*Test.java'
+    exclude '**/gen/**'
+    exclude '**/generated/**'
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+        xml {
+            destination "$project.buildDir/reports/pmd/pmd.xml"
+        }
+        html {
+            destination "$project.buildDir/reports/pmd/basic-pmd.html"
+        }
+    }
+
+    ignoreFailures = true
+}
+
+task pmd(dependsOn: "pmdBase") doLast {
+    // Generate better html report using xslt
+    ant.xslt(
+            in: "$project.buildDir/reports/pmd/pmd.xml",
+            style: "${project.rootDir}/config/pmd/wz-pmd-report.xslt",
+            out:"$project.buildDir/reports/pmd/pmd.html")
+}
+
+task findBugs(type: FindBugs, dependsOn: 'assembleDebug') {
+    outputs.upToDateWhen { false }
+    effort = "max"
+    reportLevel = "low"
+    classes = files("$project.buildDir/intermediates/classes")
+
+    // Use this only if you want exclude some errors
+    excludeFilter = file("$rootProject.rootDir/config/findBugs/vm-findbugs-exclude.xml")
+
+    source = fileTree('src/main/java/')
+    classpath = files()
+
+    reports {
+        xml.enabled = false
+        xml.withMessages = true
+        html.enabled = !xml.isEnabled()
+        xml.destination "$project.buildDir/reports/findbugs/findbugs.xml"
+        html.destination "$project.buildDir/reports/findbugs/findbugs.html"
+    }
+    ignoreFailures = true
 }
 
 dependencies {

@@ -1,0 +1,12 @@
+<FindBugsFilter>
+
+    <Match>
+        <Class name="~.*R\$.*"/>
+    </Match>
+    <Match>
+        <Class name="~.*Manifest\$.*"/>
+    </Match>
+    <Match>
+      <Package name="~com\.collaboraptor\.griffindroid\.serializers\.generated" />
+    </Match>
+</FindBugsFilter>

@@ -2,7 +2,6 @@ package com.slickpath.mobile.android.simple.vm.machine;
 
 import android.support.annotation.NonNull;
 
-import com.slickpath.mobile.android.simple.vm.VMError;
 import com.slickpath.mobile.android.simple.vm.util.Command;
 
 import java.util.ArrayList;
@@ -163,6 +162,7 @@ public class Memory {
      * @param value value to push
      * @return value pushed on the stack
      */
+    @SuppressWarnings("UnusedReturnValue")
     public Integer push_mem(final int value) {
         return _stack.push(value);
     }

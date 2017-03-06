@@ -32,7 +32,7 @@ public class VirtualMachine extends Machine implements Instructions {
     private int numInstructionsRun = 0;
     private IVMListener vmListener;
 
-    private static ThreadPoolExecutor executorPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+    private static final ThreadPoolExecutor executorPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
     /**
      * Constructor
@@ -191,17 +191,15 @@ public class VirtualMachine extends Machine implements Instructions {
             bHalt = true;
         }
 
-        return new Results(bHalt, getProgramCounter(), vmError);
+        return new Results(bHalt, vmError);
     }
 
     private static class Results {
-        boolean halt;
-        int programCounter;
-        VMError vmError;
+        final boolean halt;
+        final VMError vmError;
 
-        public Results(boolean halt, int programCounter, VMError vmError) {
+        public Results(boolean halt, VMError vmError) {
             this.halt = halt;
-            this.programCounter = programCounter;
             this.vmError = vmError;
         }
     }
@@ -311,7 +309,7 @@ public class VirtualMachine extends Machine implements Instructions {
      * file name : "memDump<sAppend>.text
      */
     private void dumpMem(final String append) {
-        if (debugDump) {
+        if (getDebugDump()) {
             final String FILENAME = "memDump" + append + ".txt";
             final StringBuilder data = new StringBuilder("");
 

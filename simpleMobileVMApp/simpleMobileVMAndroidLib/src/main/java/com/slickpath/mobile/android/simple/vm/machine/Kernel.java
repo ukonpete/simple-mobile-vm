@@ -20,7 +20,7 @@ public class Kernel {
     public static final int PUSHC_YES = 1;
     public static final int PUSHC_NO = 0;
 
-    protected final boolean debugDump = false;
+    private boolean debugDump = false;
     private boolean debugVerbose = true;
     private final Memory memory = new Memory();
     private boolean debug = true;
@@ -57,6 +57,7 @@ public class Kernel {
      * @return Integer (previous value) - @see Java.util.List.set()
      * @throws VMError error in VM
      */
+    @SuppressWarnings("UnusedReturnValue")
     public Integer setValueAt(final int value, final int location) throws VMError {
         if (location < Memory.MAX_MEMORY) {
             return memory.set(location, value);
@@ -95,6 +96,15 @@ public class Kernel {
         }
     }
 
+    @SuppressWarnings("unused")
+    public void setDebugDump(boolean debugDump) {
+        this.debugDump = debugDump;
+    }
+
+    @SuppressWarnings("unused")
+    public boolean getDebugDump() {
+        return debugDump;
+    }
     /**
      * Set the program counter (the pointer to the next instruction to be run) to the location that is passed in
      *
@@ -135,6 +145,7 @@ public class Kernel {
         }
     }
 
+    @SuppressWarnings("unused")
     protected void setDebugVebose(boolean debugVerbose) {
         this.debugVerbose = debugVerbose;
     }
@@ -169,6 +180,7 @@ public class Kernel {
      *
      * @param bDebug set this to be debug
      */
+    @SuppressWarnings("unused")
     public void setDebug(final boolean bDebug) {
         debug = bDebug;
     }
