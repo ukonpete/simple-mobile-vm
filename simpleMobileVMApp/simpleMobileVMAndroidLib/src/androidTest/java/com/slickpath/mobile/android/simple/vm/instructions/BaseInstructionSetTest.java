@@ -1,18 +1,24 @@
 package com.slickpath.mobile.android.simple.vm.instructions;
 
 
-import android.test.AndroidTestCase;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import android.support.test.runner.AndroidJUnit4;
 
 import java.util.Set;
+
+import static junit.framework.Assert.assertEquals;
 
 /**
  * @author Pete Procopio
  */
-public class BaseInstructionSetTest extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+public class BaseInstructionSetTest {
 
     /**
      * Make sure the internal instruction sets are correct.
      */
+    @Test
     public void testInternals() {
         assertEquals(BaseInstructionSet.INSTRUCTION_SET_HT.size(), Instructions.NUM_COMMANDS);
         assertEquals(BaseInstructionSet.INSTRUCTION_SET_CONV_HT.size(), Instructions.NUM_COMMANDS);

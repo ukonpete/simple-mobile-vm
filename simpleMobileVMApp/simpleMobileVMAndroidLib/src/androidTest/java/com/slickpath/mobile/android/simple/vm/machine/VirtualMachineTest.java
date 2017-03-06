@@ -2,7 +2,7 @@ package com.slickpath.mobile.android.simple.vm.machine;
 
 
 import android.support.annotation.NonNull;
-import android.test.AndroidTestCase;
+import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
 import com.slickpath.mobile.android.simple.vm.IVMListener;
@@ -13,14 +13,27 @@ import com.slickpath.mobile.android.simple.vm.parser.SimpleParser;
 import com.slickpath.mobile.android.simple.vm.util.Command;
 import com.slickpath.mobile.android.simple.vm.util.CommandList;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import static android.support.test.InstrumentationRegistry.getContext;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+
 /**
  * @author Pete Procopio
  */
-public class VirtualMachineTest extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+public class VirtualMachineTest {
 
     private static final String TAG = VirtualMachineTest.class.getName();
 
@@ -31,9 +44,8 @@ public class VirtualMachineTest extends AndroidTestCase {
     private int _lastLineExecuted;
     private CommandList _commands;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void before() throws Exception {
         _bHalt = false;
         _lastLineExecuted = -1;
         _vmError = null;
@@ -44,6 +56,7 @@ public class VirtualMachineTest extends AndroidTestCase {
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#getVMListener()}.
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#setVMListener(com.slickpath.mobile.android.simple.vm.IVMListener)}.
      */
+    @Test
     public void testGetVMListener() {
         VirtualMachine virtualMachine = new VirtualMachine(getContext());
         assertNull(virtualMachine.getVMListener());
@@ -66,6 +79,7 @@ public class VirtualMachineTest extends AndroidTestCase {
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#addCommand(com.slickpath.mobile.android.simple.vm.util.Command)}.
      */
+    @Test
     public void testAddCommand() {
         VirtualMachine virtualMachine = new VirtualMachine(getContext());
         final int[] instructions = {Instructions._ADD, Instructions._EQUAL, Instructions._NOT, Instructions._PUSHC, Instructions._JUMP, Instructions._POPC};
@@ -94,6 +108,7 @@ public class VirtualMachineTest extends AndroidTestCase {
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#addCommands(com.slickpath.mobile.android.simple.vm.util.CommandList)}.
      */
+    @Test
     public void testAddCommands() {
         VirtualMachine virtualMachine = new VirtualMachine(getContext());
         final int[] instructions = {Instructions._ADD, Instructions._EQUAL, Instructions._NOT, Instructions._PUSHC, Instructions._JUMP, Instructions._POPC};
@@ -137,6 +152,7 @@ public class VirtualMachineTest extends AndroidTestCase {
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#runNextInstruction()}.
      */
+    @Test
     public void testRunNextInstruction() {
         VirtualMachine virtualMachine = new VirtualMachine(getContext());
         final CountDownLatch signalParser = new CountDownLatch(1);
@@ -241,6 +257,7 @@ public class VirtualMachineTest extends AndroidTestCase {
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#runInstructions()}.
      */
+    @Test
     public void testRunInstructions() {
         VirtualMachine virtualMachine = new VirtualMachine(getContext());
         final CountDownLatch signalParse = new CountDownLatch(1);
@@ -292,6 +309,7 @@ public class VirtualMachineTest extends AndroidTestCase {
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.VirtualMachine#runInstructions(int)}.
      */
+    @Test
     public void testRunInstructionsInt() {
         Log.d(TAG, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
         VirtualMachine virtualMachine = new VirtualMachine(getContext());

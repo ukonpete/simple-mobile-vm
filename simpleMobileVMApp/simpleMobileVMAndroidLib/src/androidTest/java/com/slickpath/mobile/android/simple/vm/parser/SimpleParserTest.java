@@ -2,7 +2,7 @@ package com.slickpath.mobile.android.simple.vm.parser;
 
 
 import android.support.annotation.NonNull;
-import android.test.AndroidTestCase;
+import android.support.test.runner.AndroidJUnit4;
 
 import com.slickpath.mobile.android.simple.vm.VMError;
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet;
@@ -10,12 +10,22 @@ import com.slickpath.mobile.android.simple.vm.machine.FibonacciInstructions;
 import com.slickpath.mobile.android.simple.vm.machine.FileHelperForTest;
 import com.slickpath.mobile.android.simple.vm.util.CommandList;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import java.util.concurrent.CountDownLatch;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.fail;
 
 /**
  * @author Pete Procopio
  */
-public class SimpleParserTest extends AndroidTestCase implements IParserListener {
+@RunWith(AndroidJUnit4.class)
+public class SimpleParserTest implements IParserListener {
 
     private static final int FIB_LINE_NUMBER = 15;
     private static final int HALT_LINE_NUMBER = 34;
@@ -24,8 +34,8 @@ public class SimpleParserTest extends AndroidTestCase implements IParserListener
     private VMError _error;
     private CommandList _commands;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void before() throws Exception {
         _parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), this);
         _signal = new CountDownLatch(1);
     }
@@ -33,6 +43,7 @@ public class SimpleParserTest extends AndroidTestCase implements IParserListener
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.parser.SimpleParser#parse()}.
      */
+    @Test
     public void testParse() {
         _parser.parse();
         try {
