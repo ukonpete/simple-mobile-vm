@@ -1,26 +1,36 @@
 package com.slickpath.mobile.android.simple.vm.machine;
 
 
-import android.test.AndroidTestCase;
+import android.support.test.runner.AndroidJUnit4;
 
 import com.slickpath.mobile.android.simple.vm.util.Command;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+
 /**
  * @author Pete Procopio
  */
-public class MemoryTest extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+public class MemoryTest {
 
     private Memory _memory;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void before() throws Exception {
         _memory = new Memory();
     }
 
+    @Test
     public void testMemorySetup() {
         assertTrue(_memory.isStackEmpty());
         assertEquals(Memory.START_LOC, _memory.getProgramCounter());
@@ -38,6 +48,7 @@ public class MemoryTest extends AndroidTestCase {
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#push_mem(int);}.
      */
+    @Test
     public void testPush_mem() {
         final int[] values = {0, 10, 22, 34, 45, 57};
         assertTrue(_memory.isStackEmpty());
@@ -64,6 +75,7 @@ public class MemoryTest extends AndroidTestCase {
     /**
      * Test method for {@link Memory#pop_mem()}}.
      */
+    @Test
     public void testPop_mem() {
         final int[] values = {0, 10, 22, 34, 45, 57};
         assertTrue(_memory.isStackEmpty());
@@ -93,6 +105,7 @@ public class MemoryTest extends AndroidTestCase {
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#isStackEmpty()}.
      */
+    @Test
     public void testIsStackEmpty() {
         assertTrue(_memory.isStackEmpty());
         for (int j = 0; j < 100; j++) {
@@ -116,6 +129,7 @@ public class MemoryTest extends AndroidTestCase {
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#get(int)}.
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#set(int, int)}.
      */
+    @Test
     public void testProgramMemoryDump() {
         List<Integer> memDump = _memory.memoryDump();
         assertNotNull(memDump);
@@ -149,6 +163,7 @@ public class MemoryTest extends AndroidTestCase {
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#setCommand(int, Command)} )}.
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#programMemoryDump()}.
      */
+    @Test
     public void testGetCommand() {
         final int[] instruction = new int[]{11, 22, 35, 46, 88, 99};
         final Integer[] parameters = new Integer[]{15, 27, null, 64, 60, 101};
@@ -179,6 +194,7 @@ public class MemoryTest extends AndroidTestCase {
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#resetStack()}.
      */
+    @Test
     public void testResetStack() {
         assertTrue(_memory.isStackEmpty());
         for (int j = 0; j < 100; j++) {
@@ -193,6 +209,7 @@ public class MemoryTest extends AndroidTestCase {
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#stackDump()}.
      */
+    @Test
     public void testStackDump() {
         final int[] values = {0, 10, 22, 34, 45, 57};
         assertTrue(_memory.isStackEmpty());
@@ -216,6 +233,7 @@ public class MemoryTest extends AndroidTestCase {
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#incProgramCounter()}.
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#decProgramCounter()}.
      */
+    @Test
     public void testGetProgramCounter() {
 
         assertEquals(Memory.START_LOC, _memory.getProgramCounter());
@@ -236,6 +254,7 @@ public class MemoryTest extends AndroidTestCase {
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#setProgramCounter(int)}.
      */
+    @Test
     public void testSetProgramCounter() {
         assertEquals(Memory.START_LOC, _memory.getProgramCounter());
         _memory.setProgramCounter(100);
@@ -251,6 +270,7 @@ public class MemoryTest extends AndroidTestCase {
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#resetProgramCounter()}.
      */
+    @Test
     public void testResetProgramCounter() {
         assertEquals(Memory.START_LOC, _memory.getProgramCounter());
         _memory.setProgramCounter(100);
@@ -263,6 +283,7 @@ public class MemoryTest extends AndroidTestCase {
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#getProgramWriterPtr()}.
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#incProgramWriter()}.
      */
+    @Test
     public void testGetProgramWriterPtr() {
         assertEquals(Memory.START_LOC, _memory.getProgramWriterPtr());
         for (int i = 0; i < 100; i++) {
@@ -274,6 +295,7 @@ public class MemoryTest extends AndroidTestCase {
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#resetProgramWriter()}.
      */
+    @Test
     public void testResetProgramWriter() {
         assertEquals(Memory.START_LOC, _memory.getProgramWriterPtr());
         for (int i = 0; i < 100; i++) {

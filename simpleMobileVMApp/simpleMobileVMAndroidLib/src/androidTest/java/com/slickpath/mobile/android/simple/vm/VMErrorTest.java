@@ -1,29 +1,35 @@
 package com.slickpath.mobile.android.simple.vm;
 
 
-import android.support.annotation.Nullable;
-import android.test.AndroidTestCase;
+import android.support.test.runner.AndroidJUnit4;
+
+import org.junit.After;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.security.InvalidParameterException;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 /**
  * @author Pete Procopio
  */
-public class VMErrorTest extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+public class VMErrorTest {
 
     private final String TEST_STR = "THis is an ErRoR";
-    @Nullable
     private VMError _vmError = null;
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void AFTER() throws Exception {
         _vmError = null;
     }
 
     /**
      * Test method for {@link VMError#VMError()}.
      */
+    @Test
     public void testVMErrorInt() {
         _vmError = new VMError(VMErrorType.VM_ERROR_TYPE_BAD_PARAMS);
 
@@ -35,6 +41,7 @@ public class VMErrorTest extends AndroidTestCase {
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.VMError#VMError(String, VMErrorType)}.
      */
+    @Test
     public void testVMErrorStringInt() {
         _vmError = new VMError(TEST_STR, VMErrorType.VM_ERROR_TYPE_BAD_PARAMS);
 
@@ -46,6 +53,7 @@ public class VMErrorTest extends AndroidTestCase {
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.VMError#VMError(java.lang.Throwable, VMErrorType)}.
      */
+    @Test
     public void testVMErrorThrowableInt() {
         _vmError = new VMError(new InvalidParameterException(), VMErrorType.VM_ERROR_TYPE_BAD_PARAMS);
         assertEquals(VMErrorType.VM_ERROR_TYPE_BAD_PARAMS, _vmError.getType());
@@ -56,6 +64,7 @@ public class VMErrorTest extends AndroidTestCase {
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.VMError#VMError(java.lang.String, java.lang.Throwable, VMErrorType)}.
      */
+    @Test
     public void testVMErrorStringThrowableInt() {
         _vmError = new VMError(TEST_STR, new InvalidParameterException(), VMErrorType.VM_ERROR_TYPE_BAD_PARAMS);
         assertEquals(VMErrorType.VM_ERROR_TYPE_BAD_PARAMS, _vmError.getType());
@@ -66,6 +75,7 @@ public class VMErrorTest extends AndroidTestCase {
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.VMError#getType()}.
      */
+    @Test
     public void testGetType() {
         _vmError = new VMError(TEST_STR, new InvalidParameterException(), VMErrorType.VM_ERROR_TYPE_BAD_PARAMS);
         assertEquals(VMErrorType.VM_ERROR_TYPE_BAD_PARAMS, _vmError.getType());
@@ -74,6 +84,7 @@ public class VMErrorTest extends AndroidTestCase {
     /**
      * Test method for {@link java.lang.Throwable#getMessage()}.
      */
+    @Test
     public void testGetMessage() {
         _vmError = new VMError(TEST_STR, new InvalidParameterException(), VMErrorType.VM_ERROR_TYPE_BAD_PARAMS);
         assertEquals(TEST_STR, _vmError.getMessage());
@@ -82,6 +93,7 @@ public class VMErrorTest extends AndroidTestCase {
     /**
      * Test method for {@link java.lang.Throwable#getCause()}.
      */
+    @Test
     public void testGetCause() {
         _vmError = new VMError(TEST_STR, new InvalidParameterException(), VMErrorType.VM_ERROR_TYPE_BAD_PARAMS);
         assertEquals(InvalidParameterException.class.toString(), _vmError.getCause().getClass().toString());

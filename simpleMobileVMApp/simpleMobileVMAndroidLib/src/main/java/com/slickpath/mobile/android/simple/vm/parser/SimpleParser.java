@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Parses file for commands, parameters, variables and symbols
@@ -54,6 +56,8 @@ public class SimpleParser {
 
     private static final String LOG_TAG = SimpleParser.class.getName();
 
+    private static ThreadPoolExecutor executorPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+
     private final IParserListener _parserListener;
 
     private final String instructions;
@@ -69,12 +73,13 @@ public class SimpleParser {
     }
 
     /**
-     * Launches thread to Parse file for all commands, parameters, variables and symbols
-     * When finished calls completedParse on the listener which returns any error information and the CommandList
-     * Synchronized
+     * arse file for all commands, parameters, variables and symbols when finished calls completedParse
+     * on the listener which returns any error information and the CommandList
+     *
+     * Subsequent calls will be queued until the previous call is finished.
      */
     public void parse() {
-        new Thread(new Runnable() {
+        executorPool.execute(new Runnable() {
             @Override
             public void run() {
                 synchronized (this) {
@@ -89,7 +94,7 @@ public class SimpleParser {
                     }
                 }
             }
-        }).start();
+        });
     }
 
     /**
@@ -152,7 +157,7 @@ public class SimpleParser {
                 } catch (@NonNull final IOException e) {
                     thrownException = e;
                     vmErrorType = VMErrorType.VM_ERROR_TYPE_IO;
-                    additionalExceptionInfo += "finally ";
+                    additionalExceptionInfo += "stream close ";
                 }
             }
         }
