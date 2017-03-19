@@ -14,9 +14,17 @@ Written in Java to run on Android.
 
 ## Release Notes
 
-  * 3/5/2017 - Added Butterknife to App, also add use of ThreadPoolExecutor as needed
-  * 3/4/2017 - Updated to support Andorid Studio (2.3) and Gradle 
+* 3/18/2017
+  * Generated updated javadoc
+* 3/5/2017
+  * Added Butterknife to App
+  * Added use of ThreadPoolExecutor as needed
+  * Updated unit tests
+  * added pmd, findbugs and lint reporting for manual build runs - then did more code cleanup based on those runs
+* 3/4/2017
+  * Updated to support Android Studio (2.3) and Gradle 
+  * Cleaned up a lot of code and removed a lot of warnings
 
 ## Javadoc
 
-See javadoc directory in the project source directory
+See javadoc directory in the project source directory under /simple-mobile-vm/simpleMobileVMApp/javadoc/
