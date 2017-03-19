@@ -16,6 +16,7 @@ import com.slickpath.mobile.android.simple.vm.VMError;
 import com.slickpath.mobile.android.simple.vm.machine.VirtualMachine;
 import com.slickpath.mobile.android.simple.vm.parser.IParserListener;
 import com.slickpath.mobile.android.simple.vm.parser.SimpleParser;
+import com.slickpath.mobile.android.simple.vm.parser.SimpleParserRx;
 import com.slickpath.mobile.android.simple.vm.util.CommandList;
 
 import java.io.IOException;
@@ -79,6 +80,24 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
         parseFile((int) spinnerFiles.getSelectedItemId());
     }
 
+    @OnClick(R.id.buttonExeRx)
+    public void onClickExeRxButton() {
+        editTextOutput.setText("");
+        _vm = new VirtualMachine(SimpleMobileVMAppActivity.this.getApplicationContext(), new OutputListener() {
+            @Override
+            public void charOutput(char c) {
+                stringBuilder.append(c);
+            }
+
+            @Override
+            public void lineOutput(String line) {
+                stringBuilder.append(line);
+            }
+        }, null);
+        _vm.setVMListener(SimpleMobileVMAppActivity.this);
+        parseFileRx((int) spinnerFiles.getSelectedItemId());
+    }
+
     /**
      * @param index index into file list
      */
@@ -88,6 +107,25 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
         try {
             SimpleMobileVMFileHelper simpleMobileVMFileHelper = new SimpleMobileVMFileHelper(getApplicationContext(), getInstructionPath(), selectedFile);
             final SimpleParser parser = new SimpleParser(simpleMobileVMFileHelper, this);
+
+            progressDialog = ProgressDialog.show(SimpleMobileVMAppActivity.this, "",
+                    "Please wait for few seconds...", true);
+
+            parser.parse();
+        } catch (IOException e) {
+            Toast.makeText(this, "Unable to find file " + selectedFile, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * @param index index into file list
+     */
+    private void parseFileRx(final int index) {
+        final String selectedFile = getSelectedFileName(index);
+
+        try {
+            SimpleMobileVMRxFileHelper simpleMobileVMFileHelper = new SimpleMobileVMRxFileHelper(getApplicationContext(), getInstructionPath(), selectedFile);
+            final SimpleParserRx parser = new SimpleParserRx(simpleMobileVMFileHelper, this);
 
             progressDialog = ProgressDialog.show(SimpleMobileVMAppActivity.this, "",
                     "Please wait for few seconds...", true);

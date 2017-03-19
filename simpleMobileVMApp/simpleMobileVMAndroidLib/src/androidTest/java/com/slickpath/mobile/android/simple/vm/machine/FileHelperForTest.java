@@ -1,8 +1,8 @@
 package com.slickpath.mobile.android.simple.vm.machine;
 
-import com.slickpath.mobile.android.simple.vm.FileHelper;
+import com.slickpath.mobile.android.simple.vm.StringFileHelper;
 
-public class FileHelperForTest implements FileHelper {
+public class FileHelperForTest implements StringFileHelper {
 
     private final String instructions;
 
@@ -11,7 +11,7 @@ public class FileHelperForTest implements FileHelper {
     }
 
     @Override
-    public String getInstructionsString() {
+    public String getInstructions() {
         return instructions;
     }
 }

@@ -6,8 +6,6 @@ import android.util.Log;
 import com.slickpath.mobile.android.simple.vm.FileHelper;
 import com.slickpath.mobile.android.simple.vm.VMError;
 import com.slickpath.mobile.android.simple.vm.VMErrorType;
-import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet;
-import com.slickpath.mobile.android.simple.vm.util.CommandList;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -16,11 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Parses file for commands, parameters, variables and symbols
@@ -52,49 +47,16 @@ import java.util.concurrent.ThreadPoolExecutor;
  *
  * @author Pete Procopio
  */
-public class SimpleParser {
+public class SimpleParser extends SimpleParserBase {
 
     private static final String LOG_TAG = SimpleParser.class.getName();
 
-    private static final ThreadPoolExecutor executorPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
-
-    private final IParserListener _parserListener;
-
     private final String instructions;
-    private final Map<String, Integer> _symbols = new Hashtable<>();
-    private final Map<String, Integer> _addresses = new Hashtable<>();
-    private final CommandList commands = new CommandList();
-    private int freeMemoryLoc = 0;
     private boolean parserDebug = false;
 
     public SimpleParser(@NonNull final FileHelper fileHelper, final IParserListener listener) {
-        instructions = fileHelper.getInstructionsString();
-        _parserListener = listener;
-    }
-
-    /**
-     * arse file for all commands, parameters, variables and symbols when finished calls completedParse
-     * on the listener which returns any error information and the CommandList
-     *
-     * Subsequent calls will be queued until the previous call is finished.
-     */
-    public void parse() {
-        executorPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (this) {
-                    VMError vmError = null;
-                    try {
-                        doParse();
-                    } catch (@NonNull final VMError e) {
-                        vmError = e;
-                    }
-                    if (_parserListener != null) {
-                        _parserListener.completedParse(vmError, commands);
-                    }
-                }
-            }
-        });
+        super(fileHelper, listener);
+        instructions = (String) getFileHelper().getInstructions();
     }
 
     /**
@@ -102,7 +64,8 @@ public class SimpleParser {
      *
      * @throws VMError when unable to parse for the reason given in the VMError
      */
-    private void doParse() throws VMError {
+    @Override
+    protected boolean doParse() throws VMError {
         InputStream stream = null;
         Exception thrownException = null;
         VMErrorType vmErrorType = VMErrorType.VM_ERROR_TYPE_LAZY_UNSET;
@@ -110,7 +73,7 @@ public class SimpleParser {
 
         try {
             stream = new ByteArrayInputStream(instructions.getBytes());
-            getSymbols(stream);
+            setSymbols(getSymbolsFromStream(stream));
             stream.close();
             stream = new ByteArrayInputStream(instructions.getBytes());
 
@@ -121,30 +84,7 @@ public class SimpleParser {
             final ArrayList<Integer> emptyList = new ArrayList<>(0);
 
             while (line != null) {
-                debug("LINE : " + line);
-
-                // If line is not a comment
-                if (!line.startsWith("//")) {
-                    debug("-Line " + line);
-                    final String[] lineWords = line.split(" ");
-                    final String instructionWord = lineWords[0];
-
-                    debug("-RAW " + instructionWord);
-                    // If the line does not start with a symbol
-                    if (!(instructionWord.startsWith("[") && instructionWord.contains("]"))) {
-                        final int commandVal = BaseInstructionSet.INSTRUCTION_SET_HT.get(instructionWord);
-                        debug("INST : " + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(commandVal) + "(" + commandVal + ")");
-
-                        List<Integer> params;
-                        if (lineWords.length > 1) {
-                            params = parseParameters(lineWords);
-                        } else {
-                            // All Empty params point to the same empty List
-                            params = emptyList;
-                        }
-                        commands.add(commandVal, params);
-                    }
-                }
+                doParseLine(line, emptyList);
                 line = buffReader.readLine();
             }
         } catch (@NonNull final Exception e) {
@@ -164,49 +104,7 @@ public class SimpleParser {
         if(thrownException!=null) {
             throw new VMError(additionalExceptionInfo + thrownException.getMessage(), thrownException, vmErrorType);
         }
-    }
-
-    /**
-     * Parse for all the parameters for a particular command
-     *
-     * @param lineWords words on one line
-     * @return parameters as list
-     */
-    @NonNull
-    private List<Integer> parseParameters(final String[] lineWords) {
-        final List<Integer> parameters = new ArrayList<>();
-        final String params = lineWords[1];
-        final String[] InstrParams = params.split(",");
-        int paramVal;
-
-        for (final String paramTemp : InstrParams) {
-            final String param = paramTemp.trim();
-
-            // We found a symbol parameter, replace with line number from symbol table
-            if (param.startsWith("[") && param.contains("]")) {
-                final int locEnd = param.indexOf(']');
-                final String symbol = param.substring(1, locEnd);
-
-                paramVal = _symbols.get(symbol);
-                debug("  SYMBOL : " + symbol + "(" + paramVal + ")");
-            } else if (param.startsWith("g")) {
-                // Handle Variable
-                int memLoc = freeMemoryLoc;
-                if (_addresses.containsKey(param)) {
-                    memLoc = _addresses.get(param);
-                } else {
-                    _addresses.put(param, memLoc);
-                    freeMemoryLoc++;
-                }
-                paramVal = memLoc;
-                debug("  G-PARAM : " + param + "(" + paramVal + ")");
-            } else {
-                paramVal = Integer.parseInt(param);
-                debug("  PARAM : " + param);
-            }
-            parameters.add(paramVal);
-        }
-        return parameters;
+        return true;
     }
 
     /**
@@ -217,35 +115,26 @@ public class SimpleParser {
      *
      * @param fis - FileInputStream
      */
-    private void getSymbols(@NonNull final InputStream fis) {
+    private Map<String, Integer> getSymbolsFromStream(@NonNull final InputStream fis) {
         int lineNum = 0;
-
+        Map<String, Integer> symbols = new HashMap<>();
         final BufferedReader buffReader = getBufferedReader(fis);
 
         String line;
-        String symbol = "";
         try {
             line = buffReader.readLine();
             while (line != null) {
                 // If line is not a comment
-                if (!line.startsWith("//")) {
-                    if (line.startsWith("[") && line.contains("]")) {
-                        final int locEnd = line.indexOf(']');
-                        symbol = line.substring(1, locEnd);
-                        debug("--NEW SYM : " + symbol + "(" + line + ")");
-                        _symbols.put(symbol, lineNum);
-                    } else {
-                        lineNum++;
-                    }
-                }
+                lineNum = doParseSymbolLine(lineNum, symbols, line);
                 line = buffReader.readLine();
             }
 
         } catch (@NonNull final IOException e) {
-            debug("[getSymbols] IOException " + symbol + "(" + lineNum + ") " + e.getMessage());
+            debug("[getSymbolsFromStream] IOException " + "(" + lineNum + ") " + e.getMessage());
         }
-
+        return symbols;
     }
+
 
     /**
      * @param is input stream
