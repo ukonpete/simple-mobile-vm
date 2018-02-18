@@ -3,6 +3,7 @@ package com.slickpath.mobile.android.simple.vm.machine;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 import android.util.Log;
 
 import com.slickpath.mobile.android.simple.vm.IVMListener;
@@ -28,6 +29,7 @@ public class VirtualMachine extends Machine implements Instructions {
     private static final int SINGLE_PARAM_COMMAND_START = 1000;
 
     private static final String LOG_TAG = VirtualMachine.class.getName();
+    @NonNull
     private final Context context;
     private int numInstructionsRun = 0;
     private IVMListener vmListener;
@@ -35,12 +37,16 @@ public class VirtualMachine extends Machine implements Instructions {
     private static final ThreadPoolExecutor executorPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
     /**
-     * Constructor
-     * - output will be added to log is debugVerbose is set
-     * - input will be attempted to be retrieved from the console System.in
+     * Constructor:
+     * <p><ul>
+     * <li>output will be added to log is debugVerbose is set<
+     * <li>input will be attempted to be retrieved from the console System.in
+     * </ul>
      *
      * @param context context object
      */
+    @SuppressWarnings("WeakerAccess")
+    @RestrictTo(RestrictTo.Scope.TESTS)
     public VirtualMachine(final @NonNull Context context) {
         super(null, null);
         init();
@@ -49,15 +55,17 @@ public class VirtualMachine extends Machine implements Instructions {
 
     /**
      * Constructor
+     * <p>
      * Allows caller to pass in streams for both input and output
-     *
-     * If outputListener is null output will be added to log is debugVerbose is set
-     * If inputListener is null input will be attempted to be retrieved from the console System.in
+     * <p>
+     * If outputListener is null output will be added to log is debugVerbose is set<p>
+     * If inputListener is null input will be attempted to be retrieved from the console System.in<p>
      *
      * @param context context object
      * @param outputListener listener for output events
      * @param inputListener listener to return input on input events
      */
+    @SuppressWarnings("SameParameterValue")
     public VirtualMachine(final @NonNull Context context, @Nullable OutputListener outputListener, @Nullable InputListener inputListener) {
         super(outputListener, inputListener);
         init();
@@ -80,7 +88,7 @@ public class VirtualMachine extends Machine implements Instructions {
      *
      * @return IVMListener
      */
-    public IVMListener getVMListener() {
+    IVMListener getVMListener() {
         return vmListener;
     }
 
@@ -96,12 +104,12 @@ public class VirtualMachine extends Machine implements Instructions {
     //   EXECUTION
 
     /**
-     * Add the contents of a Command object to the VM
+     * Add the contents of a Command object to the VM<p>
      * Basically write the command id and its parameter(s) into the program memory space
      *
      * @param command command to add
      */
-    public void addCommand(@NonNull final Command command) {
+    void addCommand(@NonNull final Command command) {
         final int instruction = command.getCommandId();
         String params = "X";
 
@@ -159,7 +167,7 @@ public class VirtualMachine extends Machine implements Instructions {
      * @return instruction was a halt
      * @throws VMError on a VM error
      */
-    public boolean runNextInstruction() throws VMError {
+    boolean runNextInstruction() throws VMError {
         Results results = doRunNextInstruction();
 
         if(results.vmError != null) {
@@ -198,7 +206,7 @@ public class VirtualMachine extends Machine implements Instructions {
         final boolean halt;
         final VMError vmError;
 
-        public Results(boolean halt, VMError vmError) {
+        Results(boolean halt, VMError vmError) {
             this.halt = halt;
             this.vmError = vmError;
         }
@@ -229,13 +237,13 @@ public class VirtualMachine extends Machine implements Instructions {
      * Launch thread that will Run N number of instructions - starting from current program ptr location
      * will call completedRunningInstructions on IVMListener after completion
      *
-     * @param numInstrsToRun number of instructions to run until running stops
+     * @param numInstructionsToRun number of instructions to run until running stops
      */
-    protected void runInstructions(final int numInstrsToRun) {
+    void runInstructions(final int numInstructionsToRun) {
         executorPool.execute(new Runnable() {
             @Override
             public void run() {
-                doRunInstructions(numInstrsToRun);
+                doRunInstructions(numInstructionsToRun);
             }
         });
     }
@@ -244,31 +252,33 @@ public class VirtualMachine extends Machine implements Instructions {
      * Run N number of instructions - starting from current program ptr location
      * will call completedRunningInstructions on IVMListener after completion
      *
-     * @param numInstrsToRun number of instructions to run until running stops
+     * @param numInstructionsToRun number of instructions to run until running stops
      */
-    private void doRunInstructions(final int numInstrsToRun) {
+    private void doRunInstructions(final int numInstructionsToRun) {
         Log.d(LOG_TAG, "+START++++++++++++++++++");
         VMError vmError = null;
         dumpMem("1");
-        int numInstrsRun = 0;
+        int numInstructionsRun = 0;
 
-        int lastProgCtr = -1;
+        int lastProgramCounter = -1;
         int instructionVal = BaseInstructionSet._BEGIN;
 
         try {
-            while ((instructionVal != BaseInstructionSet._HALT) && (getProgramCounter() < Memory.MAX_MEMORY) && ((numInstrsRun < numInstrsToRun) || (numInstrsToRun == -1))) {
-                lastProgCtr = getProgramCounter();
-                numInstrsRun++;
+            while ((instructionVal != BaseInstructionSet._HALT) &&
+                    (getProgramCounter() < Memory.MAX_MEMORY) &&
+                    ((numInstructionsRun < numInstructionsToRun) || (numInstructionsToRun == -1))) {
+                lastProgramCounter = getProgramCounter();
+                numInstructionsRun++;
                 instructionVal = getInstruction();
                 runCommand(instructionVal);
             }
             debug(LOG_TAG, "=========================");
-            logAdditionalInfo(numInstrsRun, lastProgCtr, instructionVal);
+            logAdditionalInfo(numInstructionsRun, lastProgramCounter, instructionVal);
             debug(LOG_TAG, "=========================");
         } catch (@NonNull final VMError vme) {
             debug(LOG_TAG, "=========================");
             debug(LOG_TAG, "VMError=(" + vme.getType() + ") " + vme.getMessage());
-            logAdditionalInfo(numInstrsRun, lastProgCtr, instructionVal);
+            logAdditionalInfo(numInstructionsRun, lastProgramCounter, instructionVal);
             dumpMem("2");
             vmError = vme;
             debug(LOG_TAG, "=========================");
@@ -284,16 +294,16 @@ public class VirtualMachine extends Machine implements Instructions {
     }
 
     /**
-     * @param numInstrsRun   number of instructions to run until running stops
-     * @param lastProgCtr    last program counter location
+     * @param numInstructionsRun   number of instructions that were run
+     * @param lastProgramCounter    last program counter location
      * @param instructionVal last instruction value
      */
-    private void logAdditionalInfo(final int numInstrsRun, final int lastProgCtr,
+    private void logAdditionalInfo(final int numInstructionsRun, final int lastProgramCounter,
                                    final int instructionVal) {
         debug(LOG_TAG, "LAST_INSTRUCTION=(" + getInstructionString(instructionVal) + ") " + instructionVal);
-        debug(LOG_TAG, "NUM INSTRUCTIONS RUN=" + numInstrsRun);
+        debug(LOG_TAG, "NUM INSTRUCTIONS RUN=" + numInstructionsRun);
         debug(LOG_TAG, "PROG_CTR=" + getProgramCounter());
-        debug(LOG_TAG, "LAST_PROG_CTR=" + lastProgCtr);
+        debug(LOG_TAG, "LAST_PROG_CTR=" + lastProgramCounter);
     }
 
     /**
@@ -315,9 +325,12 @@ public class VirtualMachine extends Machine implements Instructions {
 
             for (int i = 1; i < Memory.MAX_MEMORY; i += 2) {
                 try {
-                    final int parm = getValueAt(i);
+                    final int parameter = getValueAt(i);
                     final int command = getValueAt(i - 1);
-                    data.append(command).append(' ').append(parm).append("\r\n");
+                    data.append(command)
+                            .append(' ')
+                            .append(parameter)
+                            .append("\r\n");
                 } catch (@NonNull final VMError e) {
                     e.printStackTrace();
                 }
@@ -332,7 +345,7 @@ public class VirtualMachine extends Machine implements Instructions {
                     try {
                         fos.close();
                     } catch (IOException e1) {
-                        e1.printStackTrace();
+                        Log.w(LOG_TAG, "unable to fo final close", e1);
                     }
                 }
             }
@@ -346,7 +359,7 @@ public class VirtualMachine extends Machine implements Instructions {
      * @throws VMError VM error on running a command
      */
     private void runCommand(final int commandId) throws VMError {
-        if (getDebugVebose()) {
+        if (getDebugVerbose()) {
             doRunCommandDebug(commandId);
         }
         numInstructionsRun++;
@@ -500,18 +513,18 @@ public class VirtualMachine extends Machine implements Instructions {
      */
     private void doRunCommandDebug(final int commandId) throws VMError {
         final StringBuilder lineCount = new StringBuilder("[");
-        lineCount.append(numInstructionsRun);
-        lineCount.append(']');
-        lineCount.append(" Line=");
-        lineCount.append((getProgramCounter() - 1));
-        lineCount.append(" CMD=");
-        lineCount.append(getInstructionString(commandId));
-        lineCount.append(" (");
-        lineCount.append(commandId);
-        lineCount.append(")");
+        lineCount.append(numInstructionsRun)
+                .append("]")
+                .append(" Line=")
+                .append((getProgramCounter() - 1))
+                .append(" CMD=")
+                .append(getInstructionString(commandId))
+                .append(" (")
+                .append(commandId)
+                .append(")");
         if (commandId >= 1000) {
-            lineCount.append(" PARAM=");
-            lineCount.append(getParameter());
+            lineCount.append(" PARAM=")
+                    .append(getParameter());
         }
         debug(LOG_TAG, lineCount.toString());
     }

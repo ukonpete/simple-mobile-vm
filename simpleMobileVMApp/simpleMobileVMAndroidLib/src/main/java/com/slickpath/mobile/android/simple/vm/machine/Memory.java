@@ -8,25 +8,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This class is the VM Basic Memory manager
+ *
  * @author Pete Procopio
- *         This class is the VM Basic Memory manager
  */
-public class Memory {
+class Memory {
 
     /**
      * 1st location in memory
      */
-    public static final int START_LOC = ProgramManager.START_LOC;
+    static final int START_LOC = ProgramManager.START_LOC;
 
     /**
      * Value of memory if it is empty (unused)
      */
-    public static final int EMPTY_MEMORY_VALUE = 999999;
+    static final int EMPTY_MEMORY_VALUE = 999999;
 
     /**
      * Memory consists of N number of sequential Integers
      */
-    public static final int MAX_MEMORY = 500;
+    static final int MAX_MEMORY = 500;
 
     /**
      * Memory to store values
@@ -47,7 +48,7 @@ public class Memory {
     /**
      * Constructor
      */
-    public Memory() {
+    Memory() {
         super();
         _memoryStore = new ArrayList<>(MAX_MEMORY);
         // initialize every piece of memory to EMPTY
@@ -61,25 +62,25 @@ public class Memory {
      *
      * @return boolean
      */
-    public boolean isStackEmpty() {
+    boolean isStackEmpty() {
         return _stack.isEmpty();
     }
 
     /**
      * Empty the stack
      */
-    public void resetStack() {
+    void resetStack() {
         _stack.reset();
     }
 
     /**
      * Return memory as a List<Integer>
-     * NOTE: Creates a copy of memory
+     * <p>NOTE: Creates a copy of memory
      *
      * @return value at every line of memory
      */
     @NonNull
-    public List<Integer> memoryDump() {
+    List<Integer> memoryDump() {
         return new ArrayList<>(_memoryStore);
     }
 
@@ -89,18 +90,18 @@ public class Memory {
      * @return value at every line of stack memory
      */
     @NonNull
-    public List<Integer> stackDump() {
+    List<Integer> stackDump() {
         return _stack.dump();
     }
 
     /**
      * Return program memory as a List<Integer>
-     * NOTE: Returns a copy of Program Memory
+     * <p>NOTE: Returns a copy of Program Memory
      *
      * @return Copy of every line of program Memory
      */
     @NonNull
-    public List<Command> programMemoryDump() {
+    List<Command> programMemoryDump() {
         return _programManager.dumpProgramStore();
     }
 
@@ -111,7 +112,7 @@ public class Memory {
      * @param location location in memory
      * @return value at location
      */
-    public int get(final int location) {
+    int get(final int location) {
         return _memoryStore.get(location);
     }
 
@@ -121,7 +122,7 @@ public class Memory {
      * @param location location of command in program memory
      * @return command at location
      */
-    public Command getCommand(final int location) {
+    Command getCommand(final int location) {
         return _programManager.getCommandAt(location);
     }
 
@@ -132,7 +133,7 @@ public class Memory {
      * @param value value to set
      * @return value that was set
      */
-    public Integer set(final int location, final int value) {
+    Integer set(final int location, final int value) {
         return _memoryStore.set(location, value);
     }
 
@@ -142,7 +143,7 @@ public class Memory {
      * @param location location in program memory
      * @param command command to set
      */
-    public void setCommand(final int location, final Command command) {
+    void setCommand(final int location, final Command command) {
         _programManager.setCommandAt(location, command);
     }
 
@@ -152,7 +153,7 @@ public class Memory {
      *
      * @return value at top of stack
      */
-    public Integer pop_mem() {
+    Integer pop_mem() {
         return _stack.pop();
     }
 
@@ -163,7 +164,7 @@ public class Memory {
      * @return value pushed on the stack
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Integer push_mem(final int value) {
+    Integer push_mem(final int value) {
         return _stack.push(value);
     }
 
@@ -172,7 +173,7 @@ public class Memory {
      *
      * @return int
      */
-    public int getProgramCounter() {
+    int getProgramCounter() {
         return _programManager.getProgramCounter();
     }
 
@@ -182,28 +183,28 @@ public class Memory {
      *
      * @param location location the program counter points to
      */
-    public void setProgramCounter(final int location) {
+    void setProgramCounter(final int location) {
         _programManager.setProgramCounter(location);
     }
 
     /**
      * Increment program counter location to next line of instruction
      */
-    public void incProgramCounter() {
+    void incProgramCounter() {
         _programManager.incProgramCounter();
     }
 
     /**
      * Decrement program counter location to previous line of instruction
      */
-    public void decProgramCounter() {
+    void decProgramCounter() {
         _programManager.decProgramCounter();
     }
 
     /**
      * program counter location to start of program memory
      */
-    public void resetProgramCounter() {
+    void resetProgramCounter() {
         _programManager.resetProgramCounter();
     }
 
@@ -212,21 +213,21 @@ public class Memory {
      *
      * @return current location in program memory where the next instruction will be added
      */
-    public int getProgramWriterPtr() {
+    int getProgramWriterPtr() {
         return _programManager.getProgramWriterPtr();
     }
 
     /**
      * Increment program writer location to next memory location
      */
-    public void incProgramWriter() {
+    void incProgramWriter() {
         _programManager.incProgramWriter();
     }
 
     /**
      * Decrement program writer location to previous memory location
      */
-    public void resetProgramWriter() {
+    void resetProgramWriter() {
         _programManager.resetProgramWriter();
     }
 }

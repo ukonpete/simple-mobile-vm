@@ -447,24 +447,24 @@ public class MachineTest {
     @Test
     public void testPUSH() {
         try {
-            final int[] vals = new int[]{20, 15, 17, 44, 101};
-            final int[] locs = new int[]{33, 45, 62, 77, 249};
+            final int[] values = new int[]{20, 15, 17, 44, 101};
+            final int[] locations = new int[]{33, 45, 62, 77, 249};
 
-            for (int i = 0; i < vals.length; i++) {
-                _machine.setValueAt(vals[i], locs[i]);
-                _machine.PUSH(locs[i]);
+            for (int i = 0; i < values.length; i++) {
+                _machine.setValueAt(values[i], locations[i]);
+                _machine.PUSH(locations[i]);
             }
 
             final List<Integer> stackDump = _machine.dumpStack();
 
-            for (int i = 0; i < vals.length; i++) {
-                final int memVal = _machine.getValueAt(locs[i]);
-                assertEquals(vals[i], memVal);
+            for (int i = 0; i < values.length; i++) {
+                final int memVal = _machine.getValueAt(locations[i]);
+                assertEquals(values[i], memVal);
                 final int stackVal = stackDump.get(i);
-                assertEquals(vals[i], stackVal);
+                assertEquals(values[i], stackVal);
                 _machine.POPC(i);
                 final int poppedVal = _machine.getValueAt(i);
-                assertEquals(vals[vals.length - i - 1], poppedVal);
+                assertEquals(values[values.length - i - 1], poppedVal);
             }
 
         } catch (@NonNull final VMError e) {
@@ -480,20 +480,20 @@ public class MachineTest {
     @Test
     public void testPUSHC() {
         try {
-            final int[] vals = new int[]{20, 15, 17, 44, 101};
+            final int[] values = new int[]{20, 15, 17, 44, 101};
 
-            for (final int val : vals) {
+            for (final int val : values) {
                 _machine.PUSHC(val);
             }
 
             final List<Integer> stackDump = _machine.dumpStack();
 
-            for (int i = 0; i < vals.length; i++) {
+            for (int i = 0; i < values.length; i++) {
                 final int stackVal = stackDump.get(i);
-                assertEquals(vals[i], stackVal);
+                assertEquals(values[i], stackVal);
                 _machine.POPC(i);
                 final int poppedVal = _machine.getValueAt(i);
-                assertEquals(vals[vals.length - i - 1], poppedVal);
+                assertEquals(values[values.length - i - 1], poppedVal);
             }
 
         } catch (@NonNull final VMError e) {
@@ -508,24 +508,24 @@ public class MachineTest {
     @Test
     public void testPOP() {
         try {
-            final int[] vals = new int[]{20, 15, 17, 44, 101};
-            final int[] locs = new int[]{33, 45, 62, 77, 249};
+            final int[] values = new int[]{20, 15, 17, 44, 101};
+            final int[] locations = new int[]{33, 45, 62, 77, 249};
 
-            for (int i = 0; i < vals.length; i++) {
-                _machine.PUSHC(vals[i]);
-                _machine.PUSHC(locs[i]);
+            for (int i = 0; i < values.length; i++) {
+                _machine.PUSHC(values[i]);
+                _machine.PUSHC(locations[i]);
             }
 
             final List<Integer> stackDump = _machine.dumpStack();
 
-            for (int i = 0; i < vals.length; i++) {
+            for (int i = 0; i < values.length; i++) {
                 final int stackVal = stackDump.get(i * 2);
                 final int stackValLoc = stackDump.get((i * 2) + 1);
-                assertEquals(vals[i], stackVal);
-                assertEquals(locs[i], stackValLoc);
+                assertEquals(values[i], stackVal);
+                assertEquals(locations[i], stackValLoc);
                 _machine.POP();
-                final int poppedVal = _machine.getValueAt(locs[vals.length - i - 1]);
-                assertEquals(vals[vals.length - i - 1], poppedVal);
+                final int poppedVal = _machine.getValueAt(locations[values.length - i - 1]);
+                assertEquals(values[values.length - i - 1], poppedVal);
             }
 
         } catch (@NonNull final VMError e) {
@@ -732,22 +732,22 @@ public class MachineTest {
     @Test
     public void testCONTENTS() {
         try {
-            final int[] vals = new int[]{20, 15, 17, 44, 101};
-            final int[] locs = new int[]{33, 45, 62, 77, 249};
+            final int[] values = new int[]{20, 15, 17, 44, 101};
+            final int[] locations = new int[]{33, 45, 62, 77, 249};
 
-            for (int i = 0; i < vals.length; i++) {
-                _machine.PUSHC(locs[i]);
-                _machine.setValueAt(vals[i], locs[i]);
+            for (int i = 0; i < values.length; i++) {
+                _machine.PUSHC(locations[i]);
+                _machine.setValueAt(values[i], locations[i]);
             }
 
-            for (int i = 0; i < vals.length; i++) {
+            for (int i = 0; i < values.length; i++) {
                 _machine.CONTENTS();
                 _machine.POPC(i);
             }
 
-            for (int i = 0; i < vals.length; i++) {
+            for (int i = 0; i < values.length; i++) {
                 final int val = _machine.getValueAt(i);
-                assertEquals(vals[vals.length - i - 1], val);
+                assertEquals(values[values.length - i - 1], val);
             }
 
             boolean bFailed = false;

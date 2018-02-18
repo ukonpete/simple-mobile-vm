@@ -27,18 +27,6 @@ public class VMErrorTest {
     }
 
     /**
-     * Test method for {@link VMError#VMError()}.
-     */
-    @Test
-    public void testVMErrorInt() {
-        _vmError = new VMError(VMErrorType.VM_ERROR_TYPE_BAD_PARAMS);
-
-        assertEquals(VMErrorType.VM_ERROR_TYPE_BAD_PARAMS, _vmError.getType());
-        assertEquals(null, _vmError.getMessage());
-        assertEquals(null, _vmError.getCause());
-    }
-
-    /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.VMError#VMError(String, VMErrorType)}.
      */
     @Test

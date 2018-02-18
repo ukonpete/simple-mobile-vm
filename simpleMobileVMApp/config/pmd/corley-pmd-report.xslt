@@ -27,7 +27,7 @@
 <html>
 <head>
     <title>PMD <xsl:value-of select="//pmd/@version"/> Report</title>
-	<script type="text/javascript" src="fcoltable.js"></script>
+    <script type="text/javascript" src="fcoltable.js" />
     <style type="text/css">
 		@import "fcoltable.css";
         body { margin-left: 2%; margin-right: 2%; font:normal verdana,arial,helvetica; color:#000000; }
@@ -110,7 +110,7 @@
 	        <tfoot>
 				<tr>
 					<th colspan="3">Total number of violations for this class: <xsl:value-of select="count(violation)"/> (Click anywhere on this row to see/hide details)</th>
-					<td></td>
+                    <td />
 				</tr>
 			</tfoot>
 	    <xsl:for-each select="violation">

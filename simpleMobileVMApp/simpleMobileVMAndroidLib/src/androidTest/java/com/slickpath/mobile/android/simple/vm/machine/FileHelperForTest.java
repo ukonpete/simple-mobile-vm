@@ -6,6 +6,7 @@ public class FileHelperForTest implements FileHelper {
 
     private final String instructions;
 
+    @SuppressWarnings("SameParameterValue")
     public FileHelperForTest(String instructions) {
         this.instructions = instructions;
     }

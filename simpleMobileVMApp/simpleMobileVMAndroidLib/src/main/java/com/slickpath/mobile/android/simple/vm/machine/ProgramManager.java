@@ -8,25 +8,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This class abstracts the handling of the memory used to store program instructions and parameters
+ *
  * @author Pete Procopio
- *         This class abstracts the handling of the memory used to store program instructions and parameters
  */
-public class ProgramManager {
+class ProgramManager {
 
     /**
      * Location in memory of stack pointer when stack is empty
      */
-    public static final int START_LOC = 0;
+    static final int START_LOC = 0;
 
     /**
      * Value of memory if it is empty (unused)
      */
-    public static final int EMPTY_MEMORY_VALUE = 999999;
+    private static final int EMPTY_MEMORY_VALUE = 999999;
 
     /**
      * Memory consists of N number of sequential Integers
      */
-    public static final int MAX_MEMORY = 500;
+    private static final int MAX_MEMORY = 500;
     /**
      * Actually store we use for memory
      */
@@ -43,7 +44,7 @@ public class ProgramManager {
     /**
      * Constructor
      */
-    public ProgramManager() {
+    ProgramManager() {
         // initialize every piece of instruction memory to EMPTY
         for (int i = 0; i < MAX_MEMORY; i++) {
             _programStore.add(new Command(EMPTY_MEMORY_VALUE, null));
@@ -55,7 +56,7 @@ public class ProgramManager {
      *
      * @return int
      */
-    public int getProgramCounter() {
+    int getProgramCounter() {
         return programCtr;
     }
 
@@ -64,28 +65,28 @@ public class ProgramManager {
      *
      * @param location location program counter points to
      */
-    public void setProgramCounter(final int location) {
+    void setProgramCounter(final int location) {
         programCtr = location;
     }
 
     /**
      * Increment program counter location to next line of instruction
      */
-    public void incProgramCounter() {
+    void incProgramCounter() {
         programCtr++;
     }
 
     /**
      * Decrement program counter location to previous line of instruction
      */
-    public void decProgramCounter() {
+    void decProgramCounter() {
         programCtr--;
     }
 
     /**
      * program counter location to start of program memory
      */
-    public void resetProgramCounter() {
+    void resetProgramCounter() {
         programCtr = START_LOC;
     }
 
@@ -94,21 +95,21 @@ public class ProgramManager {
      *
      * @return current location in program memory where the next instruction will be added
      */
-    public int getProgramWriterPtr() {
+    int getProgramWriterPtr() {
         return programWriter;
     }
 
     /**
      * Increment program writer location to previous memory location
      */
-    public void incProgramWriter() {
+    void incProgramWriter() {
         programWriter++;
     }
 
     /**
      * Reset program writer location to starting memory location
      */
-    public void resetProgramWriter() {
+    void resetProgramWriter() {
         programWriter = START_LOC;
     }
 
@@ -120,7 +121,7 @@ public class ProgramManager {
      * @return Copy of memory
      */
     @NonNull
-    public List<Command> dumpProgramStore() {
+    List<Command> dumpProgramStore() {
         return new ArrayList<>(_programStore);
     }
 
@@ -131,7 +132,7 @@ public class ProgramManager {
      * @param location location in program store
      * @return command at location
      */
-    public Command getCommandAt(final int location) {
+    Command getCommandAt(final int location) {
         return _programStore.get(location);
     }
 
@@ -141,7 +142,7 @@ public class ProgramManager {
      * @param location location in program store
      * @param command command that will be set
      */
-    public void setCommandAt(final int location, final Command command) {
+    void setCommandAt(final int location, final Command command) {
         _programStore.set(location, command);
     }
 }

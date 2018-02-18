@@ -29,17 +29,22 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
 
     private final StringBuilder stringBuilder = new StringBuilder();
     private ProgressDialog progressDialog;
+
     private VirtualMachine _vm;
 
+    @SuppressWarnings("WeakerAccess")
     @BindView(R.id.textViewPath)
     TextView textViewPath;
 
+    @SuppressWarnings("WeakerAccess")
     @BindView(R.id.spinnerFiles)
     Spinner spinnerFiles;
 
+    @SuppressWarnings("WeakerAccess")
     @BindView(R.id.editTextOutput)
     EditText editTextOutput;
 
+    @SuppressWarnings("WeakerAccess")
     @BindView(R.id.textViewFile)
     TextView textViewFile;
 

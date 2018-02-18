@@ -7,11 +7,12 @@ import java.util.List;
 import java.util.Stack;
 
 /**
+ * This class wraps java.util.Stack to simplify the interface to what we really need.
+ *
  * @author Pete Procopio
- *         This class wraps java.util.Stack to simplify the interface to what we really need.
  * @see java.util.Stack
  */
-public class SimpleStack {
+class SimpleStack {
 
     /**
      * The stack container class
@@ -23,7 +24,7 @@ public class SimpleStack {
      *
      * @return boolean - is the stack empty
      */
-    public boolean isEmpty() {
+    boolean isEmpty() {
         return _stack.empty();
     }
 
@@ -32,7 +33,7 @@ public class SimpleStack {
      *
      * @return Integer - value at top of stack
      */
-    public Integer peek() {
+    Integer peek() {
         return _stack.peek();
     }
 
@@ -41,7 +42,7 @@ public class SimpleStack {
      *
      * @return Integer - value at top of stack before pop
      */
-    public Integer pop() {
+    Integer pop() {
         return _stack.pop();
     }
 
@@ -51,7 +52,7 @@ public class SimpleStack {
      * @param value value to push onto top of stack
      * @return Integer - value pushed onto top of stack
      */
-    public Integer push(final Integer value) {
+    Integer push(final Integer value) {
         return _stack.push(value);
     }
 
@@ -60,19 +61,19 @@ public class SimpleStack {
      *
      * @return int - number of elements pushed onto the stack
      */
-    public int size() {
+    int size() {
         return _stack.size();
     }
 
     /**
      * Clear all items from the stack - The size should also be 0
      */
-    public void reset() {
+    void reset() {
         _stack.clear();
     }
 
     /**
-     * Dump the Stack as a List for debugging
+     * Dump the Stack as a List for debugging<p>
      * The list should be ordered where the 1st element is at the bottom of the stack and the last
      * element is at the top of the stack.
      * <p>
@@ -81,7 +82,7 @@ public class SimpleStack {
      * @return List<Integer> list of data
      */
     @NonNull
-    public List<Integer> dump() {
+    List<Integer> dump() {
         return new ArrayList<>(_stack);
     }
 }

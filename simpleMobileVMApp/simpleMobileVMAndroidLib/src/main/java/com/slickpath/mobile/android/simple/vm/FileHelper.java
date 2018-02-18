@@ -1,5 +1,7 @@
 package com.slickpath.mobile.android.simple.vm;
 
+import android.support.annotation.Nullable;
+
 /**
  * Helper to return string of the all instructions a program will run
  *
@@ -12,5 +14,6 @@ public interface FileHelper {
      *
      * @return instructions a program will run
      */
+    @Nullable
     String getInstructionsString();
 }

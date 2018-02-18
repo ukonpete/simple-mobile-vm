@@ -46,7 +46,7 @@ public class MemoryTest {
     }
 
     /**
-     * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#push_mem(int);}.
+     * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#push_mem(int)}.
      */
     @Test
     public void testPush_mem() {

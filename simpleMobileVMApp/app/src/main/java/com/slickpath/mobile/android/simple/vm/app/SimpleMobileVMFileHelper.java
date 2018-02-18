@@ -33,6 +33,7 @@ class SimpleMobileVMFileHelper implements FileHelper {
         readInstructionsString();
     }
 
+    @Nullable
     @Override
     public String getInstructionsString() {
         return instructions;
@@ -55,14 +56,16 @@ class SimpleMobileVMFileHelper implements FileHelper {
         int lineCount = 0;
         String line = buffReader.readLine();
         if (line != null) {
-            stringBuilder.append(line);
-            stringBuilder.append("\n");
+            stringBuilder
+                    .append(line)
+                    .append("\n");
             lineCount++;
             while (line != null) {
                 line = buffReader.readLine();
                 if (line != null) {
-                    stringBuilder.append(line);
-                    stringBuilder.append("\n");
+                    stringBuilder
+                            .append(line)
+                            .append("\n");
                     lineCount++;
                 }
             }
