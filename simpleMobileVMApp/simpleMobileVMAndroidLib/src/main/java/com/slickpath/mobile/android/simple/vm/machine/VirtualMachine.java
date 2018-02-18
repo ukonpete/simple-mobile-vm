@@ -327,7 +327,10 @@ public class VirtualMachine extends Machine implements Instructions {
                 try {
                     final int parameter = getValueAt(i);
                     final int command = getValueAt(i - 1);
-                    data.append(command).append(' ').append(parameter).append("\r\n");
+                    data.append(command)
+                            .append(' ')
+                            .append(parameter)
+                            .append("\r\n");
                 } catch (@NonNull final VMError e) {
                     e.printStackTrace();
                 }
@@ -342,7 +345,7 @@ public class VirtualMachine extends Machine implements Instructions {
                     try {
                         fos.close();
                     } catch (IOException e1) {
-                        e1.printStackTrace();
+                        Log.w(LOG_TAG, "unable to fo final close", e1);
                     }
                 }
             }
@@ -510,18 +513,18 @@ public class VirtualMachine extends Machine implements Instructions {
      */
     private void doRunCommandDebug(final int commandId) throws VMError {
         final StringBuilder lineCount = new StringBuilder("[");
-        lineCount.append(numInstructionsRun);
-        lineCount.append(']');
-        lineCount.append(" Line=");
-        lineCount.append((getProgramCounter() - 1));
-        lineCount.append(" CMD=");
-        lineCount.append(getInstructionString(commandId));
-        lineCount.append(" (");
-        lineCount.append(commandId);
-        lineCount.append(")");
+        lineCount.append(numInstructionsRun)
+                .append("]")
+                .append(" Line=")
+                .append((getProgramCounter() - 1))
+                .append(" CMD=")
+                .append(getInstructionString(commandId))
+                .append(" (")
+                .append(commandId)
+                .append(")");
         if (commandId >= 1000) {
-            lineCount.append(" PARAM=");
-            lineCount.append(getParameter());
+            lineCount.append(" PARAM=")
+                    .append(getParameter());
         }
         debug(LOG_TAG, lineCount.toString());
     }

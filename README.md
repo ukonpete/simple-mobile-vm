@@ -8,12 +8,19 @@ Simple machine language virtual machine. A small but powerful language to execut
 
 Written in Java to run on Android.
 
+Note: To open the Android project it is located in the simpleMobileVMApp directory
+
 ## Details
 
   * More details available on [wiki](https://github.com/ukonpete/simple-mobile-vm/wiki)
 
 ## Release Notes
 
+* 2/18/2018
+  * Updated to support Android Studio (3.0.1) and related Gradle 
+  * Updated unit tests as needed
+  * Generated updated javadoc
+  * Cleaned up code
 * 3/18/2017
   * Generated updated javadoc
 * 3/5/2017
