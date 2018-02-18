@@ -25,32 +25,37 @@ import java.util.concurrent.ThreadPoolExecutor;
 /**
  * Parses file for commands, parameters, variables and symbols
  * <p>
- * Possible line combinations
- * COMMAND
- * COMMAND PARAMETER
- * COMMAND VAR
- * COMMAND SYMBOL
- * SYMBOL
- * COMMENT
+ * Possible line combinations:
+ * <ul>
+ * <li>COMMAND
+ * <li>COMMAND PARAMETER
+ * <li>COMMAND VAR
+ * <li>COMMAND SYMBOL
+ * <li>SYMBOL
+ * <li>COMMENT
+ * </ul>
  * <p>
  * Definitions:
- * COMMAND - string
- * PARAMETER - string (typically an integer, but can be VAR OR SYMBOL)
- * VAR - String starting with 'g'  - Variable memory location reference
- * SYMBOL - [string] - note if a SYMBOL is used in a parameter it is a reference to an existing SYMBOL, that SYMBOL represents the line it is defined on. It MUST be defined somewhere on a line by itself
- * COMMENT - Ignore this line during parsing - user wants to leave a compiler ignored note at this line
+ * <ul>
+ * <li>COMMAND - string
+ * <li>PARAMETER - string (typically an integer, but can be VAR OR SYMBOL)
+ * <li>VAR - String starting with 'g'  - Variable memory location reference
+ * <li>SYMBOL - [string] - NOTE: if a SYMBOL is used in a parameter it is a reference to an existing SYMBOL, that SYMBOL represents the line it is defined on. It MUST be defined somewhere on a line by itself
+ * <li>COMMENT - Ignore this line during parsing - user wants to leave a compiler ignored note at this line
+ * </ul>
  * <p>
  * Examples:
- * COMMAND - ADD  (Adds the top two items on the stack and places result on the stack)
- * COMMAND PARAMETER - PUSHC 100 (Pushes the value 100 onto the top of the stack)
- * COMMAND VAR - POPC g1 - (Pop the top value of the stack and place into the memory location represented by g1
- * COMMAND SYMBOL - JUMP [LOOP2] - jump to the line number represented by [LOOP2]
- * SYMBOL - [LOOP2] - assign this line number (next instruction in code) to the symbol [LOOP2]
- * COMMENT - // This code rocks
+ * <ul>
+ * <li>COMMAND - ADD  (Adds the top two items on the stack and places result on the stack)
+ * <li>COMMAND PARAMETER - PUSHC 100 (Pushes the value 100 onto the top of the stack)
+ * <li>COMMAND VAR - POPC g1 - (Pop the top value of the stack and place into the memory location represented by g1
+ * <li>COMMAND SYMBOL - JUMP [LOOP2] - jump to the line number represented by [LOOP2]
+ * <li>SYMBOL - [LOOP2] - assign the next instructions line number to the symbol [LOOP2]
+ * <li>COMMENT - // This code rocks
+ * </ul>
  * <p>
- * See "Simple VM 1.0 User Manual.doc" for more details
- *
  * @author Pete Procopio
+ * @see <a href="https://github.com/ukonpete/simple-mobile-vm/wiki" target="_blank">Simple VM Wiki on Github</a>
  */
 public class SimpleParser {
 
@@ -75,7 +80,7 @@ public class SimpleParser {
     /**
      * arse file for all commands, parameters, variables and symbols when finished calls completedParse
      * on the listener which returns any error information and the CommandList
-     *
+     * <p></p>
      * Subsequent calls will be queued until the previous call is finished.
      */
     public void parse() {
@@ -210,8 +215,8 @@ public class SimpleParser {
     }
 
     /**
-     * Look for lines with symbol definitions (These are lines with "[XYZ]" where XYZ is a String).
-     * If its found save the XYZ String and the line number for later use.
+     * Look for lines with symbol definitions (These are lines with "[XYZ]" where XYZ is a String).<p>
+     * If its found save the XYZ String and the line number for later use.<p>
      * If when parsing a command during parse, we see a symbol (Parameter with "[XYZ]" where XYZ is a String)
      * we replace that symbol with the line number associated with the matching symbol in the symbol table.
      *
@@ -262,7 +267,7 @@ public class SimpleParser {
          parserDebug = debug;
     }
     /**
-     * Central location for logging / debugging statements
+     * Central location for logging/debugging statements
      *
      * @param text text to log
      */

@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.Stack;
 
 /**
+ * This class wraps java.util.Stack to simplify the interface to what we really need.
+ *
  * @author Pete Procopio
- *         This class wraps java.util.Stack to simplify the interface to what we really need.
  * @see java.util.Stack
  */
 class SimpleStack {
@@ -72,7 +73,7 @@ class SimpleStack {
     }
 
     /**
-     * Dump the Stack as a List for debugging
+     * Dump the Stack as a List for debugging<p>
      * The list should be ordered where the 1st element is at the bottom of the stack and the last
      * element is at the top of the stack.
      * <p>

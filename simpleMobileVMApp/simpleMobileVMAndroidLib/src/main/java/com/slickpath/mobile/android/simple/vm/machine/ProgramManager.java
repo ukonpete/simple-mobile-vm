@@ -8,8 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This class abstracts the handling of the memory used to store program instructions and parameters
+ *
  * @author Pete Procopio
- *         This class abstracts the handling of the memory used to store program instructions and parameters
  */
 class ProgramManager {
 

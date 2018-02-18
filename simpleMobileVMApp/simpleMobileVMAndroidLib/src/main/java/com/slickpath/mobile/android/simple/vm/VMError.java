@@ -3,10 +3,12 @@ package com.slickpath.mobile.android.simple.vm;
 /**
  * VMError extends Exception.  If is an Error holder so that callbacks can pass back errors and any Exception errors
  * <p>
- * VMError contains 3 things
- * 1.  An error type for general classification and switching
- * 2.  A description - brief description of the problem seen
- * 3.  The cause - If this VMError was caused by an Exception, the VMError will contain the Throwable object for additional information
+ * VMError contains 3 things:
+ * <p><ul>
+ * <li>An error type for general classification and switching
+ * <li>A description - brief description of the problem seen
+ * <li>The cause - If this VMError was caused by an Exception, the VMError will contain the Throwable object for additional information
+ * </ul>
  * <p>
  * NOTE: Cause can be null.  This most likely means an Error determined by the library.
  *

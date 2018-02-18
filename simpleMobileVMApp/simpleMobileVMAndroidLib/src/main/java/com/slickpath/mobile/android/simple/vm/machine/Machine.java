@@ -1,5 +1,6 @@
 package com.slickpath.mobile.android.simple.vm.machine;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.slickpath.mobile.android.simple.vm.DefaultInputListener;
@@ -11,8 +12,9 @@ import com.slickpath.mobile.android.simple.vm.VMErrorType;
 import java.io.IOException;
 
 /**
+ * The Machine.  The calls that are made to execute instructions
+ *
  * @author Pete Procopio
- *         The Machine.  The calls that are made to execute instructions
  */
 class Machine extends Kernel {
 
@@ -21,16 +23,20 @@ class Machine extends Kernel {
     /**
      * Listener where output can be written to
      */
+    @NonNull
     private final OutputListener outputListener;
     /**
      * Stream where input can be read from
      */
+    @NonNull
     private final InputListener inputListener;
 
     /**
      * Constructor
-     * - output will be added to log is debugVerbose is set
-     * - input will be attempted to be retrieved from the console System.in
+     * <p><ul>
+     * <li>output will be added to log is debugVerbose is set
+     * <li>input will be attempted to be retrieved from the console System.in
+     * </ul>
      */
     Machine() {
         this(null, null);
@@ -38,10 +44,12 @@ class Machine extends Kernel {
 
     /**
      * Constructor
+     * <p>
      * Allows caller to pass in streams for both input and output
-     *
-     * If outputListener is null output will be added to log is debugVerbose is set
-     * If inputListener is null input will be attempted to be retrieved from the console System.in
+     * <p><ul>
+     * <li>If outputListener is null output will be added to log if debugVerbose is set
+     * <li>If inputListener is null input will be attempted to be retrieved from the console System.in
+     * </ul>
      *
      * @param outputListener listener for output events
      * @param inputListener listener to return input on input events
@@ -79,9 +87,10 @@ class Machine extends Kernel {
     /////////////////////////////////////////////////  Command Category : ARITHMATIC
 
     /**
-     * 1. Pop 1st two values off the top of the stack
-     * 2. Add them together
-     * 3. Push result to top of stack
+     * <ol>
+     * <li>Pop 1st two values off the top of the stack
+     * <li>Add them together
+     * <li>Push result to top of stack
      *
      * @throws VMError on vm error
      */
@@ -93,9 +102,10 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Pop 1st two values off the top of the stack
-     * 2. Subtracts 2nd from 1st
-     * 3. Push result to top of stack
+     * <ol>
+     * <li>Pop 1st two values off the top of the stack
+     * <li>Subtracts 2nd from 1st
+     * <li>Push result to top of stack
      *
      * @throws VMError on vm error
      */
@@ -107,9 +117,10 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Pop 1st two values off the top of the stack
-     * 2. Multiplies them
-     * 3. Push result to top of stack
+     * <ol>
+     * <li>Pop 1st two values off the top of the stack
+     * <li>Multiplies them
+     * <li>Push result to top of stack
      *
      * @throws VMError on vm error
      */
@@ -121,9 +132,10 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Pop 1st two values off the top of the stack
-     * 2. Divides 2nd into 1st  (remainder is truncated)
-     * 3. Push result to top of stack
+     * <ol>
+     * <li>Pop 1st two values off the top of the stack
+     * <li>Divides 2nd into 1st  (remainder is truncated)
+     * <li>Push result to top of stack
      *
      * @throws VMError on vm error
      */
@@ -135,9 +147,10 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Pop 1st value off the top of the stack
-     * 2. Negates value
-     * 3. Push result to top of stack
+     * <ol>
+     * <li>Pop 1st value off the top of the stack
+     * <li>Negates value
+     * <li>Push result to top of stack
      *
      * @throws VMError on vm error
      */
@@ -150,9 +163,10 @@ class Machine extends Kernel {
     /////////////////////////////////////////////////  Command Category : BOOLEAN
 
     /**
-     * 1. Pop 1st two values off the top of the stack
-     * 2. If equal 1 is pushed to top of stack if not 0 is push to top of stack
-     * 3. Push result to top of stack
+     * <ol>
+     * <li>Pop 1st two values off the top of the stack
+     * <li>If equal 1 is pushed to top of stack if not 0 is push to top of stack
+     * <li>Push result to top of stack
      *
      * @throws VMError on vm error
      */
@@ -168,9 +182,10 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Pop 1st two values off the top of the stack
-     * 2. If not equal 1 is pushed to top of stack if not 0 is push to top of stack
-     * 3. Push result to top of stack
+     * <ol>
+     * <li>Pop 1st two values off the top of the stack
+     * <li>If not equal 1 is pushed to top of stack if not 0 is push to top of stack
+     * <li>Push result to top of stack
      *
      * @throws VMError on vm error
      */
@@ -186,9 +201,10 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Pop 1st two values off the top of the stack
-     * 2. If 1st value is greater than the 2nd value 1 is pushed to top of stack if not 0 is push to top of stack
-     * 3. Push result to top of stack
+     * <ol>
+     * <li>Pop 1st two values off the top of the stack
+     * <li>If 1st value is greater than the 2nd value 1 is pushed to top of stack if not 0 is push to top of stack
+     * <li>Push result to top of stack
      *
      * @throws VMError on vm error
      */
@@ -204,9 +220,10 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Pop 1st two values off the top of the stack
-     * 2. If 1st value is less than the 2nd value 1 is pushed to top of stack if not 0 is push to top of stack
-     * 3. Push result to top of stack
+     * <ol>
+     * <li>Pop 1st two values off the top of the stack
+     * <li>If 1st value is less than the 2nd value 1 is pushed to top of stack if not 0 is push to top of stack
+     * <li>Push result to top of stack
      *
      * @throws VMError on vm error
      */
@@ -222,9 +239,10 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Pop 1st two values off the top of the stack
-     * 2. If 1st value is greater than or equal to the 2nd than the 2nd value 1 is pushed to top of stack if not 0 is push to top of stack
-     * 3. Push result to top of stack
+     * <ol>
+     * <li>Pop 1st two values off the top of the stack
+     * <li>If 1st value is greater than or equal to the 2nd than the 2nd value 1 is pushed to top of stack if not 0 is push to top of stack
+     * <li>Push result to top of stack
      *
      * @throws VMError on vm error
      */
@@ -240,9 +258,10 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Pop 1st two values off the top of the stack
-     * 2. If 1st value is less than or equal to the 2nd than the 2nd value 1 is pushed to top of stack if not 0 is push to top of stack
-     * 3. Push result to top of stack
+     * <ol>
+     * <li>Pop 1st two values off the top of the stack
+     * <li>If 1st value is less than or equal to the 2nd than the 2nd value 1 is pushed to top of stack if not 0 is push to top of stack
+     * <li>Push result to top of stack
      *
      * @throws VMError on vm error
      */
@@ -258,9 +277,10 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Pop 1st value off the top of the stack
-     * 2. If value is 0 then 1 is pushed to top of stack if not 0 is push to top of stack
-     * 3. Push result to top of stack
+     * <ol>
+     * <li>Pop 1st value off the top of the stack
+     * <li>If value is 0 then 1 is pushed to top of stack if not 0 is push to top of stack
+     * <li>Push result to top of stack
      *
      * @throws VMError on vm error
      */
@@ -301,8 +321,9 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Pop 1st two values off the top of the stack
-     * 2. save the 2nd value popped off in memory location indicated by the fist
+     * <ol>
+     * <li>Pop 1st two values off the top of the stack
+     * <li>save the 2nd value popped off in memory location indicated by the fist
      *
      * @throws VMError on vm error
      */
@@ -312,8 +333,9 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Pop 1st value at top of the stack
-     * 2. Set the value popped at the location in memory indicated by passed in value.
+     * <ol>
+     * <li>Pop 1st value at top of the stack
+     * <li>Set the value popped at the location in memory indicated by passed in value.
      *
      * @param location location in memory
      * @throws VMError on vm error
@@ -326,9 +348,10 @@ class Machine extends Kernel {
     ///////////////////////////////////////////////// Command Category : INPUT/OUTPUT
 
     /**
-     * 1. Read character from Input Stream
-     * 2. Push value to top of stack
-     * 3. If debug is enabled, write value to log.d
+     * <ol>
+     * <li>Read character from Input Stream
+     * <li>Push value to top of stack
+     * <li>If debug is enabled, write value to log.d
      *
      * @throws VMError on vm error
      */
@@ -341,9 +364,10 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Pop character from top of stack
-     * 2. Write value to output Stream
-     * 3. If debug is enabled, write value to log.d
+     * <ol>
+     * <li>Pop character from top of stack
+     * <li>Write value to output Stream
+     * <li>If debug is enabled, write value to log.d
      *
      * @throws VMError on vm error
      */
@@ -355,9 +379,10 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Read int from Input Stream
-     * 2. Push value to top of stack
-     * 3. If debug is enabled, write value to log.d
+     * <ol>
+     * <li>Read int from Input Stream
+     * <li>Push value to top of stack
+     * <li>If debug is enabled, write value to log.d
      *
      * @throws VMError on vm error
      */
@@ -372,9 +397,10 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Pop int from top of stack
-     * 2. Write value to output Stream
-     * 3. If debug is enabled, write value to log.d
+     * <ol>
+     * <li>Pop int from top of stack
+     * <li>Write value to output Stream
+     * <li>If debug is enabled, write value to log.d
      *
      * @throws VMError on vm error
      */
@@ -408,8 +434,9 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Pop 1st value at top of the stack
-     * 2. Branch to passed in location if value == 0
+     * <ol>
+     * <li>Pop 1st value at top of the stack
+     * <li>Branch to passed in location if value == 0
      *
      * @param location in mem
      * @return boolean - if branch occurred
@@ -427,8 +454,9 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Pop 1st value at top of the stack
-     * 2. Branch to passed in location if value < 0
+     * <ol>
+     * <li>Pop 1st value at top of the stack
+     * <li>Branch to passed in location if value < 0
      *
      * @param location in mem
      * @return boolean - if branch occurred
@@ -446,8 +474,9 @@ class Machine extends Kernel {
     }
 
     /**
-     * 1. Pop 1st value at top of the stack
-     * 2. Branch to passed in location if value > 0
+     * <ol>
+     * <li>Pop 1st value at top of the stack
+     * <li>Branch to passed in location if value > 0
      *
      * @param location in mem
      * @return boolean - if branch occurred
@@ -467,9 +496,10 @@ class Machine extends Kernel {
     ///////////////////////////////////////////////////  Command Category : MISC
 
     /**
-     * 1. Pop 1st value at top of the stack
-     * 2. Get value at memory location indicated by value that was popped
-     * 3. Push the value to stop of the stack
+     * <ol>
+     * <li>Pop 1st value at top of the stack
+     * <li>Get value at memory location indicated by value that was popped
+     * <li>Push the value to stop of the stack
      *
      * @throws VMError on vm error
      */

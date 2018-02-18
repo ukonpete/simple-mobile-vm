@@ -3,6 +3,7 @@ package com.slickpath.mobile.android.simple.vm.machine;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 import android.util.Log;
 
 import com.slickpath.mobile.android.simple.vm.IVMListener;
@@ -28,6 +29,7 @@ public class VirtualMachine extends Machine implements Instructions {
     private static final int SINGLE_PARAM_COMMAND_START = 1000;
 
     private static final String LOG_TAG = VirtualMachine.class.getName();
+    @NonNull
     private final Context context;
     private int numInstructionsRun = 0;
     private IVMListener vmListener;
@@ -35,12 +37,16 @@ public class VirtualMachine extends Machine implements Instructions {
     private static final ThreadPoolExecutor executorPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
     /**
-     * Constructor
-     * - output will be added to log is debugVerbose is set
-     * - input will be attempted to be retrieved from the console System.in
+     * Constructor:
+     * <p><ul>
+     * <li>output will be added to log is debugVerbose is set<
+     * <li>input will be attempted to be retrieved from the console System.in
+     * </ul>
      *
      * @param context context object
      */
+    @SuppressWarnings("WeakerAccess")
+    @RestrictTo(RestrictTo.Scope.TESTS)
     public VirtualMachine(final @NonNull Context context) {
         super(null, null);
         init();
@@ -49,10 +55,11 @@ public class VirtualMachine extends Machine implements Instructions {
 
     /**
      * Constructor
+     * <p>
      * Allows caller to pass in streams for both input and output
-     *
-     * If outputListener is null output will be added to log is debugVerbose is set
-     * If inputListener is null input will be attempted to be retrieved from the console System.in
+     * <p>
+     * If outputListener is null output will be added to log is debugVerbose is set<p>
+     * If inputListener is null input will be attempted to be retrieved from the console System.in<p>
      *
      * @param context context object
      * @param outputListener listener for output events
@@ -81,7 +88,7 @@ public class VirtualMachine extends Machine implements Instructions {
      *
      * @return IVMListener
      */
-    public IVMListener getVMListener() {
+    IVMListener getVMListener() {
         return vmListener;
     }
 
@@ -97,12 +104,12 @@ public class VirtualMachine extends Machine implements Instructions {
     //   EXECUTION
 
     /**
-     * Add the contents of a Command object to the VM
+     * Add the contents of a Command object to the VM<p>
      * Basically write the command id and its parameter(s) into the program memory space
      *
      * @param command command to add
      */
-    public void addCommand(@NonNull final Command command) {
+    void addCommand(@NonNull final Command command) {
         final int instruction = command.getCommandId();
         String params = "X";
 
@@ -160,7 +167,7 @@ public class VirtualMachine extends Machine implements Instructions {
      * @return instruction was a halt
      * @throws VMError on a VM error
      */
-    public boolean runNextInstruction() throws VMError {
+    boolean runNextInstruction() throws VMError {
         Results results = doRunNextInstruction();
 
         if(results.vmError != null) {
@@ -199,7 +206,7 @@ public class VirtualMachine extends Machine implements Instructions {
         final boolean halt;
         final VMError vmError;
 
-        public Results(boolean halt, VMError vmError) {
+        Results(boolean halt, VMError vmError) {
             this.halt = halt;
             this.vmError = vmError;
         }

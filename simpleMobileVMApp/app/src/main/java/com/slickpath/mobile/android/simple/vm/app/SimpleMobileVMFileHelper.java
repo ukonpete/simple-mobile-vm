@@ -33,6 +33,7 @@ class SimpleMobileVMFileHelper implements FileHelper {
         readInstructionsString();
     }
 
+    @Nullable
     @Override
     public String getInstructionsString() {
         return instructions;

@@ -29,6 +29,7 @@ public class SimpleMobileVMAppActivity extends Activity implements IVMListener, 
 
     private final StringBuilder stringBuilder = new StringBuilder();
     private ProgressDialog progressDialog;
+
     private VirtualMachine _vm;
 
     @SuppressWarnings("WeakerAccess")

@@ -11,8 +11,9 @@ import com.slickpath.mobile.android.simple.vm.util.Command;
 import java.util.List;
 
 /**
+ * Kernel level call for the VM
+ *
  * @author Pete Procopio
- *         Kernel level call for the VM
  */
 class Kernel {
     private static final String LOG_TAG = Machine.class.getName();

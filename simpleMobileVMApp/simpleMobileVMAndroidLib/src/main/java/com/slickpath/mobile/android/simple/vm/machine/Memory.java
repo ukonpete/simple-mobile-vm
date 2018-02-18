@@ -8,8 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This class is the VM Basic Memory manager
+ *
  * @author Pete Procopio
- *         This class is the VM Basic Memory manager
  */
 class Memory {
 
@@ -74,7 +75,7 @@ class Memory {
 
     /**
      * Return memory as a List<Integer>
-     * NOTE: Creates a copy of memory
+     * <p>NOTE: Creates a copy of memory
      *
      * @return value at every line of memory
      */
@@ -95,7 +96,7 @@ class Memory {
 
     /**
      * Return program memory as a List<Integer>
-     * NOTE: Returns a copy of Program Memory
+     * <p>NOTE: Returns a copy of Program Memory
      *
      * @return Copy of every line of program Memory
      */
