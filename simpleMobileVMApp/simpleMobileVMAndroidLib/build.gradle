@@ -3,12 +3,12 @@ apply plugin: 'pmd'
 apply plugin: 'findbugs'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 27
+    buildToolsVersion "26.0.3"
 
     defaultConfig {
         minSdkVersion 17
-        targetSdkVersion 25
+        targetSdkVersion 27
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -51,10 +51,10 @@ task pmdBase(type: Pmd) {
         xml.enabled = true
         html.enabled = true
         xml {
-            destination "$project.buildDir/reports/pmd/pmd.xml"
+            setDestination(file("$project.buildDir/reports/pmd/pmd.xml"))
         }
         html {
-            destination "$project.buildDir/reports/pmd/basic-pmd.html"
+            setDestination(file("$project.buildDir/reports/pmd/basic-pmd.html"))
         }
     }
 
@@ -85,17 +85,17 @@ task findBugs(type: FindBugs, dependsOn: 'assembleDebug') {
         xml.enabled = false
         xml.withMessages = true
         html.enabled = !xml.isEnabled()
-        xml.destination "$project.buildDir/reports/findbugs/findbugs.xml"
-        html.destination "$project.buildDir/reports/findbugs/findbugs.html"
+        xml.setDestination(file("$project.buildDir/reports/findbugs/findbugs.xml"))
+        html.setDestination(file("$project.buildDir/reports/findbugs/findbugs.html"))
     }
     ignoreFailures = true
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:25.2.0'
+    compile 'com.android.support:support-annotations:27.0.2'
 
-    androidTestCompile 'com.android.support:support-annotations:25.2.0'
-    androidTestCompile 'com.android.support.test:runner:0.5'
-    androidTestCompile 'com.android.support.test:rules:0.5'
+    androidTestCompile 'com.android.support:support-annotations:27.0.2'
+    androidTestCompile 'com.android.support.test:runner:1.0.1'
+    androidTestCompile 'com.android.support.test:rules:1.0.1'
     androidTestCompile 'junit:junit:4.12'
 }

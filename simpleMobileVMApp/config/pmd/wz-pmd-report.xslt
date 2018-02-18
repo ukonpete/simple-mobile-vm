@@ -24,7 +24,7 @@
 <html>
 <head>
     <title>PMD <xsl:value-of select="//pmd/@version"/> Report</title>
-	<script type="text/javascript" src="sorttable.js"></script>
+    <script type="text/javascript" src="sorttable.js" />
     <style type="text/css">
         body { margin-left: 2%; margin-right: 2%; font:normal verdana,arial,helvetica; color:#000000; }
         table.sortable tr th { font-weight: bold; text-align:left; background:#a6caf0; }
