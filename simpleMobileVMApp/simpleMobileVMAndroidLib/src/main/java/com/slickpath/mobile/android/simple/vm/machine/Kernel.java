@@ -14,11 +14,11 @@ import java.util.List;
  * @author Pete Procopio
  *         Kernel level call for the VM
  */
-public class Kernel {
+class Kernel {
     private static final String LOG_TAG = Machine.class.getName();
 
-    public static final int PUSHC_YES = 1;
-    public static final int PUSHC_NO = 0;
+    static final int PUSHC_YES = 1;
+    static final int PUSHC_NO = 0;
 
     private boolean debugDump = false;
     private boolean debugVerbose = true;
@@ -28,7 +28,7 @@ public class Kernel {
     /**
      * Constructor
      */
-    public Kernel() {
+    Kernel() {
         super();
     }
 
@@ -39,7 +39,7 @@ public class Kernel {
      * @return int - value at specified memory location
      * @throws VMError error in VM
      */
-    public int getValueAt(final int location) throws VMError {
+    int getValueAt(final int location) throws VMError {
         int returnVal;
         if (location < Memory.MAX_MEMORY) {
             returnVal = memory.get(location);
@@ -58,7 +58,7 @@ public class Kernel {
      * @throws VMError error in VM
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Integer setValueAt(final int value, final int location) throws VMError {
+    Integer setValueAt(final int value, final int location) throws VMError {
         if (location < Memory.MAX_MEMORY) {
             return memory.set(location, value);
         } else {
@@ -74,7 +74,7 @@ public class Kernel {
      * @return int - value at top of stack
      * @throws VMError error in VM
      */
-    public int pop() throws VMError {
+    int pop() throws VMError {
         if (!memory.isStackEmpty()) {
             return memory.pop_mem();
         } else {
@@ -88,7 +88,7 @@ public class Kernel {
      * @param value value to push
      * @throws VMError error in VM
      */
-    public void push(final int value) throws VMError {
+    void push(final int value) throws VMError {
         try {
             memory.push_mem(value);
         } catch (@NonNull final Exception e) {
@@ -97,12 +97,12 @@ public class Kernel {
     }
 
     @SuppressWarnings("unused")
-    public void setDebugDump(boolean debugDump) {
+    void setDebugDump(boolean debugDump) {
         this.debugDump = debugDump;
     }
 
     @SuppressWarnings("unused")
-    public boolean getDebugDump() {
+    boolean getDebugDump() {
         return debugDump;
     }
     /**
@@ -111,7 +111,7 @@ public class Kernel {
      * @param location location in memory
      * @throws VMError error in VM
      */
-    public void branch(final int location) throws VMError {
+    void branch(final int location) throws VMError {
         if (location <= Memory.MAX_MEMORY) {
             memory.setProgramCounter(location);
         } else {
@@ -126,7 +126,7 @@ public class Kernel {
      *
      * @throws VMError error in VM
      */
-    public void jump() throws VMError {
+    void jump() throws VMError {
         final int location = pop();
         memory.setProgramCounter(location);
     }
@@ -139,14 +139,14 @@ public class Kernel {
      * @param tag  - the Log.d LOG_TAG to use
      * @param text test to log
      */
-    protected void debugVerbose(final String tag, final String text) {
+    void debugVerbose(final String tag, final String text) {
         if (debugVerbose) {
             debug(tag, text);
         }
     }
 
     @SuppressWarnings("unused")
-    protected void setDebugVebose(boolean debugVerbose) {
+    void setDebugVerbose(boolean debugVerbose) {
         this.debugVerbose = debugVerbose;
     }
 
@@ -158,7 +158,7 @@ public class Kernel {
      * @param tag  the Log.d LOG_TAG to use
      * @param text string to log if debug is enabled
      */
-    protected void debug(final String tag, final String text) {
+    void debug(final String tag, final String text) {
         if (debug) {
             Log.d(tag, text);
         }
@@ -167,7 +167,7 @@ public class Kernel {
     /**
      * @return is debug verbose enabled
      */
-    public boolean getDebugVebose() {
+    boolean getDebugVerbose() {
         return debugVerbose;
     }
 
@@ -181,7 +181,7 @@ public class Kernel {
      * @param bDebug set this to be debug
      */
     @SuppressWarnings("unused")
-    public void setDebug(final boolean bDebug) {
+    void setDebug(final boolean bDebug) {
         debug = bDebug;
     }
 
@@ -190,28 +190,28 @@ public class Kernel {
      *
      * @return int
      */
-    public int getProgramCounter() {
+    int getProgramCounter() {
         return memory.getProgramCounter();
     }
 
     /**
      * Increment program counter location to next line of instruction
      */
-    public void incProgramCounter() {
+    void incProgramCounter() {
         memory.incProgramCounter();
     }
 
     /**
      * Decrement program counter location to previous line of instruction
      */
-    public void decProgramCounter() {
+    void decProgramCounter() {
         memory.decProgramCounter();
     }
 
     /**
      * program counter location to start of program memory
      */
-    public void resetProgramCounter() {
+    void resetProgramCounter() {
         memory.resetProgramCounter();
     }
 
@@ -220,28 +220,28 @@ public class Kernel {
      *
      * @return current location in program memory where the next instruction will be added
      */
-    public int getProgramWriterPtr() {
+    int getProgramWriterPtr() {
         return memory.getProgramWriterPtr();
     }
 
     /**
      * Increment program writer location to next memory location
      */
-    public void incProgramWriter() {
+    void incProgramWriter() {
         memory.incProgramWriter();
     }
 
     /**
      * Reset program writer location to starting memory location
      */
-    public void resetProgramWriter() {
+    void resetProgramWriter() {
         memory.resetProgramWriter();
     }
 
     /**
      * Empty the stack
      */
-    public void resetStack() {
+    void resetStack() {
         memory.resetStack();
     }
 
@@ -252,7 +252,7 @@ public class Kernel {
      * @return Command at location
      * @throws VMError error in VM
      */
-    public Command getCommandAt(final int location) throws VMError {
+    Command getCommandAt(final int location) throws VMError {
         if (location < Memory.MAX_MEMORY) {
             final Integer instruction = memory.getCommand(location).getCommandId();
             final Integer parameters = memory.getCommand(location).getParameters().get(0);
@@ -272,7 +272,7 @@ public class Kernel {
      * @param command  the command to set
      * @param location location in memory
      */
-    public void setCommandAt(@NonNull final Command command, final int location) {
+    void setCommandAt(@NonNull final Command command, final int location) {
         if (location < Memory.MAX_MEMORY) {
             if (debug) {
                 String paramInfo = "<null>";
@@ -294,7 +294,7 @@ public class Kernel {
      * @return List<Integer> list of each each value of memory
      */
     @NonNull
-    public List<Integer> dumpMemory() {
+    List<Integer> dumpMemory() {
         return memory.memoryDump();
     }
 
@@ -304,7 +304,7 @@ public class Kernel {
      * @return List<Integer> list of each each value of memory in the stack
      */
     @NonNull
-    public List<Integer> dumpStack() {
+    List<Integer> dumpStack() {
         return memory.stackDump();
     }
 
@@ -314,7 +314,7 @@ public class Kernel {
      * @return List<Integer> list of each each value of memory for instructions
      */
     @NonNull
-    public List<Command> dumpInstructionMemory() {
+    List<Command> dumpInstructionMemory() {
         return memory.programMemoryDump();
     }
 }

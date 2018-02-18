@@ -31,16 +31,6 @@ public class VMError extends Exception {
     /**
      * Constructor
      *
-     * @param type VM error type
-     */
-    public VMError(final VMErrorType type) {
-        super();
-        _type = type;
-    }
-
-    /**
-     * Constructor
-     *
      * @param detailMessage message to add to this VMError
      * @param type VMErrorType
      */
@@ -55,6 +45,7 @@ public class VMError extends Exception {
      * @param cause throwable that was the cause of this VMError
      * @param type VMErrorType
      */
+    @SuppressWarnings("SameParameterValue")
     public VMError(final Throwable cause, final VMErrorType type) {
         super(cause);
         _type = type;

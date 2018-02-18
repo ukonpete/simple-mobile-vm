@@ -58,6 +58,7 @@ public class VirtualMachine extends Machine implements Instructions {
      * @param outputListener listener for output events
      * @param inputListener listener to return input on input events
      */
+    @SuppressWarnings("SameParameterValue")
     public VirtualMachine(final @NonNull Context context, @Nullable OutputListener outputListener, @Nullable InputListener inputListener) {
         super(outputListener, inputListener);
         init();
@@ -229,13 +230,13 @@ public class VirtualMachine extends Machine implements Instructions {
      * Launch thread that will Run N number of instructions - starting from current program ptr location
      * will call completedRunningInstructions on IVMListener after completion
      *
-     * @param numInstrsToRun number of instructions to run until running stops
+     * @param numInstructionsToRun number of instructions to run until running stops
      */
-    protected void runInstructions(final int numInstrsToRun) {
+    void runInstructions(final int numInstructionsToRun) {
         executorPool.execute(new Runnable() {
             @Override
             public void run() {
-                doRunInstructions(numInstrsToRun);
+                doRunInstructions(numInstructionsToRun);
             }
         });
     }
@@ -244,31 +245,33 @@ public class VirtualMachine extends Machine implements Instructions {
      * Run N number of instructions - starting from current program ptr location
      * will call completedRunningInstructions on IVMListener after completion
      *
-     * @param numInstrsToRun number of instructions to run until running stops
+     * @param numInstructionsToRun number of instructions to run until running stops
      */
-    private void doRunInstructions(final int numInstrsToRun) {
+    private void doRunInstructions(final int numInstructionsToRun) {
         Log.d(LOG_TAG, "+START++++++++++++++++++");
         VMError vmError = null;
         dumpMem("1");
-        int numInstrsRun = 0;
+        int numInstructionsRun = 0;
 
-        int lastProgCtr = -1;
+        int lastProgramCounter = -1;
         int instructionVal = BaseInstructionSet._BEGIN;
 
         try {
-            while ((instructionVal != BaseInstructionSet._HALT) && (getProgramCounter() < Memory.MAX_MEMORY) && ((numInstrsRun < numInstrsToRun) || (numInstrsToRun == -1))) {
-                lastProgCtr = getProgramCounter();
-                numInstrsRun++;
+            while ((instructionVal != BaseInstructionSet._HALT) &&
+                    (getProgramCounter() < Memory.MAX_MEMORY) &&
+                    ((numInstructionsRun < numInstructionsToRun) || (numInstructionsToRun == -1))) {
+                lastProgramCounter = getProgramCounter();
+                numInstructionsRun++;
                 instructionVal = getInstruction();
                 runCommand(instructionVal);
             }
             debug(LOG_TAG, "=========================");
-            logAdditionalInfo(numInstrsRun, lastProgCtr, instructionVal);
+            logAdditionalInfo(numInstructionsRun, lastProgramCounter, instructionVal);
             debug(LOG_TAG, "=========================");
         } catch (@NonNull final VMError vme) {
             debug(LOG_TAG, "=========================");
             debug(LOG_TAG, "VMError=(" + vme.getType() + ") " + vme.getMessage());
-            logAdditionalInfo(numInstrsRun, lastProgCtr, instructionVal);
+            logAdditionalInfo(numInstructionsRun, lastProgramCounter, instructionVal);
             dumpMem("2");
             vmError = vme;
             debug(LOG_TAG, "=========================");
@@ -284,16 +287,16 @@ public class VirtualMachine extends Machine implements Instructions {
     }
 
     /**
-     * @param numInstrsRun   number of instructions to run until running stops
-     * @param lastProgCtr    last program counter location
+     * @param numInstructionsRun   number of instructions that were run
+     * @param lastProgramCounter    last program counter location
      * @param instructionVal last instruction value
      */
-    private void logAdditionalInfo(final int numInstrsRun, final int lastProgCtr,
+    private void logAdditionalInfo(final int numInstructionsRun, final int lastProgramCounter,
                                    final int instructionVal) {
         debug(LOG_TAG, "LAST_INSTRUCTION=(" + getInstructionString(instructionVal) + ") " + instructionVal);
-        debug(LOG_TAG, "NUM INSTRUCTIONS RUN=" + numInstrsRun);
+        debug(LOG_TAG, "NUM INSTRUCTIONS RUN=" + numInstructionsRun);
         debug(LOG_TAG, "PROG_CTR=" + getProgramCounter());
-        debug(LOG_TAG, "LAST_PROG_CTR=" + lastProgCtr);
+        debug(LOG_TAG, "LAST_PROG_CTR=" + lastProgramCounter);
     }
 
     /**
@@ -315,9 +318,9 @@ public class VirtualMachine extends Machine implements Instructions {
 
             for (int i = 1; i < Memory.MAX_MEMORY; i += 2) {
                 try {
-                    final int parm = getValueAt(i);
+                    final int parameter = getValueAt(i);
                     final int command = getValueAt(i - 1);
-                    data.append(command).append(' ').append(parm).append("\r\n");
+                    data.append(command).append(' ').append(parameter).append("\r\n");
                 } catch (@NonNull final VMError e) {
                     e.printStackTrace();
                 }
@@ -346,7 +349,7 @@ public class VirtualMachine extends Machine implements Instructions {
      * @throws VMError VM error on running a command
      */
     private void runCommand(final int commandId) throws VMError {
-        if (getDebugVebose()) {
+        if (getDebugVerbose()) {
             doRunCommandDebug(commandId);
         }
         numInstructionsRun++;

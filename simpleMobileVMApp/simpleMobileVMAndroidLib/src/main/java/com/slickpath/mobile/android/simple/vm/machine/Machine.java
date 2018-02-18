@@ -14,7 +14,7 @@ import java.io.IOException;
  * @author Pete Procopio
  *         The Machine.  The calls that are made to execute instructions
  */
-public class Machine extends Kernel {
+class Machine extends Kernel {
 
     private static final String LOG_TAG = Machine.class.getName();
 
@@ -32,7 +32,7 @@ public class Machine extends Kernel {
      * - output will be added to log is debugVerbose is set
      * - input will be attempted to be retrieved from the console System.in
      */
-    public Machine() {
+    Machine() {
         this(null, null);
     }
 
@@ -46,7 +46,7 @@ public class Machine extends Kernel {
      * @param outputListener listener for output events
      * @param inputListener listener to return input on input events
      */
-    public Machine(@Nullable OutputListener outputListener, @Nullable InputListener inputListener) {
+    Machine(@Nullable OutputListener outputListener, @Nullable InputListener inputListener) {
         super();
         if(outputListener== null) {
             this.outputListener = getDefaultOutputListener();
@@ -85,7 +85,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void ADD() throws VMError {
+    void ADD() throws VMError {
         final int val1 = pop();
         final int val2 = pop();
         final int val3 = val1 + val2;
@@ -99,7 +99,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void SUB() throws VMError {
+    void SUB() throws VMError {
         final int val1 = pop();
         final int val2 = pop();
         final int val3 = val1 - val2;
@@ -113,7 +113,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void MUL() throws VMError {
+    void MUL() throws VMError {
         final int val1 = pop();
         final int val2 = pop();
         final int val3 = val1 * val2;
@@ -127,7 +127,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void DIV() throws VMError {
+    void DIV() throws VMError {
         final int val1 = pop();
         final int val2 = pop();
         final int val3 = val1 / val2;
@@ -141,7 +141,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void NEG() throws VMError {
+    void NEG() throws VMError {
         final int val1 = pop();
         final int val2 = 0 - val1;
         PUSHC(val2);
@@ -156,7 +156,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void EQUAL() throws VMError {
+    void EQUAL() throws VMError {
         int equal = PUSHC_YES;
         final int val1 = pop();
         final int val2 = pop();
@@ -174,7 +174,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void NOTEQL() throws VMError {
+    void NOTEQL() throws VMError {
         int notEqual = PUSHC_NO;
         final int val1 = pop();
         final int val2 = pop();
@@ -192,7 +192,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void GREATER() throws VMError {
+    void GREATER() throws VMError {
         int greater = PUSHC_NO;
         final int val1 = pop();
         final int val2 = pop();
@@ -210,7 +210,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void LESS() throws VMError {
+    void LESS() throws VMError {
         int less = PUSHC_NO;
         final int val1 = pop();
         final int val2 = pop();
@@ -228,7 +228,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void GTREQL() throws VMError {
+    void GTREQL() throws VMError {
         int greaterOrEqual = PUSHC_NO;
         final int val1 = pop();
         final int val2 = pop();
@@ -246,7 +246,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void LSSEQL() throws VMError {
+    void LSSEQL() throws VMError {
         int lessEqual = PUSHC_NO;
         final int val1 = pop();
         final int val2 = pop();
@@ -264,7 +264,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void NOT() throws VMError {
+    void NOT() throws VMError {
         int val = pop();
 
         // long-hand for val == 0?1:0
@@ -285,7 +285,7 @@ public class Machine extends Kernel {
      * @param location in mem
      * @throws VMError on vm error
      */
-    protected void PUSH(final int location) throws VMError {
+    void PUSH(final int location) throws VMError {
         final int val = getValueAt(location);
         PUSHC(val);
     }
@@ -296,7 +296,7 @@ public class Machine extends Kernel {
      * @param value in mem
      * @throws VMError on vm error
      */
-    protected void PUSHC(final int value) throws VMError {
+    void PUSHC(final int value) throws VMError {
         push(value);
     }
 
@@ -306,7 +306,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void POP() throws VMError {
+    void POP() throws VMError {
         final int location = pop();
         POPC(location);
     }
@@ -318,7 +318,7 @@ public class Machine extends Kernel {
      * @param location location in memory
      * @throws VMError on vm error
      */
-    protected void POPC(final int location) throws VMError {
+    void POPC(final int location) throws VMError {
         final int value = pop();
         setValueAt(value, location);
     }
@@ -332,7 +332,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void RDCHAR() throws VMError {
+    void RDCHAR() throws VMError {
         try {
             PUSHC(inputListener.getChar());
         } catch (IOException e) {
@@ -347,7 +347,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void WRCHAR() throws VMError {
+    void WRCHAR() throws VMError {
         final int value = pop();
         final char sVal = (char) value;
         outputListener.charOutput(sVal);
@@ -361,7 +361,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void RDINT() throws VMError {
+    void RDINT() throws VMError {
         final int val;
         try {
             val = inputListener.getInt();
@@ -378,7 +378,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void WRINT() throws VMError {
+    void WRINT() throws VMError {
         final int value = pop();
         final String out = Integer.toString(value);
         outputListener.lineOutput(out + "\n");
@@ -393,7 +393,7 @@ public class Machine extends Kernel {
      * @param location in mem
      * @throws VMError on vm error
      */
-    protected void BRANCH(final int location) throws VMError {
+    void BRANCH(final int location) throws VMError {
         debugVerbose(LOG_TAG, "--BR=" + location);
         branch(location);
     }
@@ -403,7 +403,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void JUMP() throws VMError {
+    void JUMP() throws VMError {
         jump();
     }
 
@@ -416,7 +416,7 @@ public class Machine extends Kernel {
      * @throws VMError on vm error
      * @see Machine#BRANCH(int)
      */
-    protected boolean BREQL(final int location) throws VMError {
+    boolean BREQL(final int location) throws VMError {
         final int val = pop();
         boolean bBranched = false;
         if (val == 0) {
@@ -435,7 +435,7 @@ public class Machine extends Kernel {
      * @throws VMError on vm error
      * @see Machine#BRANCH(int)
      */
-    protected boolean BRLSS(final int location) throws VMError {
+    boolean BRLSS(final int location) throws VMError {
         final int val = pop();
         boolean bBranched = false;
         if (val < 0) {
@@ -454,7 +454,7 @@ public class Machine extends Kernel {
      * @throws VMError on vm error
      * @see Machine#BRANCH(int)
      */
-    protected boolean BRGTR(final int location) throws VMError {
+    boolean BRGTR(final int location) throws VMError {
         final int val = pop();
         boolean bBranched = false;
         if (val > 0) {
@@ -473,7 +473,7 @@ public class Machine extends Kernel {
      *
      * @throws VMError on vm error
      */
-    protected void CONTENTS() throws VMError {
+    void CONTENTS() throws VMError {
         final int location = pop();
         final int val = getValueAt(location);
         PUSHC(val);
@@ -484,7 +484,7 @@ public class Machine extends Kernel {
      * <p>
      * This will send info to Log if debug is enabled
      */
-    protected void HALT() {
+    void HALT() {
         debug(LOG_TAG, "HALT");
     }
 }
