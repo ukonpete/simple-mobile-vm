@@ -16,6 +16,8 @@ Note: To open the Android project it is located in the simpleMobileVMApp directo
 
 ## Release Notes
 
+* 6/9/2018
+  * Updated to support Android Studio (3.1.3) and related Gradle 
 * 2/18/2018
   * Updated to support Android Studio (3.0.1) and related Gradle 
   * Updated unit tests as needed
