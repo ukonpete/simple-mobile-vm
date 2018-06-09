@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion "26.0.3"
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "com.slickpath.mobile.android.simple.vm.app"
@@ -26,9 +26,9 @@ android {
 }
 
 dependencies {
-    compile project (':simpleMobileVMAndroidLib')
-    compile 'com.android.support:support-annotations:27.0.2'
+    implementation project (':simpleMobileVMAndroidLib')
+    implementation 'com.android.support:support-annotations:27.0.2'
 
-    compile 'com.jakewharton:butterknife:8.8.1'
+    implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 }
