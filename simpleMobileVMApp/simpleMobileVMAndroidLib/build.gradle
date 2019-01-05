@@ -3,12 +3,12 @@ apply plugin: 'pmd'
 apply plugin: 'findbugs'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     buildToolsVersion '28.0.3'
 
     defaultConfig {
         minSdkVersion 17
-        targetSdkVersion 27
+        targetSdkVersion 28
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -92,9 +92,9 @@ task findBugs(type: FindBugs, dependsOn: 'assembleDebug') {
 }
 
 dependencies {
-    implementation 'com.android.support:support-annotations:27.1.1'
+    implementation 'com.android.support:support-annotations:28.0.0'
 
-    androidTestImplementation 'com.android.support:support-annotations:27.1.1'
+    androidTestImplementation 'com.android.support:support-annotations:28.0.0'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test:rules:1.0.2'
     androidTestImplementation 'junit:junit:4.12'
