@@ -31,7 +31,7 @@ public class CommandTest {
     private Command _commandWithOutParam = null;
 
     @Before
-    public void before() throws Exception {
+    public void before() {
         _commandWithParam = new Command(COMMAND_1, COMMAND_PARAM_LIST_1);
         _commandWithOutParam = new Command(COMMAND_2, COMMAND_PARAM_LIST_2);
     }

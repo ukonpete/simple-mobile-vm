@@ -31,7 +31,7 @@ public class MachineTest {
     private Machine _machine = null;
 
     @Before
-    public void before() throws Exception {
+    public void before() {
         _machine = new Machine();
     }
 
@@ -787,8 +787,8 @@ public class MachineTest {
         _machine.HALT();
         assertEquals(80, _machine.getProgramCounter());
 
-        assertTrue(_machine.dumpMemory().equals(memory));
-        assertTrue(_machine.dumpStack().equals(stack));
+        assertEquals(_machine.dumpMemory(), memory);
+        assertEquals(_machine.dumpStack(), stack);
     }
 
     /**

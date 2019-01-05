@@ -51,7 +51,7 @@ No app is deployed in the app store, so placing credit here.
 
 * [Icon8](https://icons8.com/license) - Icons used in App
 * [Butterknife](https://github.com/JakeWharton/butterknife) - Jake Warton
-* [Google](www.google.com) - Android, support-annotations, test runner, test rules, 
+* [Google](www.google.com) - Android, support-annotations, test runner, test rules
 * [Findbugs](http://findbugs.sourceforge.net/) - The University of Maryland
 * [PMD](https://pmd.github.io/) - InfoEther, LLC
 * [Gradle](https://gradle.org/) - Gradle Inc.

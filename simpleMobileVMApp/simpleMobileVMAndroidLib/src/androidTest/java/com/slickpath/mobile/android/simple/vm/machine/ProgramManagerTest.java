@@ -24,7 +24,7 @@ public class ProgramManagerTest {
     private ProgramManager _programManager = null;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         _programManager = new ProgramManager();
 
     }

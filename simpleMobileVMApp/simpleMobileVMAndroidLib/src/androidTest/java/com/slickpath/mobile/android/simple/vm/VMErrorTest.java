@@ -11,6 +11,7 @@ import java.security.InvalidParameterException;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 /**
  * @author Pete Procopio
@@ -22,7 +23,7 @@ public class VMErrorTest {
     private VMError _vmError = null;
 
     @After
-    public void AFTER() throws Exception {
+    public void AFTER() {
         _vmError = null;
     }
 
@@ -35,7 +36,7 @@ public class VMErrorTest {
 
         assertEquals(VMErrorType.VM_ERROR_TYPE_BAD_PARAMS, _vmError.getType());
         assertEquals(TEST_STR, _vmError.getMessage());
-        assertEquals(null, _vmError.getCause());
+        assertNull(_vmError.getCause());
     }
 
     /**

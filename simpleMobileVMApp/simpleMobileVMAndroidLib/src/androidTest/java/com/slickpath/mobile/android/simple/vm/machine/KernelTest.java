@@ -28,7 +28,7 @@ public class KernelTest {
     private Kernel _kernel = null;
 
     @Before
-    public void before() throws Exception {
+    public void before() {
         _kernel = new Kernel();
     }
 

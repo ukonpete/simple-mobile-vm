@@ -28,6 +28,7 @@ import butterknife.OnItemSelected;
 public class SimpleMobileVMAppActivity extends Activity implements IVMListener, IParserListener {
 
     private final StringBuilder stringBuilder = new StringBuilder();
+    // TODO ProgressDialog has been deprecated
     private ProgressDialog progressDialog;
 
     private VirtualMachine _vm;

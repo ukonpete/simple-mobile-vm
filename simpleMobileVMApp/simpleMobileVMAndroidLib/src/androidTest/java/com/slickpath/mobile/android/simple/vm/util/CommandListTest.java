@@ -36,7 +36,7 @@ public class CommandListTest {
     private CommandList testList1 = null;
 
     @Before
-    public void before() throws Exception {
+    public void before() {
         testList1 = new CommandList();
         testList1.add(new Command(COMMAND_1, COMMAND_PARAM_LIST_1));
         testList1.add(COMMAND_2, COMMAND_PARAM_LIST_2);

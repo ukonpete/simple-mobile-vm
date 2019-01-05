@@ -321,7 +321,7 @@ public class VirtualMachine extends Machine implements Instructions {
     private void dumpMem(final String append) {
         if (getDebugDump()) {
             final String FILENAME = "memDump" + append + ".txt";
-            final StringBuilder data = new StringBuilder("");
+            final StringBuilder data = new StringBuilder();
 
             for (int i = 1; i < Memory.MAX_MEMORY; i += 2) {
                 try {

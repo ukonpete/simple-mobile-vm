@@ -25,6 +25,12 @@ android {
     }
 }
 
+allprojects {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    }
+}
+
 dependencies {
     implementation project (':simpleMobileVMAndroidLib')
     implementation 'com.android.support:support-annotations:28.0.0'

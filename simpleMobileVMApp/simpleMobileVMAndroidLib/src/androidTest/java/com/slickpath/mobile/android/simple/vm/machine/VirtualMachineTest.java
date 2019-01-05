@@ -45,7 +45,7 @@ public class VirtualMachineTest {
     private CommandList _commands;
 
     @Before
-    public void before() throws Exception {
+    public void before() {
         _bHalt = false;
         _lastLineExecuted = -1;
         _vmError = null;

@@ -22,7 +22,7 @@ public class SimpleStackTest {
     private SimpleStack _stack = null;
 
     @Before
-    public void before() throws Exception {
+    public void before() {
         _stack = new SimpleStack();
     }
 

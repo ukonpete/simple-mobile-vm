@@ -35,7 +35,7 @@ public class SimpleParserTest implements IParserListener {
     private CommandList _commands;
 
     @Before
-    public void before() throws Exception {
+    public void before() {
         _parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), this);
         _signal = new CountDownLatch(1);
     }

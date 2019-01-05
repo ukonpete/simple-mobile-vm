@@ -26,7 +26,7 @@ public class MemoryTest {
     private Memory _memory;
 
     @Before
-    public void before() throws Exception {
+    public void before() {
         _memory = new Memory();
     }
 
