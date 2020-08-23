@@ -1,7 +1,7 @@
 package com.slickpath.mobile.android.simple.vm.util;
 
 
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.slickpath.mobile.android.simple.vm.instructions.Instructions;
 

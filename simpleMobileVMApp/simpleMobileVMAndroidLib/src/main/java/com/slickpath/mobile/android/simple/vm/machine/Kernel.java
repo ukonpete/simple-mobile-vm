@@ -1,6 +1,6 @@
 package com.slickpath.mobile.android.simple.vm.machine;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.slickpath.mobile.android.simple.vm.VMError;

@@ -1,6 +1,6 @@
 package com.slickpath.mobile.android.simple.vm;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Helper to return string of the all instructions a program will run
