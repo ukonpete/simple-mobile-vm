@@ -23,11 +23,11 @@ public class BaseInstructionSetTest {
         assertEquals(BaseInstructionSet.INSTRUCTION_SET_HT.size(), Instructions.NUM_COMMANDS);
         assertEquals(BaseInstructionSet.INSTRUCTION_SET_CONV_HT.size(), Instructions.NUM_COMMANDS);
 
-        assertEquals(BaseInstructionSet.INSTRUCTION_SET_HT.get(Instructions._ADD_STR).intValue(), Instructions._ADD);
-        assertEquals(BaseInstructionSet.INSTRUCTION_SET_HT.get(Instructions._HALT_STR).intValue(), Instructions._HALT);
+        assertEquals(BaseInstructionSet.INSTRUCTION_SET_HT.get(Instructions.ADD_STR).intValue(), Instructions.ADD);
+        assertEquals(BaseInstructionSet.INSTRUCTION_SET_HT.get(Instructions.HALT_STR).intValue(), Instructions.HALT);
 
-        assertEquals(BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(Instructions._DIV), Instructions._DIV_STR);
-        assertEquals(BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(Instructions._BREQL), Instructions._BREQL_STR);
+        assertEquals(BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(Instructions.DIV), Instructions.DIV_STR);
+        assertEquals(BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(Instructions.BREQL), Instructions.BREQL_STR);
 
 
         final Set<String> keys = BaseInstructionSet.INSTRUCTION_SET_HT.keySet();

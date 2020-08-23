@@ -31,38 +31,38 @@ object BaseInstructionSet : Instructions {
 
     init {
         //
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._ADD_STR] = Instructions._ADD
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._SUB_STR] = Instructions._SUB
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._MUL_STR] = Instructions._MUL
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._DIV_STR] = Instructions._DIV
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._NEG_STR] = Instructions._NEG
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.ADD_STR] = Instructions.ADD
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.SUB_STR] = Instructions.SUB
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.MUL_STR] = Instructions.MUL
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.DIV_STR] = Instructions.DIV
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.NEG_STR] = Instructions.NEG
         //
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._EQUAL_STR] = Instructions._EQUAL
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._NOTEQL_STR] = Instructions._NOTEQL
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._GREATER_STR] = Instructions._GREATER
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._LESS_STR] = Instructions._LESS
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._GTREQL_STR] = Instructions._GTREQL
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._LSSEQL_STR] = Instructions._LSSEQL
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._NOT_STR] = Instructions._NOT
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.EQUAL_STR] = Instructions.EQUAL
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.NOTEQL_STR] = Instructions.NOTEQL
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.GREATER_STR] = Instructions.GREATER
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.LESS_STR] = Instructions.LESS
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.GTREQL_STR] = Instructions.GTREQL
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.LSSEQL_STR] = Instructions.LSSEQL
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.NOT_STR] = Instructions.NOT
         //
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._PUSHC_STR] = Instructions._PUSHC
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._PUSH_STR] = Instructions._PUSH
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._POPC_STR] = Instructions._POPC
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._POP_STR] = Instructions._POP
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.PUSHC_STR] = Instructions.PUSHC
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.PUSH_STR] = Instructions.PUSH
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.POPC_STR] = Instructions.POPC
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.POP_STR] = Instructions.POP
         //
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._BRANCH_STR] = Instructions._BRANCH
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._JUMP_STR] = Instructions._JUMP
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._BREQL_STR] = Instructions._BREQL
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._BRLSS_STR] = Instructions._BRLSS
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._BRGTR_STR] = Instructions._BRGTR
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.BRANCH_STR] = Instructions.BRANCH
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.JUMP_STR] = Instructions.JUMP
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.BREQL_STR] = Instructions.BREQL
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.BRLSS_STR] = Instructions.BRLSS
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.BRGTR_STR] = Instructions.BRGTR
         //
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._RDCHAR_STR] = Instructions._RDCHAR
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._RDINT_STR] = Instructions._RDINT
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._WRCHAR_STR] = Instructions._WRCHAR
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._WRINT_STR] = Instructions._WRINT
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.RDCHAR_STR] = Instructions.RDCHAR
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.RDINT_STR] = Instructions.RDINT
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.WRCHAR_STR] = Instructions.WRCHAR
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.WRINT_STR] = Instructions.WRINT
         //
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._CONTENTS_STR] = Instructions._CONTENTS
-        INSTRUCTION_SET_HT_INTERNAL[Instructions._HALT_STR] = Instructions._HALT
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.CONTENTS_STR] = Instructions.CONTENTS
+        INSTRUCTION_SET_HT_INTERNAL[Instructions.HALT_STR] = Instructions.HALT
 
         for ((key, value) in INSTRUCTION_SET_HT_INTERNAL) {
             INSTRUCTION_SET_CONV_HT_INTERNAL[value] = key

@@ -57,160 +57,160 @@ public class SimpleParserTest implements IParserListener {
         assertNotNull(_commands);
         assertEquals(35, _commands.size());
         int i = 0;
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._PUSHC); // 1
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.PUSHC); // 1
         assertNotNull(_commands.get(i).getParameters()); // 1
         assertEquals(1, _commands.get(i).getParameters().size()); // 1
         assertEquals(HALT_LINE_NUMBER, _commands.get(i++).getParameters().get(0).intValue()); // 1
 
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._PUSHC); // 2
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.PUSHC); // 2
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(0, _commands.get(i++).getParameters().get(0).intValue());
 
-        assertEquals(_commands.get(i++).getCommandId(), BaseInstructionSet._WRINT); // 3
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._PUSHC); // 4
+        assertEquals(_commands.get(i++).getCommandId(), BaseInstructionSet.WRINT); // 3
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.PUSHC); // 4
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(1, _commands.get(i++).getParameters().get(0).intValue());
 
-        assertEquals(_commands.get(i++).getCommandId(), BaseInstructionSet._WRINT); // 5
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._PUSHC); // 6
+        assertEquals(_commands.get(i++).getCommandId(), BaseInstructionSet.WRINT); // 5
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.PUSHC); // 6
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(1, _commands.get(i++).getParameters().get(0).intValue());
 
-        assertEquals(_commands.get(i++).getCommandId(), BaseInstructionSet._WRINT); // 7
+        assertEquals(_commands.get(i++).getCommandId(), BaseInstructionSet.WRINT); // 7
         // 8 - Comment
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._PUSHC); // 9
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.PUSHC); // 9
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(0, _commands.get(i++).getParameters().get(0).intValue());
 
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._POPC); // 10
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.POPC); // 10
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(10, _commands.get(i++).getParameters().get(0).intValue());
         // 11 - Comment
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._PUSHC); // 12
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.PUSHC); // 12
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(1, _commands.get(i++).getParameters().get(0).intValue());
 
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._POPC); // 13
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.POPC); // 13
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(11, _commands.get(i++).getParameters().get(0).intValue());
         // 14 - Comment
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._PUSH); // 15
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.PUSH); // 15
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(11, _commands.get(i++).getParameters().get(0).intValue());
 
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._POPC); // 16
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.POPC); // 16
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(12, _commands.get(i++).getParameters().get(0).intValue());
         // 17 - Comment
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._PUSHC); // 18
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.PUSHC); // 18
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(12, _commands.get(i++).getParameters().get(0).intValue());
 
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._POPC); // 19
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.POPC); // 19
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(13, _commands.get(i++).getParameters().get(0).intValue());
         // 20 [FIB] - Symbol
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._PUSH); // 21
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.PUSH); // 21
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(11, _commands.get(i++).getParameters().get(0).intValue());
 
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._POPC); // 22
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.POPC); // 22
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(14, _commands.get(i++).getParameters().get(0).intValue());
         // 23 - Comment
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._PUSH); // 24
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.PUSH); // 24
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(14, _commands.get(i++).getParameters().get(0).intValue());
 
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._POPC); // 25
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.POPC); // 25
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(10, _commands.get(i++).getParameters().get(0).intValue());
         // 26 - Comment
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._PUSH); // 27
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.PUSH); // 27
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(12, _commands.get(i++).getParameters().get(0).intValue());
 
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._POPC); // 28
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.POPC); // 28
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(11, _commands.get(i++).getParameters().get(0).intValue());
         // 29 - Comment
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._PUSH); // 30
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.PUSH); // 30
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(12, _commands.get(i++).getParameters().get(0).intValue());
 
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._PUSH); // 31
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.PUSH); // 31
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(10, _commands.get(i++).getParameters().get(0).intValue());
 
-        assertEquals(_commands.get(i++).getCommandId(), BaseInstructionSet._ADD); // 32
+        assertEquals(_commands.get(i++).getCommandId(), BaseInstructionSet.ADD); // 32
 
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._POPC); // 33
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.POPC); // 33
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(12, _commands.get(i++).getParameters().get(0).intValue());
         // 34 - Comment
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._PUSH); // 35
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.PUSH); // 35
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(12, _commands.get(i++).getParameters().get(0).intValue());
 
-        assertEquals(_commands.get(i++).getCommandId(), BaseInstructionSet._WRINT); // 36
+        assertEquals(_commands.get(i++).getCommandId(), BaseInstructionSet.WRINT); // 36
         // 37 - Comment
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._PUSHC); // 38
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.PUSHC); // 38
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(1, _commands.get(i++).getParameters().get(0).intValue());
         //
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._PUSH); // 39
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.PUSH); // 39
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(13, _commands.get(i++).getParameters().get(0).intValue());
         //
-        assertEquals(_commands.get(i++).getCommandId(), BaseInstructionSet._SUB); // 40
+        assertEquals(_commands.get(i++).getCommandId(), BaseInstructionSet.SUB); // 40
 
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._POPC); // 41
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.POPC); // 41
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(13, _commands.get(i++).getParameters().get(0).intValue());
         // 42 - Comment
         // 43 - Comment
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._PUSH); // 44
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.PUSH); // 44
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(13, _commands.get(i++).getParameters().get(0).intValue());
 
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._BREQL); // 45
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.BREQL); // 45
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(HALT_LINE_NUMBER, _commands.get(i++).getParameters().get(0).intValue());
         //
         // 46 - Comment
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._BRANCH); // 47
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.BRANCH); // 47
         assertNotNull(_commands.get(i).getParameters());
         assertEquals(1, _commands.get(i).getParameters().size());
         assertEquals(FIB_LINE_NUMBER, _commands.get(i++).getParameters().get(0).intValue());
         // 48 - Comment
         // 49 [HALT] - Symbol
-        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet._HALT); // 50
+        assertEquals(_commands.get(i).getCommandId(), BaseInstructionSet.HALT); // 50
     }
 
     @Override

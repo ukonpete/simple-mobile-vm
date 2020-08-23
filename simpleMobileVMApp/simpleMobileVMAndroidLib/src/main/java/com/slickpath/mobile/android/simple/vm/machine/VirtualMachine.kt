@@ -171,7 +171,7 @@ class VirtualMachine : Machine, Instructions {
         } catch (e: VMError) {
             vmError = e
         }
-        if (instructionVal == Instructions._HALT) {
+        if (instructionVal == Instructions.HALT) {
             numInstructionsRun = 0
             resetProgramWriter()
             resetStack()
@@ -215,9 +215,9 @@ class VirtualMachine : Machine, Instructions {
         dumpMem("1")
         var numInstructionsRun = 0
         var lastProgramCounter = -1
-        var instructionVal: Int = Instructions._BEGIN
+        var instructionVal: Int = Instructions.BEGIN
         try {
-            while (instructionVal != Instructions._HALT &&
+            while (instructionVal != Instructions.HALT &&
                     programCounter < Memory.MAX_MEMORY &&
                     (numInstructionsRun < numInstructionsToRun || numInstructionsToRun == -1)) {
                 lastProgramCounter = programCounter
@@ -239,7 +239,7 @@ class VirtualMachine : Machine, Instructions {
         dumpMem("3")
         Log.d(LOG_TAG, "+DONE PROCESSING+++++++++")
         if (vMListener != null) {
-            vMListener!!.completedRunningInstructions(instructionVal == Instructions._HALT, programCounter, vmError)
+            vMListener!!.completedRunningInstructions(instructionVal == Instructions.HALT, programCounter, vmError)
         } else {
             debug(LOG_TAG, "NO VMListener")
         }
@@ -319,109 +319,109 @@ class VirtualMachine : Machine, Instructions {
         numInstructionsRun++
         val bBranched: Boolean
         when (commandId) {
-            Instructions._ADD -> {
+            Instructions.ADD -> {
                 ADD()
                 incProgramCounter()
             }
-            Instructions._SUB -> {
+            Instructions.SUB -> {
                 SUB()
                 incProgramCounter()
             }
-            Instructions._MUL -> {
+            Instructions.MUL -> {
                 MUL()
                 incProgramCounter()
             }
-            Instructions._DIV -> {
+            Instructions.DIV -> {
                 DIV()
                 incProgramCounter()
             }
-            Instructions._NEG -> {
+            Instructions.NEG -> {
                 NEG()
                 incProgramCounter()
             }
-            Instructions._EQUAL -> {
+            Instructions.EQUAL -> {
                 EQUAL()
                 incProgramCounter()
             }
-            Instructions._NOTEQL -> {
+            Instructions.NOTEQL -> {
                 NOTEQL()
                 incProgramCounter()
             }
-            Instructions._GREATER -> {
+            Instructions.GREATER -> {
                 GREATER()
                 incProgramCounter()
             }
-            Instructions._LESS -> {
+            Instructions.LESS -> {
                 LESS()
                 incProgramCounter()
             }
-            Instructions._GTREQL -> {
+            Instructions.GTREQL -> {
                 GTREQL()
                 incProgramCounter()
             }
-            Instructions._LSSEQL -> {
+            Instructions.LSSEQL -> {
                 LSSEQL()
                 incProgramCounter()
             }
-            Instructions._NOT -> {
+            Instructions.NOT -> {
                 NOT()
                 incProgramCounter()
             }
-            Instructions._POP -> {
+            Instructions.POP -> {
                 POP()
                 incProgramCounter()
             }
-            Instructions._JUMP -> JUMP()
-            Instructions._RDCHAR -> {
+            Instructions.JUMP -> JUMP()
+            Instructions.RDCHAR -> {
                 RDCHAR()
                 incProgramCounter()
             }
-            Instructions._RDINT -> {
+            Instructions.RDINT -> {
                 RDINT()
                 incProgramCounter()
             }
-            Instructions._WRCHAR -> {
+            Instructions.WRCHAR -> {
                 WRCHAR()
                 incProgramCounter()
             }
-            Instructions._WRINT -> {
+            Instructions.WRINT -> {
                 WRINT()
                 incProgramCounter()
             }
-            Instructions._CONTENTS -> {
+            Instructions.CONTENTS -> {
                 CONTENTS()
                 incProgramCounter()
             }
-            Instructions._HALT -> {
+            Instructions.HALT -> {
                 HALT()
                 incProgramCounter()
             }
-            Instructions._PUSHC -> {
+            Instructions.PUSHC -> {
                 PUSHC(parameter)
                 incProgramCounter()
             }
-            Instructions._PUSH -> {
+            Instructions.PUSH -> {
                 PUSH(parameter)
                 incProgramCounter()
             }
-            Instructions._POPC -> {
+            Instructions.POPC -> {
                 POPC(parameter)
                 incProgramCounter()
             }
-            Instructions._BRANCH -> BRANCH(parameter)
-            Instructions._BREQL -> {
+            Instructions.BRANCH -> BRANCH(parameter)
+            Instructions.BREQL -> {
                 bBranched = BREQL(parameter)
                 if (!bBranched) {
                     incProgramCounter()
                 }
             }
-            Instructions._BRLSS -> {
+            Instructions.BRLSS -> {
                 bBranched = BRLSS(parameter)
                 if (!bBranched) {
                     incProgramCounter()
                 }
             }
-            Instructions._BRGTR -> {
+            Instructions.BRGTR -> {
                 bBranched = BRGTR(parameter)
                 if (!bBranched) {
                     incProgramCounter()

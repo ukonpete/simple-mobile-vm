@@ -25,13 +25,13 @@ public class CommandListTest {
 
     private static final int TEST_PARAM_VAL1 = 15;
     private static final int TEST_PARAM_VAL2 = 25;
-    private final int COMMAND_1 = Instructions._PUSHC;
+    private final int COMMAND_1 = Instructions.PUSHC;
     private final Integer COMMAND_PARAM_VAL_1 = TEST_PARAM_VAL1;
     private final List<Integer> COMMAND_PARAM_LIST_1 = new ArrayList<>(Collections.singletonList(COMMAND_PARAM_VAL_1));
-    private final int COMMAND_2 = Instructions._PUSH;
+    private final int COMMAND_2 = Instructions.PUSH;
     private final Integer COMMAND_PARAM_VAL_2 = TEST_PARAM_VAL2;
     private final List<Integer> COMMAND_PARAM_LIST_2 = new ArrayList<>(Collections.singletonList(COMMAND_PARAM_VAL_2));
-    private final int COMMAND_3 = Instructions._ADD;
+    private final int COMMAND_3 = Instructions.ADD;
     private final List<Integer> COMMAND_PARAM_LIST_3 = null;
     private CommandList testList1 = null;
 

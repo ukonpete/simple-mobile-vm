@@ -82,7 +82,7 @@ public class VirtualMachineTest {
     @Test
     public void testAddCommand() {
         VirtualMachine virtualMachine = new VirtualMachine(getApplicationContext());
-        final int[] instructions = {Instructions._ADD, Instructions._EQUAL, Instructions._NOT, Instructions._PUSHC, Instructions._JUMP, Instructions._POPC};
+        final int[] instructions = {Instructions.ADD, Instructions.EQUAL, Instructions.NOT, Instructions.PUSHC, Instructions.JUMP, Instructions.POPC};
         final Integer[] params = {-1, -1, -1, 10, 20, 30};
 
         try {
@@ -118,7 +118,7 @@ public class VirtualMachineTest {
     @Test
     public void testAddCommands() {
         VirtualMachine virtualMachine = new VirtualMachine(getApplicationContext());
-        final int[] instructions = {Instructions._ADD, Instructions._EQUAL, Instructions._NOT, Instructions._PUSHC, Instructions._JUMP, Instructions._POPC};
+        final int[] instructions = {Instructions.ADD, Instructions.EQUAL, Instructions.NOT, Instructions.PUSHC, Instructions.JUMP, Instructions.POPC};
         final Integer[] params = {-1, -1, -1, 10, 20, 30};
 
         try {
