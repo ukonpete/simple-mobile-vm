@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import static androidx.test.platform.app.InstrumentationRegistry.getContext;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -58,7 +58,7 @@ public class VirtualMachineTest {
      */
     @Test
     public void testGetVMListener() {
-        VirtualMachine virtualMachine = new VirtualMachine(getContext());
+        VirtualMachine virtualMachine = new VirtualMachine(getApplicationContext());
         assertNull(virtualMachine.getVMListener());
         virtualMachine.setVMListener(null);
         assertNull(virtualMachine.getVMListener());
@@ -81,7 +81,7 @@ public class VirtualMachineTest {
      */
     @Test
     public void testAddCommand() {
-        VirtualMachine virtualMachine = new VirtualMachine(getContext());
+        VirtualMachine virtualMachine = new VirtualMachine(getApplicationContext());
         final int[] instructions = {Instructions._ADD, Instructions._EQUAL, Instructions._NOT, Instructions._PUSHC, Instructions._JUMP, Instructions._POPC};
         final Integer[] params = {null, null, null, 10, 20, 30};
 
@@ -110,7 +110,7 @@ public class VirtualMachineTest {
      */
     @Test
     public void testAddCommands() {
-        VirtualMachine virtualMachine = new VirtualMachine(getContext());
+        VirtualMachine virtualMachine = new VirtualMachine(getApplicationContext());
         final int[] instructions = {Instructions._ADD, Instructions._EQUAL, Instructions._NOT, Instructions._PUSHC, Instructions._JUMP, Instructions._POPC};
         final Integer[] params = {null, null, null, 10, 20, 30};
 
@@ -154,7 +154,7 @@ public class VirtualMachineTest {
      */
     @Test
     public void testRunNextInstruction() {
-        VirtualMachine virtualMachine = new VirtualMachine(getContext());
+        VirtualMachine virtualMachine = new VirtualMachine(getApplicationContext());
         final CountDownLatch signalParser = new CountDownLatch(1);
 
         SimpleParser parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), new IParserListener() {
@@ -259,7 +259,7 @@ public class VirtualMachineTest {
      */
     @Test
     public void testRunInstructions() {
-        VirtualMachine virtualMachine = new VirtualMachine(getContext());
+        VirtualMachine virtualMachine = new VirtualMachine(getApplicationContext());
         final CountDownLatch signalParse = new CountDownLatch(1);
         SimpleParser parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), new IParserListener() {
             @Override
@@ -312,7 +312,7 @@ public class VirtualMachineTest {
     @Test
     public void testRunInstructionsInt() {
         Log.d(TAG, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-        VirtualMachine virtualMachine = new VirtualMachine(getContext());
+        VirtualMachine virtualMachine = new VirtualMachine(getApplicationContext());
         final CountDownLatch signalParse = new CountDownLatch(1);
         SimpleParser parser = new SimpleParser(new FileHelperForTest(FibonacciInstructions.instructions), new IParserListener() {
             @Override
