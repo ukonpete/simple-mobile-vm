@@ -111,7 +111,7 @@ class SimpleMobileVMAppActivity : Activity(), IVMListener, IParserListener {
         return selectedFile
     }
 
-    override fun completedParse(vmError: VMError?, commands: CommandList) {
+    override fun completedParse(vmError: VMError?, commands: CommandList?) {
         if (vmError != null) {
             Toast.makeText(this, "ERROR PARSE" + vmError.message, Toast.LENGTH_LONG).show()
             vmError.printStackTrace()

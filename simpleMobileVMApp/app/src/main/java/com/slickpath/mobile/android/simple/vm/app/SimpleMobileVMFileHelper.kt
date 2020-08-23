@@ -20,10 +20,6 @@ internal class SimpleMobileVMFileHelper(private val context: Context, private va
         readInstructionsString()
     }
 
-    override fun getInstructionsString(): String? {
-        return instructions
-    }
-
     @get:Throws(IOException::class)
     private val bufferedReader: BufferedReader
         get() {
@@ -54,4 +50,7 @@ internal class SimpleMobileVMFileHelper(private val context: Context, private va
         Log.d(LOG_TAG, "Lines read: $lineCount")
         instructions = stringBuilder.toString()
     }
+
+    override val instructionsString: String?
+        get() = instructions
 }
