@@ -86,7 +86,7 @@ internal class Memory {
      * @return value at every line of stack memory
     </Integer> */
     fun stackDump(): List<Int> {
-        return _stack.dump()
+        return _stack.dumpAsList()
     }
 
     /**

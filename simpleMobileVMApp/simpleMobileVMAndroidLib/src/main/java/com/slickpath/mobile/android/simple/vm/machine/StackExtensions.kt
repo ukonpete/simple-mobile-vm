@@ -2,6 +2,6 @@ package com.slickpath.mobile.android.simple.vm.machine
 
 import java.util.*
 
-fun Stack<Int>.dump(): List<Int> {
+fun <T> Stack<T>.dumpAsList(): List<T> {
     return ArrayList(this)
 }
