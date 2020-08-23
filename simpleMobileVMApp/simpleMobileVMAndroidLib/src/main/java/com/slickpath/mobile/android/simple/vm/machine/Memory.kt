@@ -35,7 +35,7 @@ internal class Memory {
     /**
      * Memory Stack
      */
-    private val _stack = SimpleStack()
+    private val _stack = Stack<Int>()
 
     /**
      * Manager and store for Program Memory
@@ -48,7 +48,7 @@ internal class Memory {
      * @return boolean
      */
     val isStackEmpty: Boolean
-        get() = _stack.isEmpty
+        get() = _stack.isEmpty()
 
 
     /**
@@ -66,7 +66,7 @@ internal class Memory {
      * Empty the stack
      */
     fun resetStack() {
-        _stack.reset()
+        _stack.clear()
     }
 
     /**
