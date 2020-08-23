@@ -1,10 +1,6 @@
-package com.slickpath.mobile.android.simple.vm.machine;
+package com.slickpath.mobile.android.simple.vm.machine
 
-import androidx.annotation.NonNull;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*
 
 /**
  * This class wraps java.util.Stack to simplify the interface to what we really need.
@@ -12,29 +8,27 @@ import java.util.Stack;
  * @author Pete Procopio
  * @see java.util.Stack
  */
-class SimpleStack {
-
+internal class SimpleStack {
     /**
      * The stack container class
      */
-    private final Stack<Integer> _stack = new Stack<>();
+    private val _stack = Stack<Int>()
 
     /**
      * Is the stack empty
      *
      * @return boolean - is the stack empty
      */
-    boolean isEmpty() {
-        return _stack.empty();
-    }
+    val isEmpty: Boolean
+        get() = _stack.empty()
 
     /**
      * Return the value at the top of the stack, do NOT pop it!
      *
      * @return Integer - value at top of stack
      */
-    Integer peek() {
-        return _stack.peek();
+    fun peek(): Int {
+        return _stack.peek()
     }
 
     /**
@@ -42,8 +36,8 @@ class SimpleStack {
      *
      * @return Integer - value at top of stack before pop
      */
-    Integer pop() {
-        return _stack.pop();
+    fun pop(): Int {
+        return _stack.pop()
     }
 
     /**
@@ -52,8 +46,8 @@ class SimpleStack {
      * @param value value to push onto top of stack
      * @return Integer - value pushed onto top of stack
      */
-    Integer push(final Integer value) {
-        return _stack.push(value);
+    fun push(value: Int): Int {
+        return _stack.push(value)
     }
 
     /**
@@ -61,28 +55,30 @@ class SimpleStack {
      *
      * @return int - number of elements pushed onto the stack
      */
-    int size() {
-        return _stack.size();
+    fun size(): Int {
+        return _stack.size
     }
 
     /**
      * Clear all items from the stack - The size should also be 0
      */
-    void reset() {
-        _stack.clear();
+    fun reset() {
+        _stack.clear()
     }
 
     /**
-     * Dump the Stack as a List for debugging<p>
+     * Dump the Stack as a List for debugging
+     *
+     *
      * The list should be ordered where the 1st element is at the bottom of the stack and the last
      * element is at the top of the stack.
-     * <p>
+     *
+     *
      * NOTE: This makes a copy of the stack
      *
      * @return List<Integer> list of data
-     */
-    @NonNull
-    List<Integer> dump() {
-        return new ArrayList<>(_stack);
+    </Integer> */
+    fun dump(): List<Int> {
+        return ArrayList(_stack)
     }
 }

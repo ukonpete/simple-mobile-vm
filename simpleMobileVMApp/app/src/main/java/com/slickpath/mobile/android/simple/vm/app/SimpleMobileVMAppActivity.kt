@@ -50,7 +50,7 @@ class SimpleMobileVMAppActivity : Activity(), IVMListener, IParserListener {
                     stringBuilder.append(line)
                 }
             }, null)
-            _vm.setVMListener(this@SimpleMobileVMAppActivity)
+            _vm.vMListener = this@SimpleMobileVMAppActivity
             parseFile(spinnerFiles.selectedItemId.toInt())
         }
         spinnerFiles.onItemSelectedListener = object : OnItemSelectedListener {

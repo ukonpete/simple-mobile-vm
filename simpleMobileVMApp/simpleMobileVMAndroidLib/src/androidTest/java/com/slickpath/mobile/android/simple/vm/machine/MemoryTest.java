@@ -46,7 +46,7 @@ public class MemoryTest {
     }
 
     /**
-     * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#push_mem(int)}.
+     * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#pushMEM(int)}.
      */
     @Test
     public void testPush_mem() {
@@ -54,26 +54,26 @@ public class MemoryTest {
         assertTrue(_memory.isStackEmpty());
 
         for (final int value : values) {
-            _memory.push_mem(value);
+            _memory.pushMEM(value);
             assertTrue(!_memory.isStackEmpty());
         }
 
         for (int j = 0; j < 100; j++) {
-            _memory.push_mem(111);
+            _memory.pushMEM(111);
         }
         for (int j = 0; j < 100; j++) {
-            _memory.pop_mem();
+            _memory.popMEM();
         }
         for (int val = values.length - 1; val >= 0; val--) {
             assertTrue(!_memory.isStackEmpty());
-            assertEquals(values[val], _memory.pop_mem().intValue());
+            assertEquals(values[val], _memory.popMEM());
         }
         assertTrue(_memory.isStackEmpty());
     }
 
 
     /**
-     * Test method for {@link Memory#pop_mem()}}.
+     * Test method for {@link Memory#popMEM()}}.
      */
     @Test
     public void testPop_mem() {
@@ -81,24 +81,24 @@ public class MemoryTest {
         assertTrue(_memory.isStackEmpty());
 
         for (final int value : values) {
-            _memory.push_mem(value);
+            _memory.pushMEM(value);
         }
 
         for (int j = 0; j < 100; j++) {
-            _memory.push_mem(111);
+            _memory.pushMEM(111);
         }
 
         for (int j = 0; j < 50; j++) {
-            _memory.pop_mem();
+            _memory.popMEM();
         }
 
         for (int j = 0; j < 50; j++) {
-            _memory.pop_mem();
+            _memory.popMEM();
         }
 
         for (int val = values.length - 1; val >= 0; val--) {
-            _memory.push_mem(values[val]);
-            assertEquals(values[val], _memory.pop_mem().intValue());
+            _memory.pushMEM(values[val]);
+            assertEquals(values[val], _memory.popMEM());
         }
     }
 
@@ -109,18 +109,18 @@ public class MemoryTest {
     public void testIsStackEmpty() {
         assertTrue(_memory.isStackEmpty());
         for (int j = 0; j < 100; j++) {
-            _memory.push_mem(111);
+            _memory.pushMEM(111);
             assertTrue(!_memory.isStackEmpty());
         }
         for (int j = 0; j < 50; j++) {
-            _memory.pop_mem();
+            _memory.popMEM();
             assertTrue(!_memory.isStackEmpty());
         }
         for (int j = 0; j < 49; j++) {
-            _memory.pop_mem();
+            _memory.popMEM();
             assertTrue(!_memory.isStackEmpty());
         }
-        _memory.pop_mem();
+        _memory.popMEM();
         assertTrue(_memory.isStackEmpty());
     }
 
@@ -194,7 +194,7 @@ public class MemoryTest {
     public void testResetStack() {
         assertTrue(_memory.isStackEmpty());
         for (int j = 0; j < 100; j++) {
-            _memory.push_mem(111);
+            _memory.pushMEM(111);
             assertTrue(!_memory.isStackEmpty());
         }
         assertTrue(!_memory.isStackEmpty());
@@ -211,7 +211,7 @@ public class MemoryTest {
         assertTrue(_memory.isStackEmpty());
 
         for (final int value : values) {
-            _memory.push_mem(value);
+            _memory.pushMEM(value);
         }
         final List<Integer> stackDump = _memory.stackDump();
         assertNotNull(stackDump);

@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
@@ -35,9 +36,9 @@ public class SimpleStackTest {
         assertTrue(_stack.isEmpty());
         _stack.push(1);
         _stack.push(2);
-        assertTrue(!_stack.isEmpty());
+        assertFalse(_stack.isEmpty());
         _stack.pop();
-        assertTrue(!_stack.isEmpty());
+        assertFalse(_stack.isEmpty());
         _stack.reset();
         assertTrue(_stack.isEmpty());
     }
@@ -49,9 +50,9 @@ public class SimpleStackTest {
     public void testPeek() {
         assertTrue(_stack.isEmpty());
         _stack.push(1);
-        assertEquals(1, _stack.peek().intValue());
+        assertEquals(1, _stack.peek());
         _stack.push(2);
-        assertEquals(2, _stack.peek().intValue());
+        assertEquals(2, _stack.peek());
     }
 
     /**
@@ -80,12 +81,12 @@ public class SimpleStackTest {
 
         for (int val = values.length - 1; val >= 0; val--) {
             _stack.push(values[val]);
-            assertEquals(values[val], _stack.pop().intValue());
+            assertEquals(values[val], _stack.pop());
         }
     }
 
     /**
-     * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.SimpleStack#push(java.lang.Integer)}.
+     * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.SimpleStack#push(int)}.
      */
     @Test
     public void testPush() {
@@ -94,7 +95,7 @@ public class SimpleStackTest {
 
         for (final int value : values) {
             _stack.push(value);
-            assertTrue(!_stack.isEmpty());
+            assertFalse(_stack.isEmpty());
         }
 
         for (int j = 0; j < 100; j++) {
@@ -104,8 +105,8 @@ public class SimpleStackTest {
             _stack.pop();
         }
         for (int val = values.length - 1; val >= 0; val--) {
-            assertTrue(!_stack.isEmpty());
-            assertEquals(values[val], _stack.pop().intValue());
+            assertFalse(_stack.isEmpty());
+            assertEquals(values[val], _stack.pop());
         }
         assertTrue(_stack.isEmpty());
     }
@@ -133,9 +134,9 @@ public class SimpleStackTest {
         assertTrue(_stack.isEmpty());
         for (int j = 0; j < 100; j++) {
             _stack.push(111);
-            assertTrue(!_stack.isEmpty());
+            assertFalse(_stack.isEmpty());
         }
-        assertTrue(!_stack.isEmpty());
+        assertFalse(_stack.isEmpty());
         _stack.reset();
         assertTrue(_stack.isEmpty());
     }
