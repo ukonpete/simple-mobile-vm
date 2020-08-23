@@ -127,10 +127,10 @@ class SimpleMobileVMAppActivity : Activity(), IVMListener, IParserListener {
         _vm.runInstructions()
     }
 
-    override fun completedRunningInstructions(bHalt: Boolean, lineExecuted: Int, vmError: VMError?) {
+    override fun completedRunningInstructions(bHalt: Boolean, lastLineExecuted: Int, vmError: VMError?) {
         progressDialog!!.dismiss()
         if (vmError != null) {
-            Toast.makeText(this, "ERROR RUN INST lastLine=$lineExecuted", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "ERROR RUN INST lastLine=$lastLineExecuted", Toast.LENGTH_LONG).show()
             vmError.printStackTrace()
         } else {
             runOnUiThread {
