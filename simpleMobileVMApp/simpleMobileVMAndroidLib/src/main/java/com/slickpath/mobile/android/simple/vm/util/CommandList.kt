@@ -16,11 +16,7 @@ import java.util.*
  * @author Pete Procopio
  * @see com.slickpath.mobile.android.simple.vm.util.Command
  */
-class CommandList
-/**
- * Constructor
- */
-    : ArrayList<Command?>() {
+class CommandList : ArrayList<Command>() {
     /**
      * Takes commandId and parameters and adds an equivalent Command
      *
@@ -28,7 +24,6 @@ class CommandList
      * @param parameters parameters for command
      */
     fun add(commandId: Int, parameters: List<Int>?) {
-        val tempCommand = Command(commandId, parameters)
-        add(tempCommand)
+        add(Command(commandId, parameters))
     }
 }

@@ -1,8 +1,7 @@
-package com.slickpath.mobile.android.simple.vm.machine;
+package com.slickpath.mobile.android.simple.vm.machine
 
-public class FibonacciInstructions {
-    public final static String instructions =
-            "PUSHC [HALT]\n" +
+object FibonacciInstructions {
+    const val instructions = "PUSHC [HALT]\n" +
             "PUSHC 0\n" +
             "WRINT\n" +
             "PUSHC 1\n" +
@@ -38,5 +37,5 @@ public class FibonacciInstructions {
             "BREQL [HALT]\n" +
             "BRANCH [FIB]\n" +
             "[HALT]\n" +
-            "HALT";
+            "HALT"
 }
