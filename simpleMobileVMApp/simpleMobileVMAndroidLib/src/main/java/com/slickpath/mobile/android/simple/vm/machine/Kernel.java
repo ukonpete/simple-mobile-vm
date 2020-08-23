@@ -255,15 +255,20 @@ class Kernel {
      */
     Command getCommandAt(final int location) throws VMError {
         if (location < Memory.MAX_MEMORY) {
-            final Integer instruction = memory.getCommand(location).getCommandId();
-            final Integer parameters = memory.getCommand(location).getParameters().get(0);
+            final Command command =  memory.getCommand(location);
+            final Integer instruction = command.getCommandId();
+            final int parameterCount = command.getParameters().size();
             if (debug) {
-                Log.d(LOG_TAG, "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(instruction) + ") " + instruction + " param " + parameters + " at " + location);
+                if(parameterCount > 0) {
+                    Log.d(LOG_TAG, "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(instruction) + ") " + instruction + " param(0) " +  command.getParameters().get(0) + " at " + location);
+                } else {
+                    Log.d(LOG_TAG, "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(instruction) + ") " + instruction + " NO param at " + location);
+                }
             }
 
-            return memory.getCommand(location);
+            return command;
         } else {
-            throw new VMError("getValueAt", VMErrorType.VM_ERROR_TYPE_MEMORY_LIMIT);
+            throw new VMError("getCommandAt", VMErrorType.VM_ERROR_TYPE_MEMORY_LIMIT);
         }
     }
 
@@ -277,7 +282,7 @@ class Kernel {
         if (location < Memory.MAX_MEMORY) {
             if (debug) {
                 String paramInfo = "<null>";
-                if (command.getParameters().get(0) != null) {
+                if (command.getParameters().size() > 0) {
                     paramInfo = command.getParameters().get(0).toString();
                 }
                 Log.d(LOG_TAG, "Set Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT.get(command.getCommandId()) + ") " + command.getCommandId() + " param " + paramInfo + " at " + location);

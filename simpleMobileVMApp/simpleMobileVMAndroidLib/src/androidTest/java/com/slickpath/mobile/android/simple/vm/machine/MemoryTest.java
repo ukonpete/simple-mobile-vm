@@ -179,14 +179,10 @@ public class MemoryTest {
         final List<Command> instructionDump = _memory.programMemoryDump();
         for (int i = 0; i < instruction.length; i++) {
             final Command command = _memory.getCommand(location[i]);
-            assertEquals(instruction[i], command.getCommandId().intValue());
-            assertEquals(instruction[i], instructionDump.get(location[i]).getCommandId().intValue());
+            assertEquals(instruction[i], command.getCommandId());
+            assertEquals(instruction[i], instructionDump.get(location[i]).getCommandId());
             assertEquals(parameters[i], command.getParameters().get(0));
-            if (parameters[i] == null) {
-                assertNull(instructionDump.get(location[i]).getParameters().get(0));
-            } else {
-                assertEquals(parameters[i], instructionDump.get(location[i]).getParameters().get(0));
-            }
+            assertEquals(parameters[i], instructionDump.get(location[i]).getParameters().get(0));
         }
 
     }

@@ -83,21 +83,28 @@ public class VirtualMachineTest {
     public void testAddCommand() {
         VirtualMachine virtualMachine = new VirtualMachine(getApplicationContext());
         final int[] instructions = {Instructions._ADD, Instructions._EQUAL, Instructions._NOT, Instructions._PUSHC, Instructions._JUMP, Instructions._POPC};
-        final Integer[] params = {null, null, null, 10, 20, 30};
+        final Integer[] params = {-1, -1, -1, 10, 20, 30};
 
         try {
             for (int i = 0; i < instructions.length; i++) {
+                final int instruction = instructions[i];
                 final List<Integer> paramList = new ArrayList<>();
                 final Integer param = params[i];
-                paramList.add(param);
-                final Command command = new Command(instructions[i], paramList);
+                if(instruction >= 1000) {
+                    paramList.add(param);
+                }
+                final Command command = new Command(instruction, paramList);
                 virtualMachine.addCommand(command);
             }
 
             for (int i = 0; i < instructions.length; i++) {
                 final Command command = virtualMachine.getCommandAt(i);
-                assertEquals(instructions[i], command.getCommandId().intValue());
-                assertEquals(params[i], command.getParameters().get(0));
+                assertEquals(instructions[i], command.getCommandId());
+                if(command.getCommandId() >= 1000) {
+                    assertEquals(params[i], command.getParameters().get(0));
+                } else {
+                    assertEquals(0, command.getParameters().size());
+                }
             }
 
         } catch (@NonNull final VMError e) {
@@ -112,16 +119,19 @@ public class VirtualMachineTest {
     public void testAddCommands() {
         VirtualMachine virtualMachine = new VirtualMachine(getApplicationContext());
         final int[] instructions = {Instructions._ADD, Instructions._EQUAL, Instructions._NOT, Instructions._PUSHC, Instructions._JUMP, Instructions._POPC};
-        final Integer[] params = {null, null, null, 10, 20, 30};
+        final Integer[] params = {-1, -1, -1, 10, 20, 30};
 
         try {
             final CommandList commandList = new CommandList();
 
             for (int i = 0; i < instructions.length; i++) {
+                final int instruction = instructions[i];
                 final List<Integer> paramList = new ArrayList<>();
                 final Integer param = params[i];
-                paramList.add(param);
-                final Command command = new Command(instructions[i], paramList);
+                if(instruction >= 1000) {
+                    paramList.add(param);
+                }
+                final Command command = new Command(instruction, paramList);
                 commandList.add(command);
             }
 
@@ -140,8 +150,12 @@ public class VirtualMachineTest {
 
             for (int i = 0; i < instructions.length; i++) {
                 final Command command = virtualMachine.getCommandAt(i);
-                assertEquals(instructions[i], command.getCommandId().intValue());
-                assertEquals(params[i], command.getParameters().get(0));
+                assertEquals(instructions[i], command.getCommandId());
+                if(command.getCommandId() >= 1000) {
+                    assertEquals(params[i], command.getParameters().get(0));
+                } else {
+                    assertEquals(0, command.getParameters().size());
+                }
             }
 
         } catch (@NonNull final VMError e) {

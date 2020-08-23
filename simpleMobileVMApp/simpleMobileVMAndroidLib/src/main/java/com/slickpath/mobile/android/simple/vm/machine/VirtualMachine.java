@@ -110,15 +110,14 @@ public class VirtualMachine extends Machine implements Instructions {
      * @param command command to add
      */
     void addCommand(@NonNull final Command command) {
-        final int instruction = command.getCommandId();
+        final int commandId = command.getCommandId();
         String params = "X";
 
-        if (instruction >= SINGLE_PARAM_COMMAND_START) {
-
+        if (commandId >= SINGLE_PARAM_COMMAND_START && command.getParameters().size() > 0) {
             params = command.getParameters().get(0).toString();
         }
         setCommandAt(command, getProgramWriterPtr());
-        debugVerbose(LOG_TAG, "Add ins=" + getInstructionString(instruction) + "(" + instruction + ")" + " params=" + params + " at " + getProgramWriterPtr());
+        debugVerbose(LOG_TAG, "Add ins=" + getInstructionString(commandId) + "(" + commandId + ")" + " params=" + params + " at " + getProgramWriterPtr());
 
     }
 
@@ -494,15 +493,12 @@ public class VirtualMachine extends Machine implements Instructions {
 
     private int getParameter() throws VMError {
         final Command command = getCommandAt(getProgramCounter());
-        if (command.getParameters().size() == 0) {
+        if (command.getParameters().size() == 0 && command.getCommandId() > SINGLE_PARAM_COMMAND_START) {
             throw new VMError("No Parameters", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS);
-        } else {
-            try {
-                return command.getParameters().get(0);
-            } catch(Throwable t) {
-                throw new VMError(t.getMessage(), VMErrorType.VM_ERROR_TYPE_BAD_PARAMS);
-            }
+        } else if (command.getParameters().size() > 0 && command.getCommandId() < SINGLE_PARAM_COMMAND_START) {
+            throw new VMError("Too many Parameters", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS);
         }
+        return command.getParameters().get(0);
     }
 
     /**

@@ -7,6 +7,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.slickpath.mobile.android.simple.vm.VMError;
 import com.slickpath.mobile.android.simple.vm.util.Command;
 
+import junit.framework.TestCase;
+
+import org.hamcrest.core.CombinableMatcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,8 +19,8 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.fail;
+import static junit.framework.TestCase.assertTrue;
 
 /**
  * @author Pete Procopio
@@ -199,12 +202,14 @@ public class KernelTest {
     public void testGetCommandAt() {
         try {
             final int[] instruction = new int[]{11, 22, 35, 46, 88, 99};
-            final Integer[] parameters = new Integer[]{15, 27, null, 64, 60, 101};
+            final Integer[] parameters = new Integer[]{15, 27, -1, 64, 60, 101};
             final int[] location = new int[]{0, 1, 2, 64, 101, 499};
 
             for (int i = 0; i < instruction.length; i++) {
                 final List<Integer> params = new ArrayList<>();
-                params.add(parameters[i]);
+                if(parameters[i] != -1) {
+                    params.add(parameters[i]);
+                }
                 final Command command = new Command(instruction[i], params);
                 _kernel.setCommandAt(command, location[i]);
             }
@@ -212,12 +217,12 @@ public class KernelTest {
             final List<Command> instructionDump = _kernel.dumpInstructionMemory();
             for (int i = 0; i < instruction.length; i++) {
                 final Command command = _kernel.getCommandAt(location[i]);
-                assertEquals(instruction[i], command.getCommandId().intValue());
-                assertEquals(instruction[i], instructionDump.get(location[i]).getCommandId().intValue());
-                assertEquals(parameters[i], command.getParameters().get(0));
-                if (parameters[i] == null) {
-                    assertNull(instructionDump.get(location[i]).getParameters().get(0));
+                assertEquals(instruction[i], command.getCommandId());
+                assertEquals(instruction[i], instructionDump.get(location[i]).getCommandId());
+                if( command.getCommandId() == 35) {
+                    TestCase.assertEquals(0, command.getParameters().size());
                 } else {
+                    assertEquals(parameters[i], command.getParameters().get(0));
                     assertEquals(parameters[i], instructionDump.get(location[i]).getParameters().get(0));
                 }
             }
