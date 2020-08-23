@@ -9,7 +9,6 @@ import com.slickpath.mobile.android.simple.vm.util.Command;
 
 import junit.framework.TestCase;
 
-import org.hamcrest.core.CombinableMatcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -168,28 +167,28 @@ public class KernelTest {
 
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#getProgramWriterPtr()}.
-     * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#incProgramWriter()}.
+     * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#incrementProgramWriter()}.
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Kernel#resetProgramWriter()}.
      */
     @Test
     public void testGetProgramWriterPtr() {
         assertEquals(Memory.START_LOC, _kernel.getProgramWriterPtr());
-        _kernel.incProgramWriter();
-        _kernel.incProgramWriter();
-        _kernel.incProgramWriter();
+        _kernel.incrementProgramWriter();
+        _kernel.incrementProgramWriter();
+        _kernel.incrementProgramWriter();
         assertEquals(3, _kernel.getProgramWriterPtr());
         for (int i = 0; i < 100; i++) {
-            _kernel.incProgramWriter();
+            _kernel.incrementProgramWriter();
         }
         assertEquals(103, _kernel.getProgramWriterPtr());
         _kernel.resetProgramWriter();
         assertEquals(Memory.START_LOC, _kernel.getProgramWriterPtr());
-        _kernel.incProgramWriter();
-        _kernel.incProgramWriter();
-        _kernel.incProgramWriter();
+        _kernel.incrementProgramWriter();
+        _kernel.incrementProgramWriter();
+        _kernel.incrementProgramWriter();
         assertEquals(3, _kernel.getProgramWriterPtr());
         for (int i = 0; i < 100; i++) {
-            _kernel.incProgramWriter();
+            _kernel.incrementProgramWriter();
         }
         assertEquals(103, _kernel.getProgramWriterPtr());
     }

@@ -211,7 +211,7 @@ internal class Memory {
     /**
      * Increment program writer location to next memory location
      */
-    fun incProgramWriter() {
+    fun incrementProgramWriter() {
         _programManager.incProgramWriter()
     }
 

@@ -277,13 +277,13 @@ public class MemoryTest {
 
     /**
      * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#getProgramWriterPtr()}.
-     * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#incProgramWriter()}.
+     * Test method for {@link com.slickpath.mobile.android.simple.vm.machine.Memory#incrementProgramWriter()}.
      */
     @Test
     public void testGetProgramWriterPtr() {
         assertEquals(Memory.START_LOC, _memory.getProgramWriterPtr());
         for (int i = 0; i < 100; i++) {
-            _memory.incProgramWriter();
+            _memory.incrementProgramWriter();
         }
         assertEquals(100, _memory.getProgramWriterPtr());
     }
@@ -295,7 +295,7 @@ public class MemoryTest {
     public void testResetProgramWriter() {
         assertEquals(Memory.START_LOC, _memory.getProgramWriterPtr());
         for (int i = 0; i < 100; i++) {
-            _memory.incProgramWriter();
+            _memory.incrementProgramWriter();
         }
         assertEquals(100, _memory.getProgramWriterPtr());
         _memory.resetProgramWriter();

@@ -11,19 +11,37 @@ import com.slickpath.mobile.android.simple.vm.util.Command
  *
  * @author Pete Procopio
  */
-open class Kernel
-/**
- * Constructor
- */
-{
+open class Kernel {
+
+    companion object {
+        private val LOG_TAG = Machine::class.java.name
+        const val PUSHC_YES = 1
+        const val PUSHC_NO = 0
+    }
+
     var debugDump = false
 
     /**
      * @return is debug verbose enabled
      */
     var debugVerbose = true
+
+    /**
+     * Toggle if debug will be enabled
+     * If enabled certain methods will log to Android Log.d
+     * Also any output commands (example WRCHR and WRINT) will Log.d the output
+     */
+    var debug = true
+
     private val memory = Memory()
-    private var debug = true
+
+    /**
+     * Get current line in program that will execute next
+     *
+     * @return int
+     */
+    val programCounter: Int
+        get() = memory.programCounter
 
     /**
      * Returns the value at a specified memory location
@@ -150,30 +168,6 @@ open class Kernel
     }
 
     /**
-     * Toggle if debug will be enabled
-     *
-     *
-     * If enabled certain methods will log to Android Log.d
-     *
-     *
-     * Also any output commands (example WRCHR and WRINT) will Log.d the output
-     *
-     * @param bDebug set this to be debug
-     */
-    @Suppress("unused")
-    fun setDebug(bDebug: Boolean) {
-        debug = bDebug
-    }
-
-    /**
-     * Get current line in program that will execute next
-     *
-     * @return int
-     */
-    val programCounter: Int
-        get() = memory.programCounter
-
-    /**
      * Increment program counter location to next line of instruction
      */
     fun incProgramCounter() {
@@ -205,8 +199,8 @@ open class Kernel
     /**
      * Increment program writer location to next memory location
      */
-    fun incProgramWriter() {
-        memory.incProgramWriter()
+    fun incrementProgramWriter() {
+        memory.incrementProgramWriter()
     }
 
     /**
@@ -265,7 +259,7 @@ open class Kernel
                 Log.d(LOG_TAG, "Set Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT[command.commandId] + ") " + command.commandId + " param " + paramInfo + " at " + location)
             }
             memory.setCommand(location, command)
-            incProgramWriter()
+            incrementProgramWriter()
         }
     }
 
@@ -294,11 +288,5 @@ open class Kernel
     </Integer> */
     fun dumpInstructionMemory(): List<Command> {
         return memory.programMemoryDump()
-    }
-
-    companion object {
-        private val LOG_TAG = Machine::class.java.name
-        const val PUSHC_YES = 1
-        const val PUSHC_NO = 0
     }
 }
