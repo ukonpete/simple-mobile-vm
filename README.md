@@ -8,7 +8,7 @@ Simple machine language virtual machine. A small but powerful language to execut
 
 Based on the article "Programming Project: Building a Computer in Software:" by Jonathan Amsterdam in [BYTE Magazine](https://archive.org/details/byte-magazine-1985-10) circa Oct. 1985.
 
-Written in Java to run on Android.
+Written in ~~Java~~ Kotlin to run on Android.
 
 Note: To open the Android project it is located in the simpleMobileVMApp directory
 
