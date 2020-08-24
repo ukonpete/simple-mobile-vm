@@ -18,6 +18,11 @@ Note: To open the Android project it is located in the simpleMobileVMApp directo
 
 ## Release Notes
 
+* 8/23/2020
+  * Upgrade to Kotlin
+  * Upgrade to AndroidX
+  * Upgrade to DataModel
+  * Upgrade to ConstrinatLayout
 * 1/5/2019
   * Code Cleanup
   * Updated Read Me
