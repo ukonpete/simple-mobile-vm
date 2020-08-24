@@ -23,6 +23,7 @@ Note: To open the Android project it is located in the simpleMobileVMApp directo
   * Upgrade to AndroidX
   * Upgrade to DataModel
   * Upgrade to ConstrinatLayout
+  * Upgrade to View Binding
 * 1/5/2019
   * Code Cleanup
   * Updated Read Me
