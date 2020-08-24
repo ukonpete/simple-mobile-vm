@@ -1,94 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:paddingTop="10dp">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="8dp">
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/pickInstructionsTextView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
+        android:layout_margin="4dp"
         android:text="@string/pick_file"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:labelFor="@+id/spinnerFiles"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/spinnerFiles"/>
 
     <Spinner
         android:id="@+id/spinnerFiles"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:padding="5dp" />
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pickInstructionsTextView"
+        app:layout_constraintBottom_toTopOf="@id/executionInfoHolder" />
 
     <LinearLayout
+        android:id="@+id/executionInfoHolder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="5dp">
+        android:layout_margin="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinnerFiles"
+        app:layout_constraintBottom_toTopOf="@+id/outputLabel" >
 
-        <TextView
-            android:id="@+id/textView2"
+        <Button
+            android:id="@+id/buttonExe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingEnd="5dp"
-            android:paddingStart="0dp"
-            android:text="@string/path"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:text="@string/execute"
+            app:layout_constraintEnd_toStartOf="@+id/executionInfoHolder"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spinnerFiles"
+            app:layout_constraintBottom_toTopOf="@+id/outputLabel" />
 
-        <TextView
-            android:id="@+id/textViewPath"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingEnd="0dp"
-            android:paddingStart="5dp"
-            android:text="@string/not_available"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp">
-
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingEnd="5dp"
             android:paddingStart="0dp"
             android:text="@string/file"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:labelFor="@+id/textViewFile"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/textViewFile"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingEnd="0dp"
             android:paddingStart="5dp"
+            app:autoSizeMaxTextSize="24sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeTextType="uniform"
             android:text="@string/not_available"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/buttonExe"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/execute" />
-
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/outputLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="4dp"
         android:labelFor="@+id/editTextOutput"
-        android:text="@string/output" />
+        android:text="@string/output"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/executionInfoHolder"
+        app:layout_constraintBottom_toTopOf="@+id/editTextOutput"/>
 
-    <EditText
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/editTextOutput"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:ems="10"
-        android:focusable="false"
-        android:inputType="none"
-        android:importantForAutofill="no"
-        tools:targetApi="o" />
+        android:layout_height="0dp"
+        android:scrollbars = "vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/outputLabel"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-</LinearLayout>
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:layout_margin="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/editTextOutput"
+        app:layout_constraintBottom_toBottomOf="@+id/editTextOutput"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
