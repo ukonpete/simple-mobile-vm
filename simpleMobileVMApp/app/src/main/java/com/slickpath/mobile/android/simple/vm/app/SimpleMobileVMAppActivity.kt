@@ -1,6 +1,7 @@
 package com.slickpath.mobile.android.simple.vm.app
 
 import android.app.Activity
+import android.app.AppComponentFactory
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.View
@@ -8,9 +9,11 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.*
 import android.widget.AdapterView.OnItemSelectedListener
+import androidx.appcompat.app.AppCompatActivity
 import com.slickpath.mobile.android.simple.vm.IVMListener
 import com.slickpath.mobile.android.simple.vm.OutputListener
 import com.slickpath.mobile.android.simple.vm.VMError
+import com.slickpath.mobile.android.simple.vm.app.databinding.MainBinding
 import com.slickpath.mobile.android.simple.vm.machine.VirtualMachine
 import com.slickpath.mobile.android.simple.vm.parser.IParserListener
 import com.slickpath.mobile.android.simple.vm.parser.SimpleParser
@@ -18,41 +21,32 @@ import com.slickpath.mobile.android.simple.vm.util.CommandList
 import java.io.IOException
 
 
-class SimpleMobileVMAppActivity : Activity(), IVMListener, IParserListener {
+class SimpleMobileVMAppActivity : AppCompatActivity(), IVMListener, IParserListener {
     private val stringBuilder = StringBuilder()
 
     private lateinit var virtualMachine: VirtualMachine
-    private lateinit var spinnerFiles: Spinner
-    private lateinit var editTextOutput: TextView
-    private lateinit var textViewFile: TextView
-    private lateinit var buttonExe: Button
-    private lateinit var progressBar: ProgressBar
+
+    private val binding by viewBinding(MainBinding::inflate)
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.main)
+        setContentView(binding.root)
 
-        spinnerFiles = findViewById(R.id.spinnerFiles)
-        editTextOutput = findViewById(R.id.editTextOutput)
-        textViewFile = findViewById(R.id.textViewFile)
-        buttonExe = findViewById(R.id.buttonExe)
-        progressBar = findViewById(R.id.progressBar)
-
-        editTextOutput.movementMethod = ScrollingMovementMethod()
+        binding.editTextOutput.movementMethod = ScrollingMovementMethod()
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, instructionFiles)
-        spinnerFiles.adapter = adapter
-        buttonExe.setOnClickListener(ExecuteButtonOnClickListener())
-        spinnerFiles.onItemSelectedListener = FileItemSelectedListener()
+        binding.spinnerFiles.adapter = adapter
+        binding.buttonExe.setOnClickListener(ExecuteButtonOnClickListener())
+        binding.spinnerFiles.onItemSelectedListener = FileItemSelectedListener()
     }
 
     private fun onExecuteClicked() {
-        editTextOutput.text = ""
-        editTextOutput.scrollTo(0, 0)
+        binding.editTextOutput.text = ""
+        binding.editTextOutput.scrollTo(0, 0)
 
-        progressBar.visibility = VISIBLE
+        binding.progressBar.visibility = VISIBLE
         virtualMachine = VirtualMachine(applicationContext, SimpleVMOutputListener(), null)
         virtualMachine.vMListener = this
-        parseFile(spinnerFiles.selectedItemId.toInt())
+        parseFile(binding.spinnerFiles.selectedItemId.toInt())
     }
 
     private fun parseFile(fileListIndex: Int) {
@@ -92,7 +86,7 @@ class SimpleMobileVMAppActivity : Activity(), IVMListener, IParserListener {
         val files = instructionFiles
         if (index < files.size) {
             selectedFile = files[index]
-            textViewFile.text = files[index]
+            binding.textViewFile.text = files[index]
         }
         return selectedFile
     }
@@ -115,14 +109,14 @@ class SimpleMobileVMAppActivity : Activity(), IVMListener, IParserListener {
 
     override fun completedRunningInstructions(bHalt: Boolean, lastLineExecuted: Int, vmError: VMError?) {
         runOnUiThread {
-            progressBar.visibility = GONE
+            binding.progressBar.visibility = GONE
         }
         if (vmError != null) {
             Toast.makeText(this, "ERROR RUN INST lastLine=$lastLineExecuted", Toast.LENGTH_LONG).show()
             vmError.printStackTrace()
         } else {
             runOnUiThread {
-                editTextOutput.text = stringBuilder.toString()
+                binding.editTextOutput.text = stringBuilder.toString()
                 stringBuilder.setLength(0)
             }
         }
