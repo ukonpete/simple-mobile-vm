@@ -55,9 +55,9 @@ See javadoc directory in the project source directory under /simple-mobile-vm/si
 No app is deployed in the app store, so placing credit here.
 
 * [Icon8](https://icons8.com/license) - Icons used in App
-* [Butterknife](https://github.com/JakeWharton/butterknife) - Jake Warton
+* ~~[Butterknife](https://github.com/JakeWharton/butterknife) - Jake Warton~~
 * [Google](www.google.com) - Android, support-annotations, test runner, test rules
-* [Findbugs](http://findbugs.sourceforge.net/) - The University of Maryland
+* ~~[Findbugs](http://findbugs.sourceforge.net/) - The University of Maryland~~
 * [PMD](https://pmd.github.io/) - InfoEther, LLC
 * [Gradle](https://gradle.org/) - Gradle Inc.
 * [Android Studio](https://developer.android.com/studio/?gclid=CjwKCAiAyMHhBRBIEiwAkGN6fMw5VSOxZzOuKjTaUpdRIHbhV7InKbxFNtFP0_9RazAkBepJY4CFYRoCKY4QAvD_BwE) - IntelliJ and Google
