@@ -217,6 +217,12 @@ open class Kernel {
         memory.resetStack()
     }
 
+    fun reset() {
+        memory.incrementProgramWriter()
+        memory.resetProgramWriter()
+        memory.resetStack()
+    }
+
     /**
      * Gets the instruction and parameters at the requested location and puts it in a list
      *

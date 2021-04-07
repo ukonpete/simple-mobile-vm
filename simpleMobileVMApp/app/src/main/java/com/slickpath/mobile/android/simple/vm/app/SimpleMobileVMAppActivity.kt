@@ -1,7 +1,5 @@
 package com.slickpath.mobile.android.simple.vm.app
 
-import android.app.Activity
-import android.app.AppComponentFactory
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.View
@@ -10,10 +8,12 @@ import android.view.View.VISIBLE
 import android.widget.*
 import android.widget.AdapterView.OnItemSelectedListener
 import androidx.appcompat.app.AppCompatActivity
-import com.slickpath.mobile.android.simple.vm.IVMListener
+import androidx.lifecycle.ViewModelProvider
 import com.slickpath.mobile.android.simple.vm.OutputListener
 import com.slickpath.mobile.android.simple.vm.VMError
 import com.slickpath.mobile.android.simple.vm.app.databinding.MainBinding
+import com.slickpath.mobile.android.simple.vm.app.viewmodel.SimpleVMViewModel
+import com.slickpath.mobile.android.simple.vm.app.viewmodel.SimpleVMViewModelFactory
 import com.slickpath.mobile.android.simple.vm.machine.VirtualMachine
 import com.slickpath.mobile.android.simple.vm.parser.IParserListener
 import com.slickpath.mobile.android.simple.vm.parser.SimpleParser
@@ -21,16 +21,26 @@ import com.slickpath.mobile.android.simple.vm.util.CommandList
 import java.io.IOException
 
 
-class SimpleMobileVMAppActivity : AppCompatActivity(), IVMListener, IParserListener {
+class SimpleMobileVMAppActivity : AppCompatActivity(), IParserListener {
     private val stringBuilder = StringBuilder()
 
-    private lateinit var virtualMachine: VirtualMachine
-
     private val binding by viewBinding(MainBinding::inflate)
+
+    private lateinit var model: SimpleVMViewModel
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        val factory = SimpleVMViewModelFactory(VirtualMachine(applicationContext, SimpleVMOutputListener(), null))
+
+        model = ViewModelProvider(this, factory).get(SimpleVMViewModel::class.java)
+        model.onCompletedAddingInstructions.observe(owner = this){ status ->
+            onCompletedAddingInstructions(status.vmError)
+        }
+        model.onCompletedRunningInstructionsInstructionsStatus.observe(owner = this) { completedStatus ->
+            onCompletedRunningInstructions(completedStatus.onHalt, completedStatus.lastLineExecuted, completedStatus.vmError)
+        }
 
         binding.editTextOutput.movementMethod = ScrollingMovementMethod()
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, instructionFiles)
@@ -44,8 +54,6 @@ class SimpleMobileVMAppActivity : AppCompatActivity(), IVMListener, IParserListe
         binding.editTextOutput.scrollTo(0, 0)
 
         binding.progressBar.visibility = VISIBLE
-        virtualMachine = VirtualMachine(applicationContext, SimpleVMOutputListener(), null)
-        virtualMachine.vMListener = this
         parseFile(binding.spinnerFiles.selectedItemId.toInt())
     }
 
@@ -96,18 +104,20 @@ class SimpleMobileVMAppActivity : AppCompatActivity(), IVMListener, IParserListe
             Toast.makeText(this, "ERROR PARSE" + vmError.message, Toast.LENGTH_LONG).show()
             vmError.printStackTrace()
         }
-        virtualMachine.addCommands(commands)
+        model.reset(applicationContext, SimpleVMOutputListener())
+        model.addCommands(commands)
     }
 
-    override fun completedAddingInstructions(vmError: VMError?) {
+    private fun onCompletedAddingInstructions(vmError: VMError?) {
         if (vmError != null) {
             Toast.makeText(this, "ERROR ADD INST" + vmError.message, Toast.LENGTH_LONG).show()
             vmError.printStackTrace()
         }
-        virtualMachine.runInstructions()
+        model.runInstructions()
     }
 
-    override fun completedRunningInstructions(bHalt: Boolean, lastLineExecuted: Int, vmError: VMError?) {
+    @Suppress("UNUSED_PARAMETER")
+    private fun onCompletedRunningInstructions(bHalt: Boolean, lastLineExecuted: Int, vmError: VMError?) {
         runOnUiThread {
             binding.progressBar.visibility = GONE
         }
