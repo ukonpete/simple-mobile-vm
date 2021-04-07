@@ -24,12 +24,9 @@ import java.io.IOException
 class SimpleMobileVMAppActivity : AppCompatActivity(), IParserListener {
     private val stringBuilder = StringBuilder()
 
-            //private lateinit var virtualMachine: VirtualMachine
-
     private val binding by viewBinding(MainBinding::inflate)
 
     private lateinit var model: SimpleVMViewModel
-
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
