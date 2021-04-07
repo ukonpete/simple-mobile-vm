@@ -5,8 +5,10 @@ import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.widget.*
+import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.slickpath.mobile.android.simple.vm.OutputListener
@@ -35,7 +37,7 @@ class SimpleMobileVMAppActivity : AppCompatActivity(), IParserListener {
         val factory = SimpleVMViewModelFactory(VirtualMachine(applicationContext, SimpleVMOutputListener(), null))
 
         model = ViewModelProvider(this, factory).get(SimpleVMViewModel::class.java)
-        model.onCompletedAddingInstructions.observe(owner = this){ status ->
+        model.onCompletedAddingInstructions.observe(owner = this) { status ->
             onCompletedAddingInstructions(status.vmError)
         }
         model.onCompletedRunningInstructionsInstructionsStatus.observe(owner = this) { completedStatus ->
