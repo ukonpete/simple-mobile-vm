@@ -19,8 +19,14 @@ class BaseInstructionSetTest {
         assertEquals(BaseInstructionSet.INSTRUCTION_SET_CONV.size, Instructions.NUM_COMMANDS)
         assertEquals(BaseInstructionSet.INSTRUCTION_SET[Instructions.ADD_STR], Instructions.ADD)
         assertEquals(BaseInstructionSet.INSTRUCTION_SET[Instructions.HALT_STR], Instructions.HALT)
-        assertEquals(BaseInstructionSet.INSTRUCTION_SET_CONV[Instructions.DIV], Instructions.DIV_STR)
-        assertEquals(BaseInstructionSet.INSTRUCTION_SET_CONV[Instructions.BREQL], Instructions.BREQL_STR)
+        assertEquals(
+            BaseInstructionSet.INSTRUCTION_SET_CONV[Instructions.DIV],
+            Instructions.DIV_STR
+        )
+        assertEquals(
+            BaseInstructionSet.INSTRUCTION_SET_CONV[Instructions.BREQL],
+            Instructions.BREQL_STR
+        )
         val keys: Set<String> = BaseInstructionSet.INSTRUCTION_SET.keys
         for (key in keys) {
             val instructionVal = BaseInstructionSet.INSTRUCTION_SET[key]

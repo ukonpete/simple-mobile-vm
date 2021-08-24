@@ -17,14 +17,12 @@ import com.slickpath.mobile.android.simple.vm.app.databinding.MainBinding
 import com.slickpath.mobile.android.simple.vm.app.viewmodel.SimpleVMViewModel
 import com.slickpath.mobile.android.simple.vm.app.viewmodel.SimpleVMViewModelFactory
 import com.slickpath.mobile.android.simple.vm.machine.VirtualMachine
-import com.slickpath.mobile.android.simple.vm.parser.ParseResult
-import com.slickpath.mobile.android.simple.vm.parser.ParserListener
 import com.slickpath.mobile.android.simple.vm.parser.SimpleFileParserHelper
 import com.slickpath.mobile.android.simple.vm.parser.SimpleParser
 import java.io.IOException
 
 
-class SimpleMobileVMAppActivity : AppCompatActivity(), ParserListener {
+class SimpleMobileVMAppActivity : AppCompatActivity() {
     private val stringBuilder = StringBuilder()
 
     private val binding by viewBinding(MainBinding::inflate)
@@ -76,8 +74,9 @@ class SimpleMobileVMAppActivity : AppCompatActivity(), ParserListener {
         try {
             val simpleFileParserHelper =
                 SimpleFileParserHelper(applicationContext, instructionPath, selectedFile)
-            val parser = SimpleParser(simpleFileParserHelper, this)
-            parser.parse()
+            val parser = SimpleParser(simpleFileParserHelper)
+            model.reset(applicationContext, SimpleVMOutputListener())
+            model.addCommands(parser)
         } catch (e: IOException) {
             Toast.makeText(this, "Unable to find file $selectedFile", Toast.LENGTH_LONG).show()
         }
@@ -112,15 +111,6 @@ class SimpleMobileVMAppActivity : AppCompatActivity(), ParserListener {
             binding.textViewFile.text = files[index]
         }
         return selectedFile
-    }
-
-    override fun completedParse(parseResult: ParseResult) {
-        parseResult.vmError?.let { vmError ->
-            Toast.makeText(this, "ERROR PARSE" + vmError.message, Toast.LENGTH_LONG).show()
-            vmError.printStackTrace()
-        }
-        model.reset(applicationContext, SimpleVMOutputListener())
-        model.addCommands(parseResult.commands)
     }
 
     private fun onCompletedAddingInstructions(vmError: VMError?) {

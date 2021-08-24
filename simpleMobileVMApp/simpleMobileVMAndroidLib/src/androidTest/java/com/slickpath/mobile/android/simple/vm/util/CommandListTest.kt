@@ -2,7 +2,8 @@ package com.slickpath.mobile.android.simple.vm.util
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.slickpath.mobile.android.simple.vm.instructions.Instructions
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,7 +19,7 @@ class CommandListTest {
         private const val TEST_PARAM_VAL1 = 15
         private const val TEST_PARAM_VAL2 = 25
     }
-    
+
     private val COMMAND_1 = Instructions.PUSHC
     private val COMMAND_PARAM_VAL_1 = TEST_PARAM_VAL1
     private val COMMAND_PARAM_LIST_1: List<Int> = ArrayList(listOf(COMMAND_PARAM_VAL_1))
@@ -27,7 +28,7 @@ class CommandListTest {
     private val COMMAND_PARAM_LIST_2: List<Int> = ArrayList(listOf(COMMAND_PARAM_VAL_2))
     private val COMMAND_3 = Instructions.ADD
     private val COMMAND_PARAM_LIST_3: List<Int>? = null
-    
+
     private lateinit var testList1: CommandList
 
     @Before

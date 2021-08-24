@@ -23,7 +23,7 @@ class MachineTest {
     }
 
     private lateinit var _machine: Machine
-    
+
     @Before
     fun before() {
         _machine = Machine()

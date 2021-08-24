@@ -21,7 +21,7 @@ class CommandTest {
     private val COMMAND_PARAM_LIST_2: List<Int>? = null
     private lateinit var _commandWithParam: Command
     private lateinit var _commandWithOutParam: Command
-    
+
     @Before
     fun before() {
         _commandWithParam = Command(COMMAND_1, COMMAND_PARAM_LIST_1)

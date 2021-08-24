@@ -6,6 +6,7 @@ import com.slickpath.mobile.android.simple.vm.instructions.Instructions
 import com.slickpath.mobile.android.simple.vm.machine.FibonacciInstructions
 import com.slickpath.mobile.android.simple.vm.machine.FileHelperForTest
 import com.slickpath.mobile.android.simple.vm.util.CommandList
+import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -24,8 +25,14 @@ class SimpleParserTest : ParserListener {
 
     @Before
     fun before() {
-        _parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions), this)
+        _parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        _parser.addParserListener(this)
         _signal = CountDownLatch(1)
+    }
+
+    @After
+    fun after() {
+        _parser.removeParserListener(this)
     }
 
     /**

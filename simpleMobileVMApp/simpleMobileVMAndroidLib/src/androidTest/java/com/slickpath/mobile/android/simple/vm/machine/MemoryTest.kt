@@ -13,9 +13,9 @@ import java.util.*
  */
 @RunWith(AndroidJUnit4::class)
 class MemoryTest {
-    
+
     private lateinit var _memory: Memory
-    
+
     @Before
     fun before() {
         _memory = Memory()

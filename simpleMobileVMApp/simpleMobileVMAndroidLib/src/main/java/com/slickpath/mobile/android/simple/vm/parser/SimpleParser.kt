@@ -48,7 +48,7 @@ import java.util.*
  * @author Pete Procopio
  * @see [Simple VM Wiki on Github](https://github.com/ukonpete/simple-mobile-vm/wiki)
  */
-class SimpleParser(private val parserHelper: ParserHelper, parserListener: ParserListener?) : CachedThreadPoolParser(parserListener) {
+class SimpleParser(private val parserHelper: ParserHelper) : CachedThreadPoolParser() {
 
     private val symbols: MutableMap<String, Int> = Hashtable()
     private val addresses: MutableMap<String, Int> = Hashtable()

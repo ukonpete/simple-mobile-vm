@@ -15,7 +15,7 @@ import java.util.*
 @RunWith(AndroidJUnit4::class)
 class KernelTest {
     private lateinit var _kernel: Kernel
-    
+
     @Before
     fun before() {
         _kernel = Kernel()

@@ -7,6 +7,9 @@ import android.util.Log
 import com.slickpath.mobile.android.simple.vm.*
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet
 import com.slickpath.mobile.android.simple.vm.instructions.Instructions
+import com.slickpath.mobile.android.simple.vm.parser.ParseResult
+import com.slickpath.mobile.android.simple.vm.parser.Parser
+import com.slickpath.mobile.android.simple.vm.parser.ParserListener
 import com.slickpath.mobile.android.simple.vm.util.Command
 import com.slickpath.mobile.android.simple.vm.util.CommandList
 import java.io.FileOutputStream
@@ -48,6 +51,8 @@ class VirtualMachine constructor(
      */
     var vmListener: VMListener? = null
 
+    var parser: Parser? = null
+
     init {
         try {
             Class.forName("BaseInstructionSet")
@@ -87,6 +92,22 @@ class VirtualMachine constructor(
     fun addCommands(commands: CommandList?) {
         resetProgramWriter()
         executorPool.execute { doAddInstructions(commands) }
+    }
+
+    fun addCommands(parser: Parser) {
+        parser.addParserListener(vmParserListener)
+        parser.parse()
+        this.parser = parser
+    }
+
+    private var vmParserListener: ParserListener = object : ParserListener {
+        override fun completedParse(parseResult: ParseResult) {
+            if(parseResult.vmError == null) {
+                addCommands(parseResult.commands)
+            }
+            vmListener?.completedAddingInstructions(parseResult.vmError)
+            parser?.removeParserListener(this)
+        }
     }
 
     /**

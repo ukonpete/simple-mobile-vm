@@ -3,8 +3,8 @@ package com.slickpath.mobile.android.simple.vm.machine
 import android.util.Log
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.slickpath.mobile.android.simple.vm.VMListener
 import com.slickpath.mobile.android.simple.vm.VMError
+import com.slickpath.mobile.android.simple.vm.VMListener
 import com.slickpath.mobile.android.simple.vm.instructions.Instructions
 import com.slickpath.mobile.android.simple.vm.parser.ParseResult
 import com.slickpath.mobile.android.simple.vm.parser.ParserListener
@@ -23,12 +23,12 @@ import java.util.concurrent.CountDownLatch
  */
 @RunWith(AndroidJUnit4::class)
 class VirtualMachineTest {
-    
+
     private var _vmError: VMError? = null
     private var _bHalt = false
     private var _lastLineExecuted = 0
     private var _commands: CommandList? = null
-    
+
     @Before
     fun before() {
         _bHalt = false
@@ -51,8 +51,16 @@ class VirtualMachineTest {
                 this@VirtualMachineTest.completedAddingInstructions(vmError)
             }
 
-            override fun completedRunningInstructions(bHalt: Boolean, lastLineExecuted: Int, vmError: VMError?) {
-                this@VirtualMachineTest.completedRunningInstructions(bHalt, lastLineExecuted, vmError)
+            override fun completedRunningInstructions(
+                bHalt: Boolean,
+                lastLineExecuted: Int,
+                vmError: VMError?
+            ) {
+                this@VirtualMachineTest.completedRunningInstructions(
+                    bHalt,
+                    lastLineExecuted,
+                    vmError
+                )
             }
         }
         assertNotNull(virtualMachine.vmListener)
@@ -64,7 +72,14 @@ class VirtualMachineTest {
     @Test
     fun testAddCommand() {
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
-        val instructions = intArrayOf(Instructions.ADD, Instructions.EQUAL, Instructions.NOT, Instructions.PUSHC, Instructions.JUMP, Instructions.POPC)
+        val instructions = intArrayOf(
+            Instructions.ADD,
+            Instructions.EQUAL,
+            Instructions.NOT,
+            Instructions.PUSHC,
+            Instructions.JUMP,
+            Instructions.POPC
+        )
         val params = arrayOf(-1, -1, -1, 10, 20, 30)
         try {
             for (i in instructions.indices) {
@@ -97,7 +112,14 @@ class VirtualMachineTest {
     @Test
     fun testAddCommands() {
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
-        val instructions = intArrayOf(Instructions.ADD, Instructions.EQUAL, Instructions.NOT, Instructions.PUSHC, Instructions.JUMP, Instructions.POPC)
+        val instructions = intArrayOf(
+            Instructions.ADD,
+            Instructions.EQUAL,
+            Instructions.NOT,
+            Instructions.PUSHC,
+            Instructions.JUMP,
+            Instructions.POPC
+        )
         val params = arrayOf(-1, -1, -1, 10, 20, 30)
         try {
             val commandList = CommandList()
@@ -142,19 +164,21 @@ class VirtualMachineTest {
     @Test
     fun testRunNextInstruction() {
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
-        val signalParser = CountDownLatch(1)
-        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions), object : ParserListener {
+        val signalParse = CountDownLatch(1)
+        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        parser.addParserListener(object : ParserListener {
             override fun completedParse(parseResult: ParseResult) {
                 this@VirtualMachineTest.completedParse(parseResult)
-                signalParser.countDown() // notify the count down latch
+                signalParse.countDown() // notify the count down latch
             }
         })
+
         Log.d(TAG, "+...........................PARSE START ")
         parser.parse()
         try {
             // Wait for Callback
             Log.d(TAG, "+...........................PARSE WAIT ")
-            signalParser.await()
+            signalParse.await()
             Log.d(TAG, "+...........................PARSE DONE WAIT ")
         } catch (e: InterruptedException) {
             e.printStackTrace()
@@ -195,7 +219,10 @@ class VirtualMachineTest {
                 val halt = virtualMachine.runNextInstruction()
                 assertFalse("($i) Halt= ", halt)
             } catch (vmError: VMError) {
-                assertNull("(" + i + ") LINE=" + _lastLineExecuted + " --> " + vmError.message, _vmError)
+                assertNull(
+                    "(" + i + ") LINE=" + _lastLineExecuted + " --> " + vmError.message,
+                    _vmError
+                )
             }
         }
     }
@@ -207,7 +234,11 @@ class VirtualMachineTest {
                 signal.countDown() // notify the count down latch
             }
 
-            override fun completedRunningInstructions(bHalt: Boolean, lastLineExecuted: Int, vmError: VMError?) {
+            override fun completedRunningInstructions(
+                bHalt: Boolean,
+                lastLineExecuted: Int,
+                vmError: VMError?
+            ) {
                 // Do Nothing
             }
         }
@@ -219,8 +250,16 @@ class VirtualMachineTest {
                 // Do Nothing
             }
 
-            override fun completedRunningInstructions(bHalt: Boolean, lastLineExecuted: Int, vmError: VMError?) {
-                this@VirtualMachineTest.completedRunningInstructions(bHalt, lastLineExecuted, vmError)
+            override fun completedRunningInstructions(
+                bHalt: Boolean,
+                lastLineExecuted: Int,
+                vmError: VMError?
+            ) {
+                this@VirtualMachineTest.completedRunningInstructions(
+                    bHalt,
+                    lastLineExecuted,
+                    vmError
+                )
                 signal.countDown() // notify the count down latch
             }
         }
@@ -233,10 +272,11 @@ class VirtualMachineTest {
     fun testRunInstructions() {
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
         val signalParse = CountDownLatch(1)
-        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions), object : ParserListener {
+        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        parser.addParserListener(object : ParserListener {
             override fun completedParse(parseResult: ParseResult) {
                 this@VirtualMachineTest.completedParse(parseResult)
-                signalParse.countDown()
+                signalParse.countDown() // notify the count down latch
             }
         })
         parser.parse()
@@ -281,10 +321,11 @@ class VirtualMachineTest {
         Log.d(TAG, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
         val signalParse = CountDownLatch(1)
-        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions), object : ParserListener {
+        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        parser.addParserListener(object : ParserListener {
             override fun completedParse(parseResult: ParseResult) {
                 this@VirtualMachineTest.completedParse(parseResult)
-                signalParse.countDown()
+                signalParse.countDown() // notify the count down latch
             }
         })
         parser.parse()
@@ -329,9 +370,14 @@ class VirtualMachineTest {
         Log.d(TAG, "+..........completedAddingInstructions CountDown")
     }
 
-    private fun completedRunningInstructions(bHalt: Boolean,
-                                             lastLineExecuted: Int, vmError: VMError?) {
-        Log.d(TAG, "+..........CompletedRunningInstructions " + lastLineExecuted + " halt = " + bHalt + "vmError = " + vmError)
+    private fun completedRunningInstructions(
+        bHalt: Boolean,
+        lastLineExecuted: Int, vmError: VMError?
+    ) {
+        Log.d(
+            TAG,
+            "+..........CompletedRunningInstructions " + lastLineExecuted + " halt = " + bHalt + "vmError = " + vmError
+        )
         _vmError = vmError
         _bHalt = bHalt
         _lastLineExecuted = lastLineExecuted

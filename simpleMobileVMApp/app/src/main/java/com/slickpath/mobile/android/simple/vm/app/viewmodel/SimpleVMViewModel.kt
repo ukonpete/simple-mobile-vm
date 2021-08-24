@@ -7,6 +7,7 @@ import com.slickpath.mobile.android.simple.vm.VMListener
 import com.slickpath.mobile.android.simple.vm.VMError
 import com.slickpath.mobile.android.simple.vm.app.SimpleMobileVMAppActivity
 import com.slickpath.mobile.android.simple.vm.machine.VirtualMachine
+import com.slickpath.mobile.android.simple.vm.parser.Parser
 import com.slickpath.mobile.android.simple.vm.util.CommandList
 
 class SimpleVMViewModel(private var virtualMachine: VirtualMachine) : ViewModel(), VMListener {
@@ -24,9 +25,9 @@ class SimpleVMViewModel(private var virtualMachine: VirtualMachine) : ViewModel(
         MutableLiveData<CompletedRunningInstructionsStatus>()
     }
 
-    fun addCommands(commands: CommandList?) {
+    fun addCommands(parser: Parser) {
         virtualMachine.reset()
-        virtualMachine.addCommands(commands)
+        virtualMachine.addCommands(parser)
     }
 
     fun runInstructions() {
