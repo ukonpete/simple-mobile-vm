@@ -17,7 +17,6 @@ import java.util.concurrent.ThreadPoolExecutor
 /**
  * @author Pete Procopio
  *
- * BaseInstructionSet must be defined in the your
  *
  * Constructor:
  * - Allows caller to pass in streams for both input and output
@@ -41,17 +40,13 @@ class VirtualMachine constructor(
     }
 
     private var numInstructionsRun = 0
+
     /**
-     * get a listener to listen to events thrown by VM
-     *
-     * @return VMListener
-     */
-    /**
-     * Set a listener to listen to events thrown by VM
+     * listener to listen to events thrown by VM
      *
      * @param listener listener on vm events
      */
-    var vMListener: VMListener? = null
+    var vmListener: VMListener? = null
 
     init {
         try {
@@ -110,7 +105,7 @@ class VirtualMachine constructor(
         } else {
             vmError = VMError("addInstructions instructions", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS)
         }
-        vMListener?.completedAddingInstructions(vmError)
+        vmListener?.completedAddingInstructions(vmError)
     }
 
     /**
@@ -213,7 +208,7 @@ class VirtualMachine constructor(
         dumpMem("3")
         Log.d(LOG_TAG, "+DONE PROCESSING+++++++++")
 
-        vMListener?.completedRunningInstructions(
+        vmListener?.completedRunningInstructions(
             instructionVal == Instructions.HALT,
             programCounter,
             vmError

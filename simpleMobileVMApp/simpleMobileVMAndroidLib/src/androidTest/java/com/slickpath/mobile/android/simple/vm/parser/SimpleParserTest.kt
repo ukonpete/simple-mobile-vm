@@ -184,10 +184,10 @@ class SimpleParserTest : ParserListener {
         assertEquals(_commands[i].commandId, Instructions.HALT) // 50
     }
 
-    override fun completedParse(vmError: VMError?, commands: CommandList) {
+    override fun completedParse(parseResult: ParseResult) {
         // Save values on callback and release test thread
-        _error = vmError
-        _commands = commands
+        _error = parseResult.vmError
+        _commands = parseResult.commands
         _signal.countDown() // notify the count down latch
     }
 

@@ -23,9 +23,9 @@ class BaseInstructionSetTest {
         assertEquals(BaseInstructionSet.INSTRUCTION_SET_CONV[Instructions.BREQL], Instructions.BREQL_STR)
         val keys: Set<String> = BaseInstructionSet.INSTRUCTION_SET.keys
         for (key in keys) {
-            val `val` = BaseInstructionSet.INSTRUCTION_SET[key]
-            val value = BaseInstructionSet.INSTRUCTION_SET_CONV[`val`]
-            assertEquals(key, value)
+            val instructionVal = BaseInstructionSet.INSTRUCTION_SET[key]
+            val instructionValConverted = BaseInstructionSet.INSTRUCTION_SET_CONV[instructionVal]
+            assertEquals(key, instructionValConverted)
         }
     }
 }

@@ -13,7 +13,7 @@ class SimpleVMViewModel(private var virtualMachine: VirtualMachine) : ViewModel(
 
 
     init {
-        virtualMachine.vMListener = this
+        virtualMachine.vmListener = this
     }
 
     val onCompletedAddingInstructions: MutableLiveData<CompletedAddingInstructionsStatus> by lazy {
@@ -35,7 +35,7 @@ class SimpleVMViewModel(private var virtualMachine: VirtualMachine) : ViewModel(
 
     fun reset(context: Context, outputListener: SimpleMobileVMAppActivity.SimpleVMOutputListener) {
         virtualMachine = VirtualMachine(context, outputListener, null)
-        virtualMachine.vMListener = this
+        virtualMachine.vmListener = this
     }
 
     override fun completedAddingInstructions(vmError: VMError?) {

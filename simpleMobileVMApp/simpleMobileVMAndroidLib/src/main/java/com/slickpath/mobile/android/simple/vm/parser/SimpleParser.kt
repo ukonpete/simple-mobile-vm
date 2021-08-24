@@ -3,15 +3,13 @@
 package com.slickpath.mobile.android.simple.vm.parser
 
 import android.util.Log
-import com.slickpath.mobile.android.simple.vm.FileHelper
+import com.slickpath.mobile.android.simple.vm.ParserHelper
 import com.slickpath.mobile.android.simple.vm.VMError
 import com.slickpath.mobile.android.simple.vm.VMErrorType
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet
 import com.slickpath.mobile.android.simple.vm.util.CommandList
 import java.io.*
 import java.util.*
-import java.util.concurrent.Executors
-import java.util.concurrent.ThreadPoolExecutor
 
 /**
  * Parses file for commands, parameters, variables and symbols
@@ -47,13 +45,11 @@ import java.util.concurrent.ThreadPoolExecutor
  *  * SYMBOL - [LOOP2] - assign the next instructions line number to the symbol [LOOP2]
  *  * COMMENT - // This code rocks
  *
- *
- *
  * @author Pete Procopio
  * @see [Simple VM Wiki on Github](https://github.com/ukonpete/simple-mobile-vm/wiki)
  */
-class SimpleParser(fileHelper: FileHelper, private val listener: ParserListener?) {
-    private val instructions: String = fileHelper.instructionsString
+class SimpleParser(private val parserHelper: ParserHelper, parserListener: ParserListener?) : CachedThreadPoolParser(parserListener) {
+
     private val symbols: MutableMap<String, Int> = Hashtable()
     private val addresses: MutableMap<String, Int> = Hashtable()
     private val commands = CommandList()
@@ -62,7 +58,6 @@ class SimpleParser(fileHelper: FileHelper, private val listener: ParserListener?
 
     companion object {
         private val LOG_TAG = SimpleParser::class.java.name
-        private val executorPool = Executors.newCachedThreadPool() as ThreadPoolExecutor
     }
 
     /**
@@ -72,20 +67,14 @@ class SimpleParser(fileHelper: FileHelper, private val listener: ParserListener?
      *
      * Subsequent calls will be queued until the previous call is finished.
      */
-    fun parse() {
-        executorPool.execute(object : Runnable {
-            override fun run() {
-                synchronized(this) {
-                    var vmError: VMError? = null
-                    try {
-                        doParse()
-                    } catch (e: VMError) {
-                        vmError = e
-                    }
-                    listener?.completedParse(vmError, commands)
-                }
-            }
-        })
+    override fun parseInstructions(): ParseResult {
+        var vmError: VMError? = null
+        try {
+            doParse()
+        } catch (e: VMError) {
+            vmError = e
+        }
+        return ParseResult(vmError, commands)
     }
 
     /**
@@ -100,10 +89,10 @@ class SimpleParser(fileHelper: FileHelper, private val listener: ParserListener?
         var vmErrorType = VMErrorType.VM_ERROR_TYPE_LAZY_UNSET
         var additionalExceptionInfo = "[runInstructions] "
         try {
-            stream = ByteArrayInputStream(instructions.toByteArray())
+            stream = ByteArrayInputStream(parserHelper.getInstructionsString().toByteArray())
             getSymbols(stream)
             stream.close()
-            stream = ByteArrayInputStream(instructions.toByteArray())
+            stream = ByteArrayInputStream(parserHelper.getInstructionsString().toByteArray())
             val buffReader = getBufferedReader(stream)
             var line = buffReader.readLine()
             val emptyList = ArrayList<Int>(0)
@@ -240,8 +229,8 @@ class SimpleParser(fileHelper: FileHelper, private val listener: ParserListener?
      * @param is input stream
      * @return a BufferedReader
      */
-    private fun getBufferedReader(`is`: InputStream): BufferedReader {
-        val inStream = DataInputStream(`is`)
+    private fun getBufferedReader(inputStream: InputStream): BufferedReader {
+        val inStream = DataInputStream(inputStream)
         return BufferedReader(InputStreamReader(inStream), 8192)
     }
 

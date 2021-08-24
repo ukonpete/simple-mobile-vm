@@ -29,8 +29,8 @@ class MemoryTest {
         assertTrue(_memory.isStackEmpty)
         assertEquals(Memory.MAX_MEMORY, _memory.memoryDump().size)
         val tempMemory = _memory.memoryDump()
-        for (`val` in tempMemory) {
-            assertEquals(Memory.EMPTY_MEMORY_VALUE, `val`)
+        for (value in tempMemory) {
+            assertEquals(Memory.EMPTY_MEMORY_VALUE, value)
         }
     }
 
@@ -51,9 +51,9 @@ class MemoryTest {
         for (j in 0..99) {
             _memory.popMEM()
         }
-        for (`val` in values.indices.reversed()) {
+        for (value in values.indices.reversed()) {
             assertTrue(!_memory.isStackEmpty)
-            assertEquals(values[`val`], _memory.popMEM())
+            assertEquals(values[value], _memory.popMEM())
         }
         assertTrue(_memory.isStackEmpty)
     }
@@ -77,9 +77,9 @@ class MemoryTest {
         for (j in 0..49) {
             _memory.popMEM()
         }
-        for (`val` in values.indices.reversed()) {
-            _memory.pushMEM(values[`val`])
-            assertEquals(values[`val`], _memory.popMEM())
+        for (value in values.indices.reversed()) {
+            _memory.pushMEM(values[value])
+            assertEquals(values[value], _memory.popMEM())
         }
     }
 

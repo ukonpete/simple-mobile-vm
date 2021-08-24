@@ -343,7 +343,7 @@ open class Machine @JvmOverloads constructor(outputListener: OutputListener? = n
     @Throws(VMError::class)
     fun RDCHAR() {
         try {
-            PUSHC(inputListener.char.toInt())
+            PUSHC(inputListener.char.code)
         } catch (e: IOException) {
             throw VMError("Exception in RDCHAR : " + e.message, e, VMErrorType.VM_ERROR_TYPE_IO)
         }
@@ -455,9 +455,9 @@ open class Machine @JvmOverloads constructor(outputListener: OutputListener? = n
      */
     @Throws(VMError::class)
     fun BRLSS(location: Int): Boolean {
-        val `val` = pop()
+        val poppedValue = pop()
         var bBranched = false
-        if (`val` < 0) {
+        if (poppedValue < 0) {
             BRANCH(location)
             bBranched = true
         }
@@ -476,9 +476,9 @@ open class Machine @JvmOverloads constructor(outputListener: OutputListener? = n
      */
     @Throws(VMError::class)
     fun BRGTR(location: Int): Boolean {
-        val `val` = pop()
+        val poppedValue = pop()
         var bBranched = false
-        if (`val` > 0) {
+        if (poppedValue > 0) {
             BRANCH(location)
             bBranched = true
         }

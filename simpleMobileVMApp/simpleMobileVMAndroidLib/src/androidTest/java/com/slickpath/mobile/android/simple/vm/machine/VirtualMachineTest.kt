@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.slickpath.mobile.android.simple.vm.VMListener
 import com.slickpath.mobile.android.simple.vm.VMError
 import com.slickpath.mobile.android.simple.vm.instructions.Instructions
+import com.slickpath.mobile.android.simple.vm.parser.ParseResult
 import com.slickpath.mobile.android.simple.vm.parser.ParserListener
 import com.slickpath.mobile.android.simple.vm.parser.SimpleParser
 import com.slickpath.mobile.android.simple.vm.util.Command
@@ -37,15 +38,15 @@ class VirtualMachineTest {
     }
 
     /**
-     * Test method for [com.slickpath.mobile.android.simple.vm.machine.VirtualMachine.vMListener].
+     * Test method for [com.slickpath.mobile.android.simple.vm.machine.VirtualMachine.vmListener].
      */
     @Test
     fun testGetVMListener() {
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
-        assertNull(virtualMachine.vMListener)
-        virtualMachine.vMListener = null
-        assertNull(virtualMachine.vMListener)
-        virtualMachine.vMListener = object : VMListener {
+        assertNull(virtualMachine.vmListener)
+        virtualMachine.vmListener = null
+        assertNull(virtualMachine.vmListener)
+        virtualMachine.vmListener = object : VMListener {
             override fun completedAddingInstructions(vmError: VMError?) {
                 this@VirtualMachineTest.completedAddingInstructions(vmError)
             }
@@ -54,7 +55,7 @@ class VirtualMachineTest {
                 this@VirtualMachineTest.completedRunningInstructions(bHalt, lastLineExecuted, vmError)
             }
         }
-        assertNotNull(virtualMachine.vMListener)
+        assertNotNull(virtualMachine.vmListener)
     }
 
     /**
@@ -143,8 +144,8 @@ class VirtualMachineTest {
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
         val signalParser = CountDownLatch(1)
         val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions), object : ParserListener {
-            override fun completedParse(vmError: VMError?, commands: CommandList) {
-                this@VirtualMachineTest.completedParse(vmError, commands)
+            override fun completedParse(parseResult: ParseResult) {
+                this@VirtualMachineTest.completedParse(parseResult)
                 signalParser.countDown() // notify the count down latch
             }
         })
@@ -200,7 +201,7 @@ class VirtualMachineTest {
     }
 
     private fun addVMListenerAdding(virtualMachine: VirtualMachine, signal: CountDownLatch) {
-        virtualMachine.vMListener = object : VMListener {
+        virtualMachine.vmListener = object : VMListener {
             override fun completedAddingInstructions(vmError: VMError?) {
                 this@VirtualMachineTest.completedAddingInstructions(vmError)
                 signal.countDown() // notify the count down latch
@@ -213,7 +214,7 @@ class VirtualMachineTest {
     }
 
     private fun addVMListenerRunning(virtualMachine: VirtualMachine, signal: CountDownLatch) {
-        virtualMachine.vMListener = object : VMListener {
+        virtualMachine.vmListener = object : VMListener {
             override fun completedAddingInstructions(vmError: VMError?) {
                 // Do Nothing
             }
@@ -233,8 +234,8 @@ class VirtualMachineTest {
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
         val signalParse = CountDownLatch(1)
         val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions), object : ParserListener {
-            override fun completedParse(vmError: VMError?, commands: CommandList) {
-                this@VirtualMachineTest.completedParse(vmError, commands)
+            override fun completedParse(parseResult: ParseResult) {
+                this@VirtualMachineTest.completedParse(parseResult)
                 signalParse.countDown()
             }
         })
@@ -281,8 +282,8 @@ class VirtualMachineTest {
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
         val signalParse = CountDownLatch(1)
         val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions), object : ParserListener {
-            override fun completedParse(vmError: VMError?, commands: CommandList) {
-                this@VirtualMachineTest.completedParse(vmError, commands)
+            override fun completedParse(parseResult: ParseResult) {
+                this@VirtualMachineTest.completedParse(parseResult)
                 signalParse.countDown()
             }
         })
@@ -337,11 +338,11 @@ class VirtualMachineTest {
         Log.d(TAG, "+..........CompletedRunningInstructions CountDown")
     }
 
-    private fun completedParse(vmError: VMError?, commands: CommandList?) {
+    private fun completedParse(parseResult: ParseResult) {
         // Save values on callback and release test thread
         Log.d(TAG, "+..........completedParse ")
-        _vmError = vmError
-        _commands = commands
+        _vmError = parseResult.vmError
+        _commands = parseResult.commands
         Log.d(TAG, "+..........completedParse CountDown")
     }
 

@@ -1,23 +1,23 @@
-package com.slickpath.mobile.android.simple.vm.app
+package com.slickpath.mobile.android.simple.vm.parser
 
 import android.content.Context
 import android.util.Log
-import com.slickpath.mobile.android.simple.vm.FileHelper
+import com.slickpath.mobile.android.simple.vm.ParserHelper
 import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
 
-internal class SimpleMobileVMFileHelper(
+class SimpleFileParserHelper(
     private val context: Context,
     private val path: String,
     private val instructionsFile: String
-) : FileHelper {
+) : ParserHelper {
 
     private var instructions: String = ""
 
     companion object {
-        private val LOG_TAG = SimpleMobileVMFileHelper::class.java.simpleName
+        private val LOG_TAG = SimpleFileParserHelper::class.java.simpleName
     }
 
     init {
@@ -55,6 +55,8 @@ internal class SimpleMobileVMFileHelper(
         instructions = stringBuilder.toString()
     }
 
-    override val instructionsString: String
-        get() = instructions
+    override fun getInstructionsString(): String {
+        return instructions
+    }
+
 }
