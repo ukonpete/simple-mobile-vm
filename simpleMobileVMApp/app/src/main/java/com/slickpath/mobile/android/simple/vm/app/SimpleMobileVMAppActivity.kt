@@ -34,18 +34,29 @@ class SimpleMobileVMAppActivity : AppCompatActivity(), IParserListener {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        val factory = SimpleVMViewModelFactory(VirtualMachine(applicationContext, SimpleVMOutputListener(), null))
+        val factory = SimpleVMViewModelFactory(
+            VirtualMachine(
+                applicationContext,
+                SimpleVMOutputListener(),
+                null
+            )
+        )
 
         model = ViewModelProvider(this, factory).get(SimpleVMViewModel::class.java)
         model.onCompletedAddingInstructions.observe(owner = this) { status ->
             onCompletedAddingInstructions(status.vmError)
         }
         model.onCompletedRunningInstructionsInstructionsStatus.observe(owner = this) { completedStatus ->
-            onCompletedRunningInstructions(completedStatus.onHalt, completedStatus.lastLineExecuted, completedStatus.vmError)
+            onCompletedRunningInstructions(
+                completedStatus.onHalt,
+                completedStatus.lastLineExecuted,
+                completedStatus.vmError
+            )
         }
 
         binding.editTextOutput.movementMethod = ScrollingMovementMethod()
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, instructionFiles)
+        val adapter =
+            ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, instructionFiles)
         binding.spinnerFiles.adapter = adapter
         binding.buttonExe.setOnClickListener(ExecuteButtonOnClickListener())
         binding.spinnerFiles.onItemSelectedListener = FileItemSelectedListener()
@@ -62,7 +73,8 @@ class SimpleMobileVMAppActivity : AppCompatActivity(), IParserListener {
     private fun parseFile(fileListIndex: Int) {
         val selectedFile = getSelectedFileName(fileListIndex)
         try {
-            val simpleMobileVMFileHelper = SimpleMobileVMFileHelper(applicationContext, instructionPath, selectedFile)
+            val simpleMobileVMFileHelper =
+                SimpleMobileVMFileHelper(applicationContext, instructionPath, selectedFile)
             val parser = SimpleParser(simpleMobileVMFileHelper, this)
             parser.parse()
         } catch (e: IOException) {
@@ -119,12 +131,17 @@ class SimpleMobileVMAppActivity : AppCompatActivity(), IParserListener {
     }
 
     @Suppress("UNUSED_PARAMETER")
-    private fun onCompletedRunningInstructions(bHalt: Boolean, lastLineExecuted: Int, vmError: VMError?) {
+    private fun onCompletedRunningInstructions(
+        bHalt: Boolean,
+        lastLineExecuted: Int,
+        vmError: VMError?
+    ) {
         runOnUiThread {
             binding.progressBar.visibility = GONE
         }
         if (vmError != null) {
-            Toast.makeText(this, "ERROR RUN INST lastLine=$lastLineExecuted", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "ERROR RUN INST lastLine=$lastLineExecuted", Toast.LENGTH_LONG)
+                .show()
             vmError.printStackTrace()
         } else {
             runOnUiThread {

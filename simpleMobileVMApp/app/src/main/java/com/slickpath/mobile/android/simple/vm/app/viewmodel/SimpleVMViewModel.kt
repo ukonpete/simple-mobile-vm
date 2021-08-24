@@ -33,7 +33,7 @@ class SimpleVMViewModel(private var virtualMachine: VirtualMachine) : ViewModel(
         virtualMachine.runInstructions()
     }
 
-    fun reset(context: Context, outputListener : SimpleMobileVMAppActivity.SimpleVMOutputListener) {
+    fun reset(context: Context, outputListener: SimpleMobileVMAppActivity.SimpleVMOutputListener) {
         virtualMachine = VirtualMachine(context, outputListener, null)
         virtualMachine.vMListener = this
     }
@@ -42,11 +42,21 @@ class SimpleVMViewModel(private var virtualMachine: VirtualMachine) : ViewModel(
         onCompletedAddingInstructions.postValue(CompletedAddingInstructionsStatus(vmError))
     }
 
-    override fun completedRunningInstructions(bHalt: Boolean, lastLineExecuted: Int, vmError: VMError?) {
-        onCompletedRunningInstructionsInstructionsStatus.postValue(CompletedRunningInstructionsStatus(bHalt, lastLineExecuted, vmError))
+    override fun completedRunningInstructions(
+        bHalt: Boolean,
+        lastLineExecuted: Int,
+        vmError: VMError?
+    ) {
+        onCompletedRunningInstructionsInstructionsStatus.postValue(
+            CompletedRunningInstructionsStatus(bHalt, lastLineExecuted, vmError)
+        )
     }
 }
 
-data class CompletedRunningInstructionsStatus(val onHalt: Boolean, val lastLineExecuted: Int, val vmError: VMError?)
+data class CompletedRunningInstructionsStatus(
+    val onHalt: Boolean,
+    val lastLineExecuted: Int,
+    val vmError: VMError?
+)
 
 data class CompletedAddingInstructionsStatus(val vmError: VMError?)

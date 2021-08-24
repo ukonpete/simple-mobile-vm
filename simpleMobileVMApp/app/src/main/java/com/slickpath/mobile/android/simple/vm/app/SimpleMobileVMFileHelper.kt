@@ -8,7 +8,11 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
 
-internal class SimpleMobileVMFileHelper(private val context: Context, private val path: String, private val instructionsFile: String) : FileHelper {
+internal class SimpleMobileVMFileHelper(
+    private val context: Context,
+    private val path: String,
+    private val instructionsFile: String
+) : FileHelper {
 
     private var instructions: String? = null
 

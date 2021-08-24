@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="8dp">
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -10,66 +10,66 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:text="@string/pick_file"
         android:labelFor="@+id/spinnerFiles"
+        android:text="@string/pick_file"
         android:textAppearance="?android:attr/textAppearanceMedium"
+        app:layout_constraintBottom_toTopOf="@+id/spinnerFiles"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/spinnerFiles"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
         android:id="@+id/spinnerFiles"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
+        app:layout_constraintBottom_toTopOf="@id/executionInfoHolder"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pickInstructionsTextView"
-        app:layout_constraintBottom_toTopOf="@id/executionInfoHolder" />
+        app:layout_constraintTop_toBottomOf="@+id/pickInstructionsTextView" />
 
     <LinearLayout
         android:id="@+id/executionInfoHolder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_margin="4dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/outputLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerFiles"
-        app:layout_constraintBottom_toTopOf="@+id/outputLabel" >
+        app:layout_constraintTop_toBottomOf="@+id/spinnerFiles">
 
         <Button
             android:id="@+id/buttonExe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/execute"
+            app:layout_constraintBottom_toTopOf="@+id/outputLabel"
             app:layout_constraintEnd_toStartOf="@+id/executionInfoHolder"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinnerFiles"
-            app:layout_constraintBottom_toTopOf="@+id/outputLabel" />
+            app:layout_constraintTop_toBottomOf="@+id/spinnerFiles" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingEnd="5dp"
-            android:paddingStart="0dp"
-            android:text="@string/file"
             android:labelFor="@+id/textViewFile"
+            android:paddingStart="0dp"
+            android:paddingEnd="5dp"
+            android:text="@string/file"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/textViewFile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingEnd="0dp"
             android:paddingStart="5dp"
+            android:paddingEnd="0dp"
+            android:text="@string/not_available"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             app:autoSizeMaxTextSize="24sp"
             app:autoSizeMinTextSize="12sp"
-            app:autoSizeTextType="uniform"
-            android:text="@string/not_available"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            app:autoSizeTextType="uniform" />
     </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -79,31 +79,31 @@
         android:layout_margin="4dp"
         android:labelFor="@+id/editTextOutput"
         android:text="@string/output"
+        app:layout_constraintBottom_toTopOf="@+id/editTextOutput"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/executionInfoHolder"
-        app:layout_constraintBottom_toTopOf="@+id/editTextOutput"/>
+        app:layout_constraintTop_toBottomOf="@+id/executionInfoHolder" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/editTextOutput"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:scrollbars = "vertical"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/outputLabel"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/outputLabel" />
 
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:visibility="gone"
         android:layout_margin="4dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/editTextOutput"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/editTextOutput"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextOutput"/>
+        app:layout_constraintTop_toTopOf="@+id/editTextOutput" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,8 +14,8 @@ import kotlin.reflect.KProperty
  * https://medium.com/@Zhuinden/simple-one-liner-viewbinding-in-fragments-and-activities-with-kotlin-961430c6c07c
  */
 class FragmentViewBindingDelegate<T : ViewBinding>(
-        val fragment: Fragment,
-        val viewBindingFactory: (View) -> T
+    val fragment: Fragment,
+    val viewBindingFactory: (View) -> T
 ) : ReadOnlyProperty<Fragment, T> {
     private var binding: T? = null
 
@@ -50,8 +50,8 @@ class FragmentViewBindingDelegate<T : ViewBinding>(
 
 
 inline fun <T> LiveData<T>.observe(
-        owner: LifecycleOwner,
-        crossinline onChanged: (T) -> Unit
+    owner: LifecycleOwner,
+    crossinline onChanged: (T) -> Unit
 ): Observer<T> {
     val wrappedObserver = Observer<T> { t -> onChanged.invoke(t) }
     observe(owner, wrappedObserver)
@@ -59,16 +59,18 @@ inline fun <T> LiveData<T>.observe(
 }
 
 fun <T : ViewBinding> Fragment.viewBinding(viewBindingFactory: (View) -> T) =
-        FragmentViewBindingDelegate(this, viewBindingFactory)
+    FragmentViewBindingDelegate(this, viewBindingFactory)
 
 inline fun <T : ViewBinding> AppCompatActivity.viewBinding(
-        crossinline bindingInflater: (LayoutInflater) -> T) =
-        lazy(LazyThreadSafetyMode.NONE) {
-            bindingInflater.invoke(layoutInflater)
-        }
+    crossinline bindingInflater: (LayoutInflater) -> T
+) =
+    lazy(LazyThreadSafetyMode.NONE) {
+        bindingInflater.invoke(layoutInflater)
+    }
 
 inline fun <T : ViewBinding> Activity.viewBinding(
-        crossinline bindingInflater: (LayoutInflater) -> T) =
-        lazy(LazyThreadSafetyMode.NONE) {
-            bindingInflater.invoke(layoutInflater)
-        }
+    crossinline bindingInflater: (LayoutInflater) -> T
+) =
+    lazy(LazyThreadSafetyMode.NONE) {
+        bindingInflater.invoke(layoutInflater)
+    }
