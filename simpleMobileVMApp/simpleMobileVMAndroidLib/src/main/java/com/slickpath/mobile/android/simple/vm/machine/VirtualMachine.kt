@@ -31,14 +31,14 @@ class VirtualMachine : Machine, Instructions {
     /**
      * get a listener to listen to events thrown by VM
      *
-     * @return IVMListener
+     * @return VMListener
      */
     /**
      * Set a listener to listen to events thrown by VM
      *
      * @param listener listener on vm events
      */
-    var vMListener: IVMListener? = null
+    var vMListener: VMListener? = null
 
     /**
      * Constructor:
@@ -86,7 +86,7 @@ class VirtualMachine : Machine, Instructions {
         try {
             Class.forName("BaseInstructionSet")
         } catch (e: ClassNotFoundException) {
-            debug(LOG_TAG, e.message!!)
+            debug(LOG_TAG, e.message ?: "<No Message>")
         }
     }
     //   EXECUTION
@@ -110,7 +110,7 @@ class VirtualMachine : Machine, Instructions {
 
     /**
      * Launch thread that will add all the Commands in the CommandList to the VM
-     * will call completedAddingInstructions on IVMListener after completion
+     * will call completedAddingInstructions on VMListener after completion
      *
      * @param commands command container
      */
@@ -121,7 +121,7 @@ class VirtualMachine : Machine, Instructions {
 
     /**
      * Add all the Commands in the CommandList to the VM
-     * will call completedAddingInstructions on IVMListener after completion
+     * will call completedAddingInstructions on VMListener after completion
      *
      * @param commands commands to add
      */
@@ -130,14 +130,12 @@ class VirtualMachine : Machine, Instructions {
         if (commands != null) {
             val numCommands = commands.size
             for (i in 0 until numCommands) {
-                addCommand(commands[i]!!)
+                addCommand(commands[i])
             }
         } else {
             vmError = VMError("addInstructions instructions", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS)
         }
-        if (vMListener != null) {
-            vMListener!!.completedAddingInstructions(vmError)
-        }
+        vMListener?.completedAddingInstructions(vmError)
     }
 
     /**
@@ -158,7 +156,7 @@ class VirtualMachine : Machine, Instructions {
 
     /**
      * Run the instruction the program pointer is pointing at
-     * will call completedRunningInstruction on IVMListener after completion
+     * will call completedRunningInstruction on VMListener after completion
      */
     private fun doRunNextInstruction(): Results {
         Log.d(LOG_TAG, "+doRunNextInstruction $programCounter")
@@ -184,7 +182,7 @@ class VirtualMachine : Machine, Instructions {
 
     /**
      * Launches thread that does - Run all remaining instructions - starting from current program ptr location
-     * will call completedRunningInstructions on IVMListener after completion
+     * will call completedRunningInstructions on VMListener after completion
      */
     fun runInstructions() {
         executorPool.execute { doRunInstructions() }
@@ -192,7 +190,7 @@ class VirtualMachine : Machine, Instructions {
 
     /**
      * Launch thread that will Run N number of instructions - starting from current program ptr location
-     * will call completedRunningInstructions on IVMListener after completion
+     * will call completedRunningInstructions on VMListener after completion
      *
      * @param numInstructionsToRun number of instructions to run until running stops
      */
@@ -201,13 +199,13 @@ class VirtualMachine : Machine, Instructions {
     }
     /**
      * Run N number of instructions - starting from current program ptr location
-     * will call completedRunningInstructions on IVMListener after completion
+     * will call completedRunningInstructions on VMListener after completion
      *
      * @param numInstructionsToRun number of instructions to run until running stops
      */
     /**
      * Run all remaining instructions - starting from current program ptr location
-     * will call completedRunningInstructions on IVMListener after completion
+     * will call completedRunningInstructions on VMListener after completion
      */
     private fun doRunInstructions(numInstructionsToRun: Int = -1) {
         Log.d(LOG_TAG, "+START++++++++++++++++++")
@@ -238,9 +236,8 @@ class VirtualMachine : Machine, Instructions {
         }
         dumpMem("3")
         Log.d(LOG_TAG, "+DONE PROCESSING+++++++++")
-        if (vMListener != null) {
-            vMListener!!.completedRunningInstructions(instructionVal == Instructions.HALT, programCounter, vmError)
-        } else {
+
+        vMListener?.completedRunningInstructions(instructionVal == Instructions.HALT, programCounter, vmError) ?: run {
             debug(LOG_TAG, "NO VMListener")
         }
         Log.d(LOG_TAG, "+END+++++++++++++++++++++")
@@ -264,7 +261,7 @@ class VirtualMachine : Machine, Instructions {
      * @return instruction string representation
      */
     private fun getInstructionString(instructionVal: Int): String? {
-        return BaseInstructionSet.INSTRUCTION_SET_CONV_HT[instructionVal]
+        return BaseInstructionSet.INSTRUCTION_SET_CONV[instructionVal]
     }
 
     /**

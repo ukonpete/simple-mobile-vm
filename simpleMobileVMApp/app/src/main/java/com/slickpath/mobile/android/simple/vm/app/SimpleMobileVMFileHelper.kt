@@ -14,7 +14,7 @@ internal class SimpleMobileVMFileHelper(
     private val instructionsFile: String
 ) : FileHelper {
 
-    private var instructions: String? = null
+    private var instructions: String = ""
 
     companion object {
         private val LOG_TAG = SimpleMobileVMFileHelper::class.java.simpleName
@@ -55,6 +55,6 @@ internal class SimpleMobileVMFileHelper(
         instructions = stringBuilder.toString()
     }
 
-    override val instructionsString: String?
+    override val instructionsString: String
         get() = instructions
 }

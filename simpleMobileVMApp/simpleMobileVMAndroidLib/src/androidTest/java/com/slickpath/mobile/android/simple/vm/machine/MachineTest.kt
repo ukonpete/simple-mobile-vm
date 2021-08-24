@@ -753,17 +753,19 @@ class MachineTest {
      * @param methodName name of method to check
      * @return true if method failed
      */
-    fun didMethodFail(machine: Machine?, methodName: String?): Boolean {
+    private fun didMethodFail(machine: Machine?, methodName: String): Boolean {
         var bFailed = false
         val method: Method
         try {
-            method = Machine::class.java.getDeclaredMethod(methodName!!)
+            method = Machine::class.java.getDeclaredMethod(methodName)
             method.invoke(machine)
         } catch (e: InvocationTargetException) {
             if (e.cause is VMError) {
                 bFailed = true
+                println("VMError for instruction failed: $methodName")
+            } else {
+                e.printStackTrace()
             }
-            e.printStackTrace()
         } catch (e1: SecurityException) {
             e1.printStackTrace()
         } catch (e1: NoSuchMethodException) {

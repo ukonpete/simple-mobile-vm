@@ -11,5 +11,5 @@ interface FileHelper {
      *
      * @return instructions a program will run
      */
-    val instructionsString: String?
+    val instructionsString: String
 }

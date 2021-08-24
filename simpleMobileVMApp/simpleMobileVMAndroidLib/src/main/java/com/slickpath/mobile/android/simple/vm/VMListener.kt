@@ -10,7 +10,7 @@ package com.slickpath.mobile.android.simple.vm
  *
  * @author Pete Procopio
  */
-interface IVMListener {
+interface VMListener {
     /**
      * Callback - Called when VM is completed adding instructions
      * VMError will be null if no error

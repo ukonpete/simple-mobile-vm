@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
 
     defaultConfig {
         applicationId "com.slickpath.mobile.android.simple.vm.app"
         minSdkVersion 17
-        targetSdkVersion 29
+        targetSdkVersion 30
 
         testApplicationId "com.slickpath.mobile.android.simple.vm.app.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
@@ -32,10 +32,6 @@ android {
     buildFeatures {
         viewBinding true
     }
-
-    dexOptions {
-        javaMaxHeapSize "3g"
-    }
 }
 
 allprojects {
@@ -45,17 +41,21 @@ allprojects {
 }
 
 dependencies {
+    def appcompat_version = "1.3.1"
+
     implementation project(':simpleMobileVMAndroidLib')
-    implementation 'androidx.annotation:annotation:1.1.0'
-    implementation "androidx.core:core-ktx:1.3.1"
-    implementation "androidx.constraintlayout:constraintlayout:2.0.0"
+    implementation 'androidx.annotation:annotation:1.2.0'
+    implementation "androidx.core:core-ktx:1.6.0"
+    implementation "androidx.constraintlayout:constraintlayout:2.1.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "androidx.lifecycle:lifecycle-runtime:2.2.0"
-    implementation "androidx.lifecycle:lifecycle-common-java8:2.2.0"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
-    implementation "androidx.activity:activity-ktx:1.1.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-common-java8:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1"
+    implementation "androidx.activity:activity-ktx:1.3.1"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation "androidx.appcompat:appcompat:$appcompat_version"
+    implementation "androidx.appcompat:appcompat-resources:$appcompat_version"
 }
 repositories {
     mavenCentral()

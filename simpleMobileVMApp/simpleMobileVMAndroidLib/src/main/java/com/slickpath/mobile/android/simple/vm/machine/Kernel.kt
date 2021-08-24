@@ -238,9 +238,9 @@ open class Kernel {
             val parameterCount = command.parameters.size
             if (debug) {
                 if (parameterCount > 0) {
-                    Log.d(LOG_TAG, "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT[instruction] + ") " + instruction + " param(0) " + command.parameters[0] + " at " + location)
+                    Log.d(LOG_TAG, "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[instruction] + ") " + instruction + " param(0) " + command.parameters[0] + " at " + location)
                 } else {
-                    Log.d(LOG_TAG, "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT[instruction] + ") " + instruction + " NO param at " + location)
+                    Log.d(LOG_TAG, "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[instruction] + ") " + instruction + " NO param at " + location)
                 }
             }
             command
@@ -262,7 +262,7 @@ open class Kernel {
                 if (command.parameters.isNotEmpty()) {
                     paramInfo = command.parameters[0].toString()
                 }
-                Log.d(LOG_TAG, "Set Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV_HT[command.commandId] + ") " + command.commandId + " param " + paramInfo + " at " + location)
+                Log.d(LOG_TAG, "Set Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[command.commandId] + ") " + command.commandId + " param " + paramInfo + " at " + location)
             }
             memory.setCommand(location, command)
             incrementProgramWriter()

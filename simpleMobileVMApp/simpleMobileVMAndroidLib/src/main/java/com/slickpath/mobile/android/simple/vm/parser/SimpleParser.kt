@@ -52,8 +52,8 @@ import java.util.concurrent.ThreadPoolExecutor
  * @author Pete Procopio
  * @see [Simple VM Wiki on Github](https://github.com/ukonpete/simple-mobile-vm/wiki)
  */
-class SimpleParser(fileHelper: FileHelper, private val listener: IParserListener?) {
-    private val instructions: String? = fileHelper.instructionsString
+class SimpleParser(fileHelper: FileHelper, private val listener: ParserListener?) {
+    private val instructions: String = fileHelper.instructionsString
     private val symbols: MutableMap<String, Int> = Hashtable()
     private val addresses: MutableMap<String, Int> = Hashtable()
     private val commands = CommandList()
@@ -100,7 +100,7 @@ class SimpleParser(fileHelper: FileHelper, private val listener: IParserListener
         var vmErrorType = VMErrorType.VM_ERROR_TYPE_LAZY_UNSET
         var additionalExceptionInfo = "[runInstructions] "
         try {
-            stream = ByteArrayInputStream(instructions!!.toByteArray())
+            stream = ByteArrayInputStream(instructions.toByteArray())
             getSymbols(stream)
             stream.close()
             stream = ByteArrayInputStream(instructions.toByteArray())
@@ -118,15 +118,19 @@ class SimpleParser(fileHelper: FileHelper, private val listener: IParserListener
                     debug("-RAW $instructionWord")
                     // If the line does not start with a symbol
                     if (!(instructionWord.startsWith("[") && instructionWord.contains("]"))) {
-                        val commandVal = BaseInstructionSet.INSTRUCTION_SET_HT[instructionWord]!!
-                        debug("INST : " + BaseInstructionSet.INSTRUCTION_SET_CONV_HT[commandVal] + "(" + commandVal + ")")
-                        val params: List<Int> = if (lineWords.size > 1) {
-                            parseParameters(lineWords)
-                        } else {
-                            // All Empty params point to the same empty List
-                            emptyList
+                        val commandVal = BaseInstructionSet.INSTRUCTION_SET[instructionWord]
+                        commandVal?.let {
+                            debug("INST : " + BaseInstructionSet.INSTRUCTION_SET_CONV[commandVal] + "(" + commandVal + ")")
+                            val params: List<Int> = if (lineWords.size > 1) {
+                                parseParameters(lineWords)
+                            } else {
+                                // All Empty params point to the same empty List
+                                emptyList
+                            }
+                            commands.add(commandVal, params)
+                        } ?: run {
+                            throw IllegalStateException("Instruction $instructionWord is not recognized for line: $line")
                         }
-                        commands.add(commandVal, params)
                     }
                 }
                 line = buffReader.readLine()
@@ -160,7 +164,7 @@ class SimpleParser(fileHelper: FileHelper, private val listener: IParserListener
         val parameters: MutableList<Int> = ArrayList()
         val params = lineWords[1]
         val instrParams = params.split(",".toRegex()).toTypedArray()
-        var paramVal: Int
+        var paramVal: Int?
         for (paramTemp in instrParams) {
             val param = paramTemp.trim { it <= ' ' }
 
@@ -168,13 +172,17 @@ class SimpleParser(fileHelper: FileHelper, private val listener: IParserListener
             if (param.startsWith("[") && param.contains("]")) {
                 val locEnd = param.indexOf(']')
                 val symbol = param.substring(1, locEnd)
-                paramVal = symbols[symbol]!!
-                debug("  SYMBOL : $symbol($paramVal)")
+                paramVal = symbols[symbol]
+                paramVal?.let {
+                    debug("  SYMBOL : $symbol($paramVal)")
+                } ?: throw IllegalStateException("Unrecognized symbol $symbol"  )
+
             } else if (param.startsWith("g")) {
                 // Handle Variable
                 var memLoc = freeMemoryLoc
-                if (addresses.containsKey(param)) {
-                    memLoc = addresses[param]!!
+                val addressMemLoc = addresses[param]
+                if (addressMemLoc != null) {
+                    memLoc = addressMemLoc
                 } else {
                     addresses[param] = memLoc
                     freeMemoryLoc++

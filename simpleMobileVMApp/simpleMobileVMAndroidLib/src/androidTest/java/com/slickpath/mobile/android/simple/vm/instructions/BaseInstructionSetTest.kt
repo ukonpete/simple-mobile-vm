@@ -15,16 +15,16 @@ class BaseInstructionSetTest {
      */
     @Test
     fun testInternals() {
-        assertEquals(BaseInstructionSet.INSTRUCTION_SET_HT.size, Instructions.NUM_COMMANDS)
-        assertEquals(BaseInstructionSet.INSTRUCTION_SET_CONV_HT.size, Instructions.NUM_COMMANDS)
-        assertEquals(BaseInstructionSet.INSTRUCTION_SET_HT[Instructions.ADD_STR]!!.toInt(), Instructions.ADD)
-        assertEquals(BaseInstructionSet.INSTRUCTION_SET_HT[Instructions.HALT_STR]!!.toInt(), Instructions.HALT)
-        assertEquals(BaseInstructionSet.INSTRUCTION_SET_CONV_HT[Instructions.DIV], Instructions.DIV_STR)
-        assertEquals(BaseInstructionSet.INSTRUCTION_SET_CONV_HT[Instructions.BREQL], Instructions.BREQL_STR)
-        val keys: Set<String> = BaseInstructionSet.INSTRUCTION_SET_HT.keys
+        assertEquals(BaseInstructionSet.INSTRUCTION_SET.size, Instructions.NUM_COMMANDS)
+        assertEquals(BaseInstructionSet.INSTRUCTION_SET_CONV.size, Instructions.NUM_COMMANDS)
+        assertEquals(BaseInstructionSet.INSTRUCTION_SET[Instructions.ADD_STR], Instructions.ADD)
+        assertEquals(BaseInstructionSet.INSTRUCTION_SET[Instructions.HALT_STR], Instructions.HALT)
+        assertEquals(BaseInstructionSet.INSTRUCTION_SET_CONV[Instructions.DIV], Instructions.DIV_STR)
+        assertEquals(BaseInstructionSet.INSTRUCTION_SET_CONV[Instructions.BREQL], Instructions.BREQL_STR)
+        val keys: Set<String> = BaseInstructionSet.INSTRUCTION_SET.keys
         for (key in keys) {
-            val `val` = BaseInstructionSet.INSTRUCTION_SET_HT[key]!!
-            val value = BaseInstructionSet.INSTRUCTION_SET_CONV_HT[`val`]
+            val `val` = BaseInstructionSet.INSTRUCTION_SET[key]
+            val value = BaseInstructionSet.INSTRUCTION_SET_CONV[`val`]
             assertEquals(key, value)
         }
     }
