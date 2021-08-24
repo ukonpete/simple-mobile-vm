@@ -31,23 +31,6 @@ Note: To open the Android project it is located in the simpleMobileVMApp directo
   * Updated Read Me
   * Updated App Icon
   * Updated License
-* 6/9/2018
-  * Updated to support Android Studio (3.1.3) and related Gradle 
-* 2/18/2018
-  * Updated to support Android Studio (3.0.1) and related Gradle 
-  * Updated unit tests as needed
-  * Generated updated javadoc
-  * Cleaned up code
-* 3/18/2017
-  * Generated updated javadoc
-* 3/5/2017
-  * Added Butterknife to App
-  * Added use of ThreadPoolExecutor as needed
-  * Updated unit tests
-  * added pmd, findbugs and lint reporting for manual build runs - then did more code cleanup based on those runs
-* 3/4/2017
-  * Updated to support Android Studio (2.3) and Gradle 
-  * Cleaned up a lot of code and removed a lot of warnings
 
 ## Javadoc
 
@@ -58,16 +41,18 @@ See javadoc directory in the project source directory under /simple-mobile-vm/si
 No app is deployed in the app store, so placing credit here.
 
 * [Icon8](https://icons8.com/license) - Icons used in App
-* ~~[Butterknife](https://github.com/JakeWharton/butterknife) - Jake Warton~~
 * [Google](www.google.com) - Android, support-annotations, test runner, test rules
-* ~~[Findbugs](http://findbugs.sourceforge.net/) - The University of Maryland~~
 * [PMD](https://pmd.github.io/) - InfoEther, LLC
 * [Gradle](https://gradle.org/) - Gradle Inc.
 * [Android Studio](https://developer.android.com/studio/?gclid=CjwKCAiAyMHhBRBIEiwAkGN6fMw5VSOxZzOuKjTaUpdRIHbhV7InKbxFNtFP0_9RazAkBepJY4CFYRoCKY4QAvD_BwE) - IntelliJ and Google
 
+## Project History
+
+For thos who wahnt to see olde change history and other stuff no longer used go the [Project History Wiki page](https://github.com/ukonpete/simple-mobile-vm/wiki/Project-History)
+
 ## License
 
-    Copyright 2018. 2019, 2020 Pete Procopio
+    Copyright 2018, 2019, 2020, 2021 Pete Procopio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
