@@ -21,6 +21,7 @@ Note: To open the Android project it is located in the simpleMobileVMApp directo
 * 8/23/2020
   * Upgrade to Gralde 7.0.1
   * Use new Kotlin Formatter
+  * Use Kotlin better in places
 * 8/23/2020
   * Upgrade to Kotlin
   * Upgrade to AndroidX
