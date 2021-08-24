@@ -1,4 +1,4 @@
-package com.slickpath.mobile.android.simple.vm.machine
+package com.slickpath.mobile.android.simple.vm.extensions
 
 import java.util.*
 

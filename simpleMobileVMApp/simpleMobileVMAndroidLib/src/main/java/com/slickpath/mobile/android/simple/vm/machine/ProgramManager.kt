@@ -45,9 +45,6 @@ internal class ProgramManager {
     var programWriterPtr = START_LOC
         private set
 
-    /**
-     * Constructor
-     */
     init {
         // initialize every piece of instruction memory to EMPTY
         for (i in 0 until MAX_MEMORY) {

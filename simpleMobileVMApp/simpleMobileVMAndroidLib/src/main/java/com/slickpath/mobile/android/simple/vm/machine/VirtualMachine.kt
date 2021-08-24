@@ -4,7 +4,6 @@ package com.slickpath.mobile.android.simple.vm.machine
 
 import android.content.Context
 import android.util.Log
-import androidx.annotation.RestrictTo
 import com.slickpath.mobile.android.simple.vm.*
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet
 import com.slickpath.mobile.android.simple.vm.instructions.Instructions
@@ -17,8 +16,23 @@ import java.util.concurrent.ThreadPoolExecutor
 
 /**
  * @author Pete Procopio
+ *
+ * BaseInstructionSet must be defined in the your
+ *
+ * Constructor:
+ * - Allows caller to pass in streams for both input and output
+ * - If outputListener is null output will be added to log is debugVerbose is set
+ * - If inputListener is null input will be attempted to be retrieved from the console System.in
+ *
+ * @param context context object
+ * @param outputListener listener for output events
+ * @param inputListener listener to return input on input events
  */
-class VirtualMachine : Machine, Instructions {
+class VirtualMachine constructor(
+    private val context: Context,
+    private val outputListener: OutputListener? = null,
+    private val inputListener: InputListener? = null
+) : Machine(outputListener, inputListener), Instructions {
 
     companion object {
         private const val SINGLE_PARAM_COMMAND_START = 1000
@@ -26,7 +40,6 @@ class VirtualMachine : Machine, Instructions {
         private val executorPool = Executors.newCachedThreadPool() as ThreadPoolExecutor
     }
 
-    private val context: Context
     private var numInstructionsRun = 0
     /**
      * get a listener to listen to events thrown by VM
@@ -40,55 +53,14 @@ class VirtualMachine : Machine, Instructions {
      */
     var vMListener: VMListener? = null
 
-    /**
-     * Constructor:
-     *
-     *
-     *  * output will be added to log is debugVerbose is set<
-     *  * input will be attempted to be retrieved from the console System.in
-     *
-     *
-     * @param context context object
-     */
-    @RestrictTo(RestrictTo.Scope.TESTS)
-    constructor(context: Context) : super(null, null) {
-        init()
-        this.context = context
-    }
-
-    /**
-     * Constructor
-     *
-     *
-     * Allows caller to pass in streams for both input and output
-     *
-     *
-     * If outputListener is null output will be added to log is debugVerbose is set
-     *
-     *
-     * If inputListener is null input will be attempted to be retrieved from the console System.in
-     *
-     *
-     *
-     * @param context context object
-     * @param outputListener listener for output events
-     * @param inputListener listener to return input on input events
-     */
-    constructor(context: Context, outputListener: OutputListener?, inputListener: InputListener?) : super(outputListener, inputListener) {
-        init()
-        this.context = context
-    }
-
-    /**
-     * Initialize VM
-     */
-    private fun init() {
+    init {
         try {
             Class.forName("BaseInstructionSet")
         } catch (e: ClassNotFoundException) {
             debug(LOG_TAG, e.message ?: "<No Message>")
         }
     }
+
     //   EXECUTION
     /**
      * Add the contents of a Command object to the VM
@@ -105,7 +77,10 @@ class VirtualMachine : Machine, Instructions {
             params = command.parameters[0].toString()
         }
         setCommandAt(command, programWriterPtr)
-        debugVerbose(LOG_TAG, "Add ins=" + getInstructionString(commandId) + "(" + commandId + ")" + " params=" + params + " at " + programWriterPtr)
+        debugVerbose(
+            LOG_TAG,
+            "Add ins=" + getInstructionString(commandId) + "(" + commandId + ")" + " params=" + params + " at " + programWriterPtr
+        )
     }
 
     /**
@@ -216,8 +191,9 @@ class VirtualMachine : Machine, Instructions {
         var instructionVal: Int = Instructions.BEGIN
         try {
             while (instructionVal != Instructions.HALT &&
-                    programCounter < Memory.MAX_MEMORY &&
-                    (numInstructionsRun < numInstructionsToRun || numInstructionsToRun == -1)) {
+                programCounter < Memory.MAX_MEMORY &&
+                (numInstructionsRun < numInstructionsToRun || numInstructionsToRun == -1)
+            ) {
                 lastProgramCounter = programCounter
                 numInstructionsRun++
                 instructionVal = instruction
@@ -237,7 +213,11 @@ class VirtualMachine : Machine, Instructions {
         dumpMem("3")
         Log.d(LOG_TAG, "+DONE PROCESSING+++++++++")
 
-        vMListener?.completedRunningInstructions(instructionVal == Instructions.HALT, programCounter, vmError) ?: run {
+        vMListener?.completedRunningInstructions(
+            instructionVal == Instructions.HALT,
+            programCounter,
+            vmError
+        ) ?: run {
             debug(LOG_TAG, "NO VMListener")
         }
         Log.d(LOG_TAG, "+END+++++++++++++++++++++")
@@ -248,9 +228,14 @@ class VirtualMachine : Machine, Instructions {
      * @param lastProgramCounter    last program counter location
      * @param instructionVal last instruction value
      */
-    private fun logAdditionalInfo(numInstructionsRun: Int, lastProgramCounter: Int,
-                                  instructionVal: Int) {
-        debug(LOG_TAG, "LAST_INSTRUCTION=(" + getInstructionString(instructionVal) + ") " + instructionVal)
+    private fun logAdditionalInfo(
+        numInstructionsRun: Int, lastProgramCounter: Int,
+        instructionVal: Int
+    ) {
+        debug(
+            LOG_TAG,
+            "LAST_INSTRUCTION=(" + getInstructionString(instructionVal) + ") " + instructionVal
+        )
         debug(LOG_TAG, "NUM INSTRUCTIONS RUN=$numInstructionsRun")
         debug(LOG_TAG, "PROG_CTR=$programCounter")
         debug(LOG_TAG, "LAST_PROG_CTR=$lastProgramCounter")
@@ -278,9 +263,9 @@ class VirtualMachine : Machine, Instructions {
                     val parameter = getValueAt(i)
                     val command = getValueAt(i - 1)
                     data.append(command)
-                            .append(' ')
-                            .append(parameter)
-                            .append("\r\n")
+                        .append(' ')
+                        .append(parameter)
+                        .append("\r\n")
                 } catch (e: VMError) {
                     e.printStackTrace()
                 }
@@ -424,7 +409,10 @@ class VirtualMachine : Machine, Instructions {
                     incProgramCounter()
                 }
             }
-            else -> throw VMError("BAD runCommand :$commandId", VMErrorType.VM_ERROR_TYPE_BAD_UNKNOWN_COMMAND)
+            else -> throw VMError(
+                "BAD runCommand :$commandId",
+                VMErrorType.VM_ERROR_TYPE_BAD_UNKNOWN_COMMAND
+            )
         }
     }
 
@@ -457,17 +445,17 @@ class VirtualMachine : Machine, Instructions {
     private fun doRunCommandDebug(commandId: Int) {
         val lineCount = StringBuilder("[")
         lineCount.append(numInstructionsRun)
-                .append("]")
-                .append(" Line=")
-                .append(programCounter - 1)
-                .append(" CMD=")
-                .append(getInstructionString(commandId))
-                .append(" (")
-                .append(commandId)
-                .append(")")
+            .append("]")
+            .append(" Line=")
+            .append(programCounter - 1)
+            .append(" CMD=")
+            .append(getInstructionString(commandId))
+            .append(" (")
+            .append(commandId)
+            .append(")")
         if (commandId >= 1000) {
             lineCount.append(" PARAM=")
-                    .append(parameter)
+                .append(parameter)
         }
         debug(LOG_TAG, lineCount.toString())
     }

@@ -1,5 +1,6 @@
 package com.slickpath.mobile.android.simple.vm.machine
 
+import com.slickpath.mobile.android.simple.vm.extensions.dumpAsList
 import com.slickpath.mobile.android.simple.vm.util.Command
 import java.util.*
 
