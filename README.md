@@ -19,6 +19,7 @@ Note: To open the Android project it is located in the simpleMobileVMApp directo
 ## Release Notes
 
 * 8/23/2020
+  * Added RxJava/Android version of the VM library. It passes all unit tests, but it is not integrated with the app yet.
   * Upgrade to Gralde 7.0.1
   * Use new Kotlin Formatter
   * Use Kotlin better in places
