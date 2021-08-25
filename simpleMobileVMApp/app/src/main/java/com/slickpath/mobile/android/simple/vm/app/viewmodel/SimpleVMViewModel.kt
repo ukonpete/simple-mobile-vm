@@ -39,7 +39,7 @@ class SimpleVMViewModel(private var virtualMachine: VirtualMachine) : ViewModel(
         virtualMachine.vmListener = this
     }
 
-    override fun completedAddingInstructions(vmError: VMError?) {
+    override fun completedAddingInstructions(vmError: VMError?, instructionsAdded: Int) {
         onCompletedAddingInstructions.postValue(CompletedAddingInstructionsStatus(vmError))
     }
 

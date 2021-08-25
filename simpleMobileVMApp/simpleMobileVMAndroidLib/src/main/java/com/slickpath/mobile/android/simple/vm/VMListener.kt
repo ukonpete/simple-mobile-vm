@@ -20,7 +20,7 @@ interface VMListener {
      *
      * @see com.slickpath.mobile.android.simple.vm.VMError
      */
-    fun completedAddingInstructions(vmError: VMError?)
+    fun completedAddingInstructions(vmError: VMError?, instructionsAdded: Int)
 
     /**
      * Callback - Called when VM has completed running instructions .  Will return the line number of the program that was last executed
@@ -35,3 +35,5 @@ interface VMListener {
      */
     fun completedRunningInstructions(bHalt: Boolean, lastLineExecuted: Int, vmError: VMError?)
 }
+
+data class CompletedAddingInstructionsResult(val vmError: VMError?)

@@ -27,12 +27,14 @@ class VirtualMachineTest {
     private var _vmError: VMError? = null
     private var _bHalt = false
     private var _lastLineExecuted = 0
+    private var _instructionAddedCount = 0
     private var _commands: CommandList? = null
 
     @Before
     fun before() {
         _bHalt = false
         _lastLineExecuted = -1
+        _instructionAddedCount = -1
         _vmError = null
         _commands = null
     }
@@ -47,8 +49,8 @@ class VirtualMachineTest {
         virtualMachine.vmListener = null
         assertNull(virtualMachine.vmListener)
         virtualMachine.vmListener = object : VMListener {
-            override fun completedAddingInstructions(vmError: VMError?) {
-                this@VirtualMachineTest.completedAddingInstructions(vmError)
+            override fun completedAddingInstructions(vmError: VMError?, instructionsAdded: Int) {
+                this@VirtualMachineTest.completedAddingInstructions(vmError, instructionsAdded)
             }
 
             override fun completedRunningInstructions(
@@ -216,8 +218,8 @@ class VirtualMachineTest {
         assertNull(_vmError)
         for (i in 0..99) {
             try {
-                val halt = virtualMachine.runNextInstruction()
-                assertFalse("($i) Halt= ", halt)
+                val results = virtualMachine.runNextInstruction()
+                assertFalse("($i) Halt= ", results.halt)
             } catch (vmError: VMError) {
                 assertNull(
                     "(" + i + ") LINE=" + _lastLineExecuted + " --> " + vmError.message,
@@ -229,8 +231,8 @@ class VirtualMachineTest {
 
     private fun addVMListenerAdding(virtualMachine: VirtualMachine, signal: CountDownLatch) {
         virtualMachine.vmListener = object : VMListener {
-            override fun completedAddingInstructions(vmError: VMError?) {
-                this@VirtualMachineTest.completedAddingInstructions(vmError)
+            override fun completedAddingInstructions(vmError: VMError?, instructionsAdded: Int) {
+                this@VirtualMachineTest.completedAddingInstructions(vmError, instructionsAdded)
                 signal.countDown() // notify the count down latch
             }
 
@@ -246,7 +248,7 @@ class VirtualMachineTest {
 
     private fun addVMListenerRunning(virtualMachine: VirtualMachine, signal: CountDownLatch) {
         virtualMachine.vmListener = object : VMListener {
-            override fun completedAddingInstructions(vmError: VMError?) {
+            override fun completedAddingInstructions(vmError: VMError?, instructionsAdded: Int) {
                 // Do Nothing
             }
 
@@ -364,9 +366,46 @@ class VirtualMachineTest {
         Log.d(TAG, "??????????????????????????????")
     }
 
-    private fun completedAddingInstructions(vmError: VMError?) {
+
+    /**
+     * Test method for [com.slickpath.mobile.android.simple.vm.machine.VirtualMachine.runInstructions].
+     */
+    @Test
+    fun testAddInstructionsWithParser() {
+        Log.d(TAG, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+        val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
+        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        val signalAddCommands = CountDownLatch(1)
+        addVMListenerAdding(virtualMachine, signalAddCommands)
+        virtualMachine.addCommands(parser)
+        try {
+            // Wait for Callback
+            signalAddCommands.await()
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+            fail(e.message)
+        } // wait for callback
+        assertEquals(35, _instructionAddedCount)
+        val signalRunInstructions = CountDownLatch(1)
+        addVMListenerRunning(virtualMachine, signalRunInstructions)
+        virtualMachine.runInstructions()
+        try {
+            // Wait for Callback
+            signalRunInstructions.await()
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+            fail(e.message)
+        } // wait for callback
+        virtualMachine.runInstructions()
+        Log.d(TAG, "+......... checking last line executed")
+        assertEquals(35, _lastLineExecuted)
+        Log.d(TAG, "??????????????????????????????")
+    }
+
+    private fun completedAddingInstructions(vmError: VMError?, instructionsAdded: Int) {
         Log.d(TAG, "+..........completedAddingInstructions ")
         _vmError = vmError
+        _instructionAddedCount = instructionsAdded
         Log.d(TAG, "+..........completedAddingInstructions CountDown")
     }
 

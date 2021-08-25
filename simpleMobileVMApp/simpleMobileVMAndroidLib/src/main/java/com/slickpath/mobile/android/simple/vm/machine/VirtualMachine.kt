@@ -34,10 +34,10 @@ class VirtualMachine constructor(
     private val context: Context,
     private val outputListener: OutputListener? = null,
     private val inputListener: InputListener? = null
-) : Machine(outputListener, inputListener), Instructions {
+) : VirtualMachineInterface, Machine(outputListener, inputListener), Instructions {
 
     companion object {
-        private const val SINGLE_PARAM_COMMAND_START = 1000
+        const val SINGLE_PARAM_COMMAND_START = 1000
         private val LOG_TAG = VirtualMachine::class.java.name
         private val executorPool = Executors.newCachedThreadPool() as ThreadPoolExecutor
     }
@@ -70,7 +70,7 @@ class VirtualMachine constructor(
      *
      * @param command command to add
      */
-    fun addCommand(command: Command) {
+    override fun addCommand(command: Command) {
         val commandId = command.commandId
         var params = "X"
         if (commandId >= SINGLE_PARAM_COMMAND_START && command.parameters.isNotEmpty()) {
@@ -89,12 +89,12 @@ class VirtualMachine constructor(
      *
      * @param commands command container
      */
-    fun addCommands(commands: CommandList?) {
+    override fun addCommands(commands: CommandList?) {
         resetProgramWriter()
         executorPool.execute { doAddInstructions(commands) }
     }
 
-    fun addCommands(parser: Parser) {
+    override fun addCommands(parser: Parser) {
         parser.addParserListener(vmParserListener)
         parser.parse()
         this.parser = parser
@@ -105,7 +105,7 @@ class VirtualMachine constructor(
             if(parseResult.vmError == null) {
                 addCommands(parseResult.commands)
             }
-            vmListener?.completedAddingInstructions(parseResult.vmError)
+            vmListener?.completedAddingInstructions(parseResult.vmError, parseResult.commands.size )
             parser?.removeParserListener(this)
         }
     }
@@ -118,15 +118,17 @@ class VirtualMachine constructor(
      */
     private fun doAddInstructions(commands: CommandList?) {
         var vmError: VMError? = null
+        var numInstructionsAdded = 0
         if (commands != null) {
             val numCommands = commands.size
             for (i in 0 until numCommands) {
                 addCommand(commands[i])
+                numInstructionsAdded++
             }
         } else {
             vmError = VMError("addInstructions instructions", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS)
         }
-        vmListener?.completedAddingInstructions(vmError)
+        vmListener?.completedAddingInstructions(vmError, numInstructionsAdded)
     }
 
     /**
@@ -137,12 +139,12 @@ class VirtualMachine constructor(
      * @throws VMError on a VM error
      */
     @Throws(VMError::class)
-    fun runNextInstruction(): Boolean {
+    override fun runNextInstruction(): Results {
         val results = doRunNextInstruction()
         if (results.vmError != null) {
             throw results.vmError
         }
-        return results.halt
+        return results
     }
 
     /**
@@ -166,16 +168,16 @@ class VirtualMachine constructor(
             resetStack()
             bHalt = true
         }
-        return Results(bHalt, vmError)
+        return Results(bHalt, programCounter, vmError)
     }
 
-    private class Results constructor(val halt: Boolean, val vmError: VMError?)
+    data class Results constructor(val halt: Boolean, val lastLineExecuted: Int, val vmError: VMError?)
 
     /**
      * Launches thread that does - Run all remaining instructions - starting from current program ptr location
      * will call completedRunningInstructions on VMListener after completion
      */
-    fun runInstructions() {
+    override fun runInstructions() {
         executorPool.execute { doRunInstructions() }
     }
 
@@ -185,7 +187,7 @@ class VirtualMachine constructor(
      *
      * @param numInstructionsToRun number of instructions to run until running stops
      */
-    fun runInstructions(numInstructionsToRun: Int) {
+    override fun runInstructions(numInstructionsToRun: Int) {
         executorPool.execute { doRunInstructions(numInstructionsToRun) }
     }
     /**
@@ -193,10 +195,6 @@ class VirtualMachine constructor(
      * will call completedRunningInstructions on VMListener after completion
      *
      * @param numInstructionsToRun number of instructions to run until running stops
-     */
-    /**
-     * Run all remaining instructions - starting from current program ptr location
-     * will call completedRunningInstructions on VMListener after completion
      */
     private fun doRunInstructions(numInstructionsToRun: Int = -1) {
         Log.d(LOG_TAG, "+START++++++++++++++++++")
