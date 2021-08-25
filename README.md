@@ -6,7 +6,7 @@ Written by Pete Procopio
 
 Simple machine language virtual machine. A small but powerful language to execute code.
 
-Based on the article "Programming Project: Building a Computer in Software:" by Jonathan Amsterdam in [BYTE Magazine](https://archive.org/details/byte-magazine-1985-10) circa Oct. 1985.
+Based on the article ["Programming Project: Building a Computer in Software:"](https://archive.org/details/byte-magazine-1985-10/page/n111/mode/2up) by Jonathan Amsterdam in [BYTE Magazine](https://archive.org/details/byte-magazine-1985-10) circa Oct. 1985.  Pg. 112
 
 Written in ~~Java~~ Kotlin to run on Android.
 
