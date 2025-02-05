@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'pmd'
+//apply plugin: 'pmd'
 
 android {
     compileSdkVersion 30
@@ -8,8 +8,6 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
@@ -32,44 +30,45 @@ android {
         htmlOutput file("$project.buildDir/reports/lint/lint-report.html")
         xmlOutput file("$project.buildDir/reports/lint/lint-report.xml")
     }
+    namespace 'com.slickpath.mobile.android.simple.vm'
 
-    task vmAnalyze (dependsOn: ['lint', 'pmd']) doLast {
-    }
+//    task vmAnalyze (dependsOn: ['lint', 'pmd']) doLast {
+//    }
 }
 
-task pmdBase(type: Pmd) {
-    outputs.upToDateWhen { false }
-    ruleSetFiles = files("${project.rootDir}/config/pmd/vm-pmd-ruleset.xml")
-    ignoreFailures = false
-    ruleSets = []
+//task pmdBase(type: Pmd) {
+//    outputs.upToDateWhen { false }
+//    ruleSetFiles = files("${project.rootDir}/config/pmd/vm-pmd-ruleset.xml")
+//    ignoreFailures = false
+//    ruleSets = []
+//
+//    source 'src'
+//    include '**/*.java'
+//    exclude '**/*Test.java'
+//    exclude '**/gen/**'
+//    exclude '**/generated/**'
+//
+//    reports {
+//        xml.enabled = true
+//        html.enabled = true
+//        xml {
+//            setDestination(file("$project.buildDir/reports/pmd/pmd.xml"))
+//        }
+//        html {
+//            setDestination(file("$project.buildDir/reports/pmd/basic-pmd.html"))
+//        }
+//    }
+//
+//    ignoreFailures = true
+//}
 
-    source 'src'
-    include '**/*.java'
-    exclude '**/*Test.java'
-    exclude '**/gen/**'
-    exclude '**/generated/**'
-
-    reports {
-        xml.enabled = true
-        html.enabled = true
-        xml {
-            setDestination(file("$project.buildDir/reports/pmd/pmd.xml"))
-        }
-        html {
-            setDestination(file("$project.buildDir/reports/pmd/basic-pmd.html"))
-        }
-    }
-
-    ignoreFailures = true
-}
-
-task pmd(dependsOn: "pmdBase") doLast {
-    // Generate better html report using xslt
-    ant.xslt(
-            in: "$project.buildDir/reports/pmd/pmd.xml",
-            style: "${project.rootDir}/config/pmd/wz-pmd-report.xslt",
-            out:"$project.buildDir/reports/pmd/pmd.html")
-}
+//task pmd(dependsOn: "pmdBase") doLast {
+//    // Generate better html report using xslt
+//    ant.xslt(
+//            in: "$project.buildDir/reports/pmd/pmd.xml",
+//            style: "${project.rootDir}/config/pmd/wz-pmd-report.xslt",
+//            out:"$project.buildDir/reports/pmd/pmd.html")
+//}
 
 dependencies {
     implementation 'androidx.annotation:annotation:1.2.0'
