@@ -441,7 +441,7 @@ class VirtualMachine constructor(
     private val parameter: Int
         get() {
             val command = getCommandAt(programCounter)
-            if (command.parameters.isEmpty() && command.commandId > SINGLE_PARAM_COMMAND_START) {
+            if (command.parameters.isEmpty() && command.commandId >= SINGLE_PARAM_COMMAND_START) {
                 throw VMError("No Parameters", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS)
             } else if (command.parameters.isNotEmpty() && command.commandId < SINGLE_PARAM_COMMAND_START) {
                 throw VMError("Too many Parameters", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS)
