@@ -9,14 +9,9 @@ import java.util.*
  *
  * @author Pete Procopio
  */
-internal class Memory {
+internal class MemoryStore {
 
     companion object {
-        /**
-         * 1st location in memory
-         */
-        const val START_LOC = ProgramManager.START_LOC
-
         /**
          * Value of memory if it is empty (unused)
          */
@@ -31,43 +26,22 @@ internal class Memory {
     /**
      * Memory to store values
      */
-    private val _memoryStore: MutableList<Int>
-
-    /**
-     * Memory Stack
-     */
-    private val _stack = Stack<Int>()
+    private val _memoryStore: MutableList<Int> = ArrayList(MAX_MEMORY)
 
     /**
      * Manager and store for Program Memory
      */
     private val _programManager = ProgramManager()
 
-    /**
-     * Returns if Stack is empty
-     *
-     * @return boolean
-     */
-    val isStackEmpty: Boolean
-        get() = _stack.isEmpty()
-
 
     /**
      * Constructor
      */
     init {
-        _memoryStore = ArrayList(MAX_MEMORY)
         // initialize every piece of memory to EMPTY
         for (i in 0 until MAX_MEMORY) {
             _memoryStore.add(EMPTY_MEMORY_VALUE)
         }
-    }
-
-    /**
-     * Empty the stack
-     */
-    fun resetStack() {
-        _stack.clear()
     }
 
     /**
@@ -79,15 +53,6 @@ internal class Memory {
     </Integer> */
     fun memoryDump(): List<Int> {
         return ArrayList(_memoryStore)
-    }
-
-    /**
-     * Return stack memory as a List<Integer>
-     *
-     * @return value at every line of stack memory
-    </Integer> */
-    fun stackDump(): List<Int> {
-        return _stack.dumpAsList()
     }
 
     /**
@@ -142,26 +107,6 @@ internal class Memory {
         _programManager.setCommandAt(location, command)
     }
 
-    /**
-     * pop the top value from the stack and return
-     * clear out the old top
-     *
-     * @return value at top of stack
-     */
-    fun popMEM(): Int {
-        return _stack.pop()
-    }
-
-    /**
-     * pop the value onto the stack
-     *
-     * @param value value to push
-     * @return value pushed on the stack
-     */
-    @Suppress("FunctionName")
-    fun pushMEM(value: Int): Int {
-        return _stack.push(value)
-    }
     /**
      * Get current line in program that will execute next
      *

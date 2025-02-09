@@ -205,7 +205,7 @@ class VirtualMachine constructor(
         var instructionVal: Int = Instructions.BEGIN
         try {
             while (instructionVal != Instructions.HALT &&
-                programCounter < Memory.MAX_MEMORY &&
+                programCounter < MemoryStore.MAX_MEMORY &&
                 (numInstructionsRun < numInstructionsToRun || numInstructionsToRun == -1)
             ) {
                 lastProgramCounter = programCounter
@@ -272,7 +272,7 @@ class VirtualMachine constructor(
             val filename = "memDump$append.txt"
             val data = StringBuilder()
             var i = 1
-            while (i < Memory.MAX_MEMORY) {
+            while (i < MemoryStore.MAX_MEMORY) {
                 try {
                     val parameter = getValueAt(i)
                     val command = getValueAt(i - 1)

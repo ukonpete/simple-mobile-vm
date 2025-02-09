@@ -1,6 +1,7 @@
 package com.slickpath.mobile.android.simple.vm.machine
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.slickpath.mobile.android.simple.vm.machine.ProgramManager.Companion.START_LOC
 import com.slickpath.mobile.android.simple.vm.util.Command
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -26,15 +27,15 @@ class ProgramManagerTest {
      */
     @Test
     fun testSetProgramCounter() {
-        assertEquals(Memory.START_LOC, _programManager.programCounter)
+        assertEquals(START_LOC, _programManager.programCounter)
         _programManager.programCounter = 100
         assertEquals(100, _programManager.programCounter)
         _programManager.programCounter = 10
         assertEquals(10, _programManager.programCounter)
         _programManager.programCounter = 249
         assertEquals(249, _programManager.programCounter)
-        _programManager.programCounter = Memory.START_LOC
-        assertEquals(Memory.START_LOC, _programManager.programCounter)
+        _programManager.programCounter = START_LOC
+        assertEquals(START_LOC, _programManager.programCounter)
     }
 
     /**
@@ -44,7 +45,7 @@ class ProgramManagerTest {
      */
     @Test
     fun testGetProgramCounter() {
-        assertEquals(Memory.START_LOC, _programManager.programCounter)
+        assertEquals(START_LOC, _programManager.programCounter)
         for (i in 0..99) {
             _programManager.incProgramCounter()
         }
@@ -56,7 +57,7 @@ class ProgramManagerTest {
         for (i in 0..49) {
             _programManager.decProgramCounter()
         }
-        assertEquals(Memory.START_LOC, _programManager.programCounter)
+        assertEquals(START_LOC, _programManager.programCounter)
     }
 
     /**
@@ -64,11 +65,11 @@ class ProgramManagerTest {
      */
     @Test
     fun testResetProgramCounter() {
-        assertEquals(Memory.START_LOC, _programManager.programCounter)
+        assertEquals(START_LOC, _programManager.programCounter)
         _programManager.programCounter = 100
         assertEquals(100, _programManager.programCounter)
         _programManager.resetProgramCounter()
-        assertEquals(Memory.START_LOC, _programManager.programCounter)
+        assertEquals(START_LOC, _programManager.programCounter)
     }
 
     /**
@@ -77,7 +78,7 @@ class ProgramManagerTest {
      */
     @Test
     fun testGetProgramWriterPtr() {
-        assertEquals(Memory.START_LOC, _programManager.programWriterPtr)
+        assertEquals(START_LOC, _programManager.programWriterPtr)
         for (i in 0..99) {
             _programManager.incProgramWriter()
         }
@@ -114,12 +115,12 @@ class ProgramManagerTest {
      */
     @Test
     fun testResetProgramWriter() {
-        assertEquals(Memory.START_LOC, _programManager.programWriterPtr)
+        assertEquals(START_LOC, _programManager.programWriterPtr)
         for (i in 0..99) {
             _programManager.incProgramWriter()
         }
         assertEquals(100, _programManager.programWriterPtr)
         _programManager.resetProgramWriter()
-        assertEquals(Memory.START_LOC, _programManager.programWriterPtr)
+        assertEquals(START_LOC, _programManager.programWriterPtr)
     }
 }

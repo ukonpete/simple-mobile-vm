@@ -2,6 +2,7 @@ package com.slickpath.mobile.android.simple.vm.machine
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.slickpath.mobile.android.simple.vm.VMError
+import com.slickpath.mobile.android.simple.vm.machine.ProgramManager.Companion.START_LOC
 import com.slickpath.mobile.android.simple.vm.util.Command
 import org.junit.Assert.*
 import org.junit.Before
@@ -38,9 +39,9 @@ class KernelTest {
             assertEquals(2, _kernel.getValueAt(2))
             assertEquals(3, _kernel.getValueAt(55))
             assertEquals(4, _kernel.getValueAt(100))
-            for (i in 0 until Memory.MAX_MEMORY) {
+            for (i in 0 until MemoryStore.MAX_MEMORY) {
                 if (i != 0 && i != 1 && i != 2 && i != 55 && i != 100) {
-                    assertEquals(Memory.EMPTY_MEMORY_VALUE, _kernel.getValueAt(i))
+                    assertEquals(MemoryStore.EMPTY_MEMORY_VALUE, _kernel.getValueAt(i))
                 }
             }
         } catch (e: VMError) {
@@ -82,7 +83,7 @@ class KernelTest {
     @Test
     fun testBranch() {
         try {
-            assertEquals(Memory.START_LOC, _kernel.programCounter)
+            assertEquals(START_LOC, _kernel.programCounter)
             for (i in 0..99) {
                 _kernel.incProgramCounter()
             }
@@ -98,7 +99,7 @@ class KernelTest {
             _kernel.branch(1)
             assertEquals(1, _kernel.programCounter)
             _kernel.resetProgramCounter()
-            assertEquals(Memory.START_LOC, _kernel.programCounter)
+            assertEquals(START_LOC, _kernel.programCounter)
             _kernel.branch(25)
             assertEquals(25, _kernel.programCounter)
         } catch (e: VMError) {
@@ -117,7 +118,7 @@ class KernelTest {
     @Test
     fun testJump() {
         try {
-            assertEquals(Memory.START_LOC, _kernel.programCounter)
+            assertEquals(START_LOC, _kernel.programCounter)
             for (i in 0..99) {
                 _kernel.incProgramCounter()
             }
@@ -154,7 +155,7 @@ class KernelTest {
      */
     @Test
     fun testGetProgramWriterPtr() {
-        assertEquals(Memory.START_LOC, _kernel.programWriterPtr)
+        assertEquals(START_LOC, _kernel.programWriterPtr)
         _kernel.incrementProgramWriter()
         _kernel.incrementProgramWriter()
         _kernel.incrementProgramWriter()
@@ -164,7 +165,7 @@ class KernelTest {
         }
         assertEquals(103, _kernel.programWriterPtr)
         _kernel.resetProgramWriter()
-        assertEquals(Memory.START_LOC, _kernel.programWriterPtr)
+        assertEquals(START_LOC, _kernel.programWriterPtr)
         _kernel.incrementProgramWriter()
         _kernel.incrementProgramWriter()
         _kernel.incrementProgramWriter()
