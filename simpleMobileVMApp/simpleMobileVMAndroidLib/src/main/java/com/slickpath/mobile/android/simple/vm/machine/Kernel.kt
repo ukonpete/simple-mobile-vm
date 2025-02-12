@@ -38,12 +38,17 @@ open class Kernel {
     private val memoryStack = MemoryStack()
 
     /**
+     * Manager and store for Program Memory
+     */
+    private val programManager = ProgramManager()
+
+    /**
      * Get current line in program that will execute next
      *
      * @return int
      */
     val programCounter: Int
-        get() = memoryStore.programCounter
+        get() = programManager.getProgramCounter()
 
     /**
      * Returns the value at a specified memory location
@@ -120,11 +125,11 @@ open class Kernel {
     @Throws(VMError::class)
     fun branch(location: Int) {
         if (location <= MemoryStore.MAX_MEMORY) {
-            memoryStore.programCounter = location
+            programManager.setProgramCounter(location)
         } else {
             throw VMError("BRANCH : loc=$location", VMErrorType.VM_ERROR_TYPE_STACK_LIMIT)
         }
-        debugVerbose(LOG_TAG, "--BR=" + memoryStore.programCounter)
+        debugVerbose(LOG_TAG, "--BR=" + programManager.getProgramCounter())
     }
 
     /**
@@ -136,7 +141,7 @@ open class Kernel {
     @Throws(VMError::class)
     fun jump() {
         val location = pop()
-        memoryStore.programCounter = location
+        programManager.setProgramCounter(location)
     }
 
     /**
@@ -173,21 +178,21 @@ open class Kernel {
      * Increment program counter location to next line of instruction
      */
     fun incProgramCounter() {
-        memoryStore.incProgramCounter()
+        programManager.incProgramCounter()
     }
 
     /**
      * Decrement program counter location to previous line of instruction
      */
     fun decProgramCounter() {
-        memoryStore.decProgramCounter()
+        programManager.decProgramCounter()
     }
 
     /**
      * program counter location to start of program memory
      */
     fun resetProgramCounter() {
-        memoryStore.resetProgramCounter()
+        programManager.resetProgramCounter()
     }
 
     /**
@@ -196,20 +201,20 @@ open class Kernel {
      * @return current location in program memory where the next instruction will be added
      */
     val programWriterPtr: Int
-        get() = memoryStore.programWriterPtr
+        get() = programManager.programWriterPtr
 
     /**
      * Increment program writer location to next memory location
      */
     fun incrementProgramWriter() {
-        memoryStore.incrementProgramWriter()
+        programManager.incrementProgramWriter()
     }
 
     /**
      * Reset program writer location to starting memory location
      */
     fun resetProgramWriter() {
-        memoryStore.resetProgramWriter()
+        programManager.resetProgramWriter()
     }
 
     /**
@@ -220,8 +225,8 @@ open class Kernel {
     }
 
     fun reset() {
-        memoryStore.incrementProgramWriter()
-        memoryStore.resetProgramWriter()
+        programManager.incrementProgramWriter()
+        programManager.resetProgramWriter()
         resetStack()
     }
 
@@ -235,14 +240,20 @@ open class Kernel {
     @Throws(VMError::class)
     fun getCommandAt(location: Int): Command {
         return if (location < MemoryStore.MAX_MEMORY) {
-            val command = memoryStore.getCommand(location)
+            val command = programManager.getCommandAt(location)
             val instruction = command.commandId
             val parameterCount = command.parameters.size
             if (debug) {
                 if (parameterCount > 0) {
-                    Log.d(LOG_TAG, "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[instruction] + ") " + instruction + " param(0) " + command.parameters[0] + " at " + location)
+                    Log.d(
+                        LOG_TAG,
+                        "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[instruction] + ") " + instruction + " param(0) " + command.parameters[0] + " at " + location
+                    )
                 } else {
-                    Log.d(LOG_TAG, "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[instruction] + ") " + instruction + " NO param at " + location)
+                    Log.d(
+                        LOG_TAG,
+                        "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[instruction] + ") " + instruction + " NO param at " + location
+                    )
                 }
             }
             command
@@ -264,9 +275,12 @@ open class Kernel {
                 if (command.parameters.isNotEmpty()) {
                     paramInfo = command.parameters[0].toString()
                 }
-                Log.d(LOG_TAG, "Set Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[command.commandId] + ") " + command.commandId + " param " + paramInfo + " at " + location)
+                Log.d(
+                    LOG_TAG,
+                    "Set Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[command.commandId] + ") " + command.commandId + " param " + paramInfo + " at " + location
+                )
             }
-            memoryStore.setCommand(location, command)
+            programManager.setCommandAt(location, command)
             incrementProgramWriter()
         }
     }
@@ -295,6 +309,6 @@ open class Kernel {
      * @return List<Integer> list of each each value of memory for instructions
     </Integer> */
     fun dumpInstructionMemory(): List<Command> {
-        return memoryStore.programMemoryDump()
+        return programManager.dumpProgramStore()
     }
 }

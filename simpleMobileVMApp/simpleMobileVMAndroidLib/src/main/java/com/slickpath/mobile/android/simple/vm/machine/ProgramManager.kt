@@ -3,7 +3,6 @@
 package com.slickpath.mobile.android.simple.vm.machine
 
 import com.slickpath.mobile.android.simple.vm.util.Command
-import java.util.*
 
 /**
  * This class abstracts the handling of the memory used to store program instructions and parameters
@@ -37,7 +36,7 @@ internal class ProgramManager {
     /**
      * Keeps track of location of next instruction to run
      */
-    var programCounter = START_LOC
+    private var _programCounter = START_LOC
 
     /**
      * Keeps track of next location where an instruction to run can be written to- part of program setup
@@ -52,31 +51,39 @@ internal class ProgramManager {
         }
     }
 
+    fun setProgramCounter(location: Int) {
+        _programCounter = location
+    }
+
+    fun getProgramCounter(): Int {
+        return _programCounter
+    }
+
     /**
      * Increment program counter location to next line of instruction
      */
     fun incProgramCounter() {
-        programCounter++
+        _programCounter++
     }
 
     /**
      * Decrement program counter location to previous line of instruction
      */
     fun decProgramCounter() {
-        programCounter--
+        _programCounter--
     }
 
     /**
      * program counter location to start of program memory
      */
     fun resetProgramCounter() {
-        programCounter = START_LOC
+        _programCounter = START_LOC
     }
 
     /**
      * Increment program writer location to previous memory location
      */
-    fun incProgramWriter() {
+    fun incrementProgramWriter() {
         programWriterPtr++
     }
 
