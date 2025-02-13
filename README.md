@@ -57,11 +57,11 @@ No app is deployed in the app store, so placing credit here.
 
 ## Project History
 
-For thos who wahnt to see olde change history and other stuff no longer used go the [Project History Wiki page](https://github.com/ukonpete/simple-mobile-vm/wiki/Project-History)
+For those who want to see old change history and other stuff no longer used go the [Project History Wiki page](https://github.com/ukonpete/simple-mobile-vm/wiki/Project-History)
 
 ## License
 
-    Copyright 2018, 2019, 2020, 2021 Pete Procopio
+    Copyright 2018 - 2025 Pete Procopio
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
