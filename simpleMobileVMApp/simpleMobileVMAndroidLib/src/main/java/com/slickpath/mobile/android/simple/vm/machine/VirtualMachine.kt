@@ -71,16 +71,7 @@ class VirtualMachine constructor(
      * @param command command to add
      */
     override fun addCommand(command: Command) {
-        val commandId = command.commandId
-        var params = "X"
-        if (commandId >= SINGLE_PARAM_COMMAND_START && command.parameters.isNotEmpty()) {
-            params = command.parameters[0].toString()
-        }
         setCommandAt(command, programWriterPtr)
-        debugVerbose(
-            LOG_TAG,
-            "Add ins=" + getInstructionString(commandId) + "(" + commandId + ")" + " params=" + params + " at " + programWriterPtr
-        )
     }
 
     /**
@@ -94,7 +85,7 @@ class VirtualMachine constructor(
         executorPool.execute { doAddInstructions(commands) }
     }
 
-    override fun addCommands(parser: Parser) {
+    override suspend fun addCommands(parser: Parser) {
         parser.addParserListener(vmParserListener)
         parser.parse()
         this.parser = parser
@@ -117,6 +108,7 @@ class VirtualMachine constructor(
      * @param commands commands to add
      */
     private fun doAddInstructions(commands: CommandList?) {
+        Log.d(LOG_TAG, "^^^^^^^^^^ ADD INSTRUCTIONS START ^^^^^^^^^^")
         var vmError: VMError? = null
         var numInstructionsAdded = 0
         if (commands != null) {
@@ -129,6 +121,7 @@ class VirtualMachine constructor(
             vmError = VMError("addInstructions instructions", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS)
         }
         vmListener?.completedAddingInstructions(vmError, numInstructionsAdded)
+        Log.d(LOG_TAG, "^^^^^^^^^^ ADD INSTRUCTIONS END ^^^^^^^^^^")
     }
 
     /**
@@ -197,7 +190,7 @@ class VirtualMachine constructor(
      * @param numInstructionsToRun number of instructions to run until running stops
      */
     private fun doRunInstructions(numInstructionsToRun: Int = -1) {
-        Log.d(LOG_TAG, "+START++++++++++++++++++")
+        Log.d(LOG_TAG, "++++++++++ RUN INSTRUCTIONS START ++++++++++")
         var vmError: VMError? = null
         dumpMem("1")
         var numInstructionsRun = 0
@@ -205,7 +198,7 @@ class VirtualMachine constructor(
         var instructionVal: Int = Instructions.BEGIN
         try {
             while (instructionVal != Instructions.HALT &&
-                programCounter < Memory.MAX_MEMORY &&
+                programCounter < MemoryStore.MAX_MEMORY &&
                 (numInstructionsRun < numInstructionsToRun || numInstructionsToRun == -1)
             ) {
                 lastProgramCounter = programCounter
@@ -234,7 +227,7 @@ class VirtualMachine constructor(
         ) ?: run {
             debug(LOG_TAG, "NO VMListener")
         }
-        Log.d(LOG_TAG, "+END+++++++++++++++++++++")
+        Log.d(LOG_TAG, "++++++++++ RUN INSTRUCTIONS END ++++++++++")
     }
 
     /**
@@ -272,7 +265,7 @@ class VirtualMachine constructor(
             val filename = "memDump$append.txt"
             val data = StringBuilder()
             var i = 1
-            while (i < Memory.MAX_MEMORY) {
+            while (i < MemoryStore.MAX_MEMORY) {
                 try {
                     val parameter = getValueAt(i)
                     val command = getValueAt(i - 1)
@@ -441,7 +434,7 @@ class VirtualMachine constructor(
     private val parameter: Int
         get() {
             val command = getCommandAt(programCounter)
-            if (command.parameters.isEmpty() && command.commandId > SINGLE_PARAM_COMMAND_START) {
+            if (command.parameters.isEmpty() && command.commandId >= SINGLE_PARAM_COMMAND_START) {
                 throw VMError("No Parameters", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS)
             } else if (command.parameters.isNotEmpty() && command.commandId < SINGLE_PARAM_COMMAND_START) {
                 throw VMError("Too many Parameters", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS)

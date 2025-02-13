@@ -10,6 +10,7 @@ import com.slickpath.mobile.android.simple.vm.parser.ParserListener
 import com.slickpath.mobile.android.simple.vm.util.Command
 import com.slickpath.mobile.android.simple.vm.util.CommandList
 import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.runBlocking
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class RxVirtualMachine(context: Context) {
@@ -66,7 +67,9 @@ class RxVirtualMachine(context: Context) {
                     emitter.onSuccess(parseResult)
                 }
             })
-            parser.parse()
+            runBlocking {
+                parser.parse()
+            }
         }.flatMap { parseResult ->
             addCommands(parseResult.commands)
         }

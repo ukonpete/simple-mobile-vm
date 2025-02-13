@@ -33,7 +33,14 @@ open class Kernel {
      */
     var debug = true
 
-    private val memory = Memory()
+    private val memoryStore = MemoryStore()
+
+    private val memoryStack = MemoryStack()
+
+    /**
+     * Manager and store for Program Memory
+     */
+    private val programManager = ProgramManager()
 
     /**
      * Get current line in program that will execute next
@@ -41,7 +48,7 @@ open class Kernel {
      * @return int
      */
     val programCounter: Int
-        get() = memory.programCounter
+        get() = programManager.getProgramCounter()
 
     /**
      * Returns the value at a specified memory location
@@ -52,8 +59,8 @@ open class Kernel {
      */
     @Throws(VMError::class)
     fun getValueAt(location: Int): Int {
-        return if (location < Memory.MAX_MEMORY) {
-            memory[location]
+        return if (location < MemoryStore.MAX_MEMORY) {
+            memoryStore[location]
         } else {
             throw VMError("getValueAt : $location", VMErrorType.VM_ERROR_TYPE_MEMORY_LIMIT)
         }
@@ -69,8 +76,8 @@ open class Kernel {
      */
     @Throws(VMError::class)
     fun setValueAt(value: Int, location: Int): Int {
-        return if (location < Memory.MAX_MEMORY) {
-            memory.set(location, value)
+        return if (location < MemoryStore.MAX_MEMORY) {
+            memoryStore.set(location, value)
         } else {
             throw VMError("setValAt", VMErrorType.VM_ERROR_TYPE_MEMORY_LIMIT)
         }
@@ -87,8 +94,8 @@ open class Kernel {
      */
     @Throws(VMError::class)
     fun pop(): Int {
-        return if (!memory.isStackEmpty) {
-            memory.popMEM()
+        return if (!memoryStack.isEmpty) {
+            memoryStack.popValue()
         } else {
             throw VMError("_pop", VMErrorType.VM_ERROR_TYPE_STACK_LIMIT)
         }
@@ -103,7 +110,7 @@ open class Kernel {
     @Throws(VMError::class)
     fun push(value: Int) {
         try {
-            memory.pushMEM(value)
+            memoryStack.pushValue(value)
         } catch (e: Exception) {
             throw VMError("PUSHC", e, VMErrorType.VM_ERROR_TYPE_STACK_LIMIT)
         }
@@ -117,12 +124,12 @@ open class Kernel {
      */
     @Throws(VMError::class)
     fun branch(location: Int) {
-        if (location <= Memory.MAX_MEMORY) {
-            memory.programCounter = location
+        if (location <= MemoryStore.MAX_MEMORY) {
+            programManager.setProgramCounter(location)
         } else {
             throw VMError("BRANCH : loc=$location", VMErrorType.VM_ERROR_TYPE_STACK_LIMIT)
         }
-        debugVerbose(LOG_TAG, "--BR=" + memory.programCounter)
+        debugVerbose(LOG_TAG, "--BR=" + programManager.getProgramCounter())
     }
 
     /**
@@ -134,7 +141,7 @@ open class Kernel {
     @Throws(VMError::class)
     fun jump() {
         val location = pop()
-        memory.programCounter = location
+        programManager.setProgramCounter(location)
     }
 
     /**
@@ -171,21 +178,21 @@ open class Kernel {
      * Increment program counter location to next line of instruction
      */
     fun incProgramCounter() {
-        memory.incProgramCounter()
+        programManager.incProgramCounter()
     }
 
     /**
      * Decrement program counter location to previous line of instruction
      */
     fun decProgramCounter() {
-        memory.decProgramCounter()
+        programManager.decProgramCounter()
     }
 
     /**
      * program counter location to start of program memory
      */
     fun resetProgramCounter() {
-        memory.resetProgramCounter()
+        programManager.resetProgramCounter()
     }
 
     /**
@@ -194,33 +201,33 @@ open class Kernel {
      * @return current location in program memory where the next instruction will be added
      */
     val programWriterPtr: Int
-        get() = memory.programWriterPtr
+        get() = programManager.programWriterPtr
 
     /**
      * Increment program writer location to next memory location
      */
     fun incrementProgramWriter() {
-        memory.incrementProgramWriter()
+        programManager.incrementProgramWriter()
     }
 
     /**
      * Reset program writer location to starting memory location
      */
     fun resetProgramWriter() {
-        memory.resetProgramWriter()
+        programManager.resetProgramWriter()
     }
 
     /**
      * Empty the stack
      */
     fun resetStack() {
-        memory.resetStack()
+        memoryStack.reset()
     }
 
     fun reset() {
-        memory.incrementProgramWriter()
-        memory.resetProgramWriter()
-        memory.resetStack()
+        programManager.incrementProgramWriter()
+        programManager.resetProgramWriter()
+        resetStack()
     }
 
     /**
@@ -232,15 +239,21 @@ open class Kernel {
      */
     @Throws(VMError::class)
     fun getCommandAt(location: Int): Command {
-        return if (location < Memory.MAX_MEMORY) {
-            val command = memory.getCommand(location)
+        return if (location < MemoryStore.MAX_MEMORY) {
+            val command = programManager.getCommandAt(location)
             val instruction = command.commandId
             val parameterCount = command.parameters.size
             if (debug) {
                 if (parameterCount > 0) {
-                    Log.d(LOG_TAG, "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[instruction] + ") " + instruction + " param(0) " + command.parameters[0] + " at " + location)
+                    Log.d(
+                        LOG_TAG,
+                        "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[instruction] + ") " + instruction + " param(0) " + command.parameters[0] + " at " + location
+                    )
                 } else {
-                    Log.d(LOG_TAG, "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[instruction] + ") " + instruction + " NO param at " + location)
+                    Log.d(
+                        LOG_TAG,
+                        "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[instruction] + ") " + instruction + " NO param at " + location
+                    )
                 }
             }
             command
@@ -256,15 +269,18 @@ open class Kernel {
      * @param location location in memory
      */
     fun setCommandAt(command: Command, location: Int) {
-        if (location < Memory.MAX_MEMORY) {
+        if (location < MemoryStore.MAX_MEMORY) {
             if (debug) {
                 var paramInfo = "<null>"
                 if (command.parameters.isNotEmpty()) {
                     paramInfo = command.parameters[0].toString()
                 }
-                Log.d(LOG_TAG, "Set Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[command.commandId] + ") " + command.commandId + " param " + paramInfo + " at " + location)
+                Log.d(
+                    LOG_TAG,
+                    "  Set CMD : ${BaseInstructionSet.INSTRUCTION_SET_CONV[command.commandId]} (${command.commandId}) PARAM $paramInfo at loc $location"
+                )
             }
-            memory.setCommand(location, command)
+            programManager.setCommandAt(location, command)
             incrementProgramWriter()
         }
     }
@@ -275,7 +291,7 @@ open class Kernel {
      * @return List<Integer> list of each each value of memory
     </Integer> */
     fun dumpMemory(): List<Int> {
-        return memory.memoryDump()
+        return memoryStore.memoryDump()
     }
 
     /**
@@ -284,7 +300,7 @@ open class Kernel {
      * @return List<Integer> list of each each value of memory in the stack
     </Integer> */
     fun dumpStack(): List<Int> {
-        return memory.stackDump()
+        return memoryStack.stackDump()
     }
 
     /**
@@ -293,6 +309,6 @@ open class Kernel {
      * @return List<Integer> list of each each value of memory for instructions
     </Integer> */
     fun dumpInstructionMemory(): List<Command> {
-        return memory.programMemoryDump()
+        return programManager.dumpProgramStore()
     }
 }

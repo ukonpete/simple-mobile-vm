@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'pmd'
+//apply plugin: 'pmd'
 
 android {
     compileSdk 30
@@ -8,8 +8,6 @@ android {
     defaultConfig {
         minSdk 17
         targetSdk 30
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -33,48 +31,49 @@ android {
         xmlOutput file("$project.buildDir/reports/lint/lint-report.xml")
     }
 
-    task vmAnalyze(dependsOn: ['lint', 'pmd']) doLast {
-    }
+//    task vmAnalyze(dependsOn: ['lint', 'pmd']) doLast {
+//    }
 
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    namespace 'com.slickpath.mobile.android.simple.vm.rx'
 
 }
 
-task pmdBase(type: Pmd) {
-    outputs.upToDateWhen { false }
-    ruleSetFiles = files("${project.rootDir}/config/pmd/vm-pmd-ruleset.xml")
-    ignoreFailures = false
-    ruleSets = []
-
-    source 'src'
-    include '**/*.java'
-    exclude '**/*Test.java'
-    exclude '**/gen/**'
-    exclude '**/generated/**'
-
-    reports {
-        xml.enabled = true
-        html.enabled = true
-        xml {
-            setDestination(file("$project.buildDir/reports/pmd/pmd.xml"))
-        }
-        html {
-            setDestination(file("$project.buildDir/reports/pmd/basic-pmd.html"))
-        }
-    }
-
-    ignoreFailures = true
-}
-
-task pmd(dependsOn: "pmdBase") doLast {
-    // Generate better html report using xslt
-    ant.xslt(
-            in: "$project.buildDir/reports/pmd/pmd.xml",
-            style: "${project.rootDir}/config/pmd/wz-pmd-report.xslt",
-            out: "$project.buildDir/reports/pmd/pmd.html")
-}
+//task pmdBase(type: Pmd) {
+//    outputs.upToDateWhen { false }
+//    ruleSetFiles = files("${project.rootDir}/config/pmd/vm-pmd-ruleset.xml")
+//    ignoreFailures = false
+//    ruleSets = []
+//
+//    source 'src'
+//    include '**/*.java'
+//    exclude '**/*Test.java'
+//    exclude '**/gen/**'
+//    exclude '**/generated/**'
+//
+//    reports {
+//        xml.enabled = true
+//        html.enabled = true
+//        xml {
+//            setDestination(file("$project.buildDir/reports/pmd/pmd.xml"))
+//        }
+//        html {
+//            setDestination(file("$project.buildDir/reports/pmd/basic-pmd.html"))
+//        }
+//    }
+//
+//    ignoreFailures = true
+//}
+//
+//task pmd(dependsOn: "pmdBase") doLast {
+//    // Generate better html report using xslt
+//    ant.xslt(
+//            in: "$project.buildDir/reports/pmd/pmd.xml",
+//            style: "${project.rootDir}/config/pmd/wz-pmd-report.xslt",
+//            out: "$project.buildDir/reports/pmd/pmd.html")
+//}
 
 dependencies {
 
@@ -92,6 +91,7 @@ dependencies {
 
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
     implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
 
 }
 repositories {

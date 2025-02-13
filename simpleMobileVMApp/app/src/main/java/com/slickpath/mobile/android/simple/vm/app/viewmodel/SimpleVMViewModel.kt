@@ -9,6 +9,7 @@ import com.slickpath.mobile.android.simple.vm.app.SimpleMobileVMAppActivity
 import com.slickpath.mobile.android.simple.vm.machine.VirtualMachine
 import com.slickpath.mobile.android.simple.vm.parser.Parser
 import com.slickpath.mobile.android.simple.vm.util.CommandList
+import kotlinx.coroutines.runBlocking
 
 class SimpleVMViewModel(private var virtualMachine: VirtualMachine) : ViewModel(), VMListener {
 
@@ -27,7 +28,9 @@ class SimpleVMViewModel(private var virtualMachine: VirtualMachine) : ViewModel(
 
     fun addCommands(parser: Parser) {
         virtualMachine.reset()
-        virtualMachine.addCommands(parser)
+        runBlocking {
+            virtualMachine.addCommands(parser)
+        }
     }
 
     fun runInstructions() {
