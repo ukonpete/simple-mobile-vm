@@ -79,6 +79,7 @@ dependencies {
     androidTestImplementation 'junit:junit:4.13.2'
     implementation "androidx.core:core-ktx:1.6.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
 }
 repositories {
     mavenCentral()

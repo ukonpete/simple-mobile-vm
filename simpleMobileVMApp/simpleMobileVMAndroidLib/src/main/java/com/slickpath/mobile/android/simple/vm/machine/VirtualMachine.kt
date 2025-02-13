@@ -85,7 +85,7 @@ class VirtualMachine constructor(
         executorPool.execute { doAddInstructions(commands) }
     }
 
-    override fun addCommands(parser: Parser) {
+    override suspend fun addCommands(parser: Parser) {
         parser.addParserListener(vmParserListener)
         parser.parse()
         this.parser = parser
