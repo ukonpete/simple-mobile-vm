@@ -10,7 +10,10 @@ import java.io.IOException
  *
  * @author Pete Procopio
  */
-open class Machine @JvmOverloads constructor(outputListener: OutputListener? = null, inputListener: InputListener? = null) : Kernel() {
+open class Machine @JvmOverloads constructor(
+    outputListener: OutputListener? = null,
+    inputListener: InputListener? = null
+) : Kernel() {
 
     companion object {
         private val LOG_TAG = Machine::class.java.name

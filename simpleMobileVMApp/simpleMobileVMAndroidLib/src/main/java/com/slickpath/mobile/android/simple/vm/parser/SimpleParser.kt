@@ -84,32 +84,35 @@ class SimpleParser(private val parserHelper: ParserHelper) : CachedThreadPoolPar
      */
     @Throws(VMError::class)
     private fun doParse() {
+        debug("********** PARSE START **********")
         var stream: InputStream? = null
         var thrownException: Exception? = null
         var vmErrorType = VMErrorType.VM_ERROR_TYPE_LAZY_UNSET
         var additionalExceptionInfo = "[runInstructions] "
         try {
             stream = ByteArrayInputStream(parserHelper.getInstructionsString().toByteArray())
+            debug("********** SYMBOLS START **********")
             getSymbols(stream)
+            debug("********** SYMBOLS END**********")
             stream.close()
             stream = ByteArrayInputStream(parserHelper.getInstructionsString().toByteArray())
             val buffReader = getBufferedReader(stream)
             var line = buffReader.readLine()
             val emptyList = ArrayList<Int>(0)
+            var lineCount = 0
+            debug("********** PARSE LINE START **********")
             while (line != null) {
-                debug("LINE : $line")
-
+                debug("LINE $lineCount : $line")
+                lineCount++
                 // If line is not a comment
                 if (!line.startsWith("//")) {
-                    debug("-Line $line")
                     val lineWords = line.split(" ".toRegex()).toTypedArray()
                     val instructionWord = lineWords[0]
-                    debug("-RAW $instructionWord")
                     // If the line does not start with a symbol
                     if (!(instructionWord.startsWith("[") && instructionWord.contains("]"))) {
                         val commandVal = BaseInstructionSet.INSTRUCTION_SET[instructionWord]
                         commandVal?.let {
-                            debug("INST : " + BaseInstructionSet.INSTRUCTION_SET_CONV[commandVal] + "(" + commandVal + ")")
+                            debug("  CMD VAL : $commandVal")
                             val params: List<Int> = if (lineWords.size > 1) {
                                 parseParameters(lineWords)
                             } else {
@@ -128,6 +131,7 @@ class SimpleParser(private val parserHelper: ParserHelper) : CachedThreadPoolPar
             thrownException = e
             vmErrorType = VMErrorType.VM_ERROR_TYPE_UNKNOWN
         } finally {
+            debug("********** PARSE LINE END **********")
             if (stream != null) {
                 try {
                     stream.close()
@@ -138,8 +142,12 @@ class SimpleParser(private val parserHelper: ParserHelper) : CachedThreadPoolPar
                 }
             }
         }
+
         if (thrownException != null) {
+            debug("********** PARSE END WITH EXCEPTION **********")
             throw VMError(additionalExceptionInfo + thrownException.message, thrownException, vmErrorType)
+        } else {
+            debug("********** PARSE END **********")
         }
     }
 

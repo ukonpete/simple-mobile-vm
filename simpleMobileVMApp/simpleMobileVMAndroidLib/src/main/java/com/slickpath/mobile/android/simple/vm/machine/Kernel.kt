@@ -277,7 +277,7 @@ open class Kernel {
                 }
                 Log.d(
                     LOG_TAG,
-                    "Set Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[command.commandId] + ") " + command.commandId + " param " + paramInfo + " at " + location
+                    "  Set CMD : ${BaseInstructionSet.INSTRUCTION_SET_CONV[command.commandId]} (${command.commandId}) PARAM $paramInfo at loc $location"
                 )
             }
             programManager.setCommandAt(location, command)
