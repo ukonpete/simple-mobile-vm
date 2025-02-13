@@ -18,6 +18,12 @@ Note: To open the Android project it is located in the simpleMobileVMApp directo
 
 ## Release Notes
 
+* 2/12/2025
+  * Long overdue fix of timing issue with async code
+    * TODO
+      * remove Rxjava
+      * Use suspend functions and Flows
+      * More refactoring to make the code more manageable
 * 8/23/2020
   * Added RxJava/Android version of the VM library. It passes all unit tests, but it is not integrated with the app yet.
   * Upgrade to Gralde 7.0.1
