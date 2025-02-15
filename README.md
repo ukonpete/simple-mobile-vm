@@ -18,9 +18,10 @@ Note: To open the Android project it is located in the simpleMobileVMApp directo
 
 ## Release Notes
 
-* 2/12/2025
+* 2/12/2025 - 2/15/2025
   * Update for newer Android Studio and Gradle
   * Long overdue fix of timing issue with async code
+  * Code cleanup
     * TODO
       * remove Rxjava
       * Use suspend functions and Flows
