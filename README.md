@@ -12,13 +12,13 @@ Written in ~~Java~~ Kotlin to run on Android.
 
 Note: To open the Android project it is located in the simpleMobileVMApp directory
 
-minSdkVersion 21
-targetSdkVersion 35
-compileSdkVersion 35
-
 ## Details
 
   * More details available on [wiki](https://github.com/ukonpete/simple-mobile-vm/wiki)
+
+* minSdkVersion 21
+* targetSdkVersion 35
+* compileSdkVersion 35
 
 ## Release Notes
 
