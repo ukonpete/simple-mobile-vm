@@ -14,40 +14,33 @@ import java.io.*
 import java.util.*
 
 /**
- * Parses file for commands, parameters, variables and symbols
- *
+ * Parses a file for commands, parameters, variables, and symbols.
  *
  * Possible line combinations:
- *
- *  * COMMAND
- *  * COMMAND PARAMETER
- *  * COMMAND VAR
- *  * COMMAND SYMBOL
- *  * SYMBOL
- *  * COMMENT
- *
- *
+ * - COMMAND
+ * - COMMAND PARAMETER
+ * - COMMAND VAR
+ * - COMMAND SYMBOL
+ * - SYMBOL
+ * - COMMENT
  *
  * Definitions:
- *
- *  * COMMAND - string
- *  * PARAMETER - string (typically an integer, but can be VAR OR SYMBOL)
- *  * VAR - String starting with 'g'  - Variable memory location reference
- *  * SYMBOL - [string] - NOTE: if a SYMBOL is used in a parameter it is a reference to an existing SYMBOL, that SYMBOL represents the line it is defined on. It MUST be defined somewhere on a line by itself
- *  * COMMENT - Ignore this line during parsing - user wants to leave a compiler ignored note at this line
- *
- *
+ * - COMMAND: A string representing an operation.
+ * - PARAMETER: A string, typically an integer, but can be a VAR or SYMBOL.
+ * - VAR: A string starting with 'g', representing a variable memory location reference.
+ * - SYMBOL: A string enclosed in square brackets, e.g., "[symbol_name]". If used as a parameter, it refers to an existing SYMBOL, which in turn represents the line it is defined on. It MUST be defined on a line by itself.
+ * - COMMENT: A line ignored during parsing, indicated by "//".
  *
  * Examples:
- *
- *  * COMMAND - ADD  (Adds the top two items on the stack and places result on the stack)
- *  * COMMAND PARAMETER - PUSHC 100 (Pushes the value 100 onto the top of the stack)
- *  * COMMAND VAR - POPC g1 - (Pop the top value of the stack and place into the memory location represented by g1
- *  * COMMAND SYMBOL - JUMP [LOOP2] - jump to the line number represented by [LOOP2]
- *  * SYMBOL - [LOOP2] - assign the next instructions line number to the symbol [LOOP2]
- *  * COMMENT - // This code rocks
+ * - COMMAND: ADD (Adds the top two items on the stack and places the result on the stack)
+ * - COMMAND PARAMETER: PUSHC 100 (Pushes the value 100 onto the top of the stack)
+ * - COMMAND VAR: POPC g1 (Pops the top value of the stack and places it into the memory location represented by g1)
+ * - COMMAND SYMBOL: JUMP [LOOP2] (Jumps to the line number represented by [LOOP2])
+ * - SYMBOL: [LOOP2] (Assigns the next instruction's line number to the symbol [LOOP2])
+ * - COMMENT: // This code rocks
  *
  * @author Pete Procopio
+ *
  * @see [Simple VM Wiki on Github](https://github.com/ukonpete/simple-mobile-vm/wiki)
  */
 class SimpleParser(private val parserHelper: ParserHelper) : AsyncParser() {
