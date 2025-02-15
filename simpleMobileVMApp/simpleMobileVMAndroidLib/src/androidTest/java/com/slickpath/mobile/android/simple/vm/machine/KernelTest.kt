@@ -2,7 +2,7 @@ package com.slickpath.mobile.android.simple.vm.machine
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.slickpath.mobile.android.simple.vm.VMError
-import com.slickpath.mobile.android.simple.vm.machine.ProgramManager.Companion.START_LOC
+import com.slickpath.mobile.android.simple.vm.machine.ProgramManager.Companion.START_LOCATION
 import com.slickpath.mobile.android.simple.vm.util.Command
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -84,7 +84,7 @@ class KernelTest {
     @Test
     fun testBranch() {
         try {
-            assertEquals(START_LOC, _kernel.programCounter)
+            assertEquals(START_LOCATION, _kernel.programCounter)
             for (i in 0..99) {
                 _kernel.incProgramCounter()
             }
@@ -100,7 +100,7 @@ class KernelTest {
             _kernel.branch(1)
             assertEquals(1, _kernel.programCounter)
             _kernel.resetProgramCounter()
-            assertEquals(START_LOC, _kernel.programCounter)
+            assertEquals(START_LOCATION, _kernel.programCounter)
             _kernel.branch(25)
             assertEquals(25, _kernel.programCounter)
         } catch (e: VMError) {
@@ -119,7 +119,7 @@ class KernelTest {
     @Test
     fun testJump() {
         try {
-            assertEquals(START_LOC, _kernel.programCounter)
+            assertEquals(START_LOCATION, _kernel.programCounter)
             for (i in 0..99) {
                 _kernel.incProgramCounter()
             }
@@ -156,7 +156,7 @@ class KernelTest {
      */
     @Test
     fun testGetProgramWriterPtr() {
-        assertEquals(START_LOC, _kernel.programWriterPtr)
+        assertEquals(START_LOCATION, _kernel.programWriterPtr)
         _kernel.incrementProgramWriter()
         _kernel.incrementProgramWriter()
         _kernel.incrementProgramWriter()
@@ -166,7 +166,7 @@ class KernelTest {
         }
         assertEquals(103, _kernel.programWriterPtr)
         _kernel.resetProgramWriter()
-        assertEquals(START_LOC, _kernel.programWriterPtr)
+        assertEquals(START_LOCATION, _kernel.programWriterPtr)
         _kernel.incrementProgramWriter()
         _kernel.incrementProgramWriter()
         _kernel.incrementProgramWriter()

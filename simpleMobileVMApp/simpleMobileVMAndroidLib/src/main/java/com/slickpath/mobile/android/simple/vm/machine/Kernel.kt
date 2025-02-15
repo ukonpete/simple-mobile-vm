@@ -234,7 +234,7 @@ open class Kernel : IDebugVerboseLogger {
      * @return current location in program memory where the next instruction will be added
      */
     val programWriterPtr: Int
-        get() = programManager.programWriterPtr
+        get() = programManager.programWriterPointer
 
     /**
      * Increment program writer location to next memory location

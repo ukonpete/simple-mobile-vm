@@ -2,7 +2,7 @@ package com.slickpath.mobile.android.simple.vm.machine
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.slickpath.mobile.android.simple.vm.VMError
-import com.slickpath.mobile.android.simple.vm.machine.ProgramManager.Companion.START_LOC
+import com.slickpath.mobile.android.simple.vm.machine.ProgramManager.Companion.START_LOCATION
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
@@ -504,7 +504,7 @@ class MachineTest {
     @Test
     fun testBRANCH() {
         try {
-            assertEquals(START_LOC, _machine.programCounter)
+            assertEquals(START_LOCATION, _machine.programCounter)
             for (i in 0..99) {
                 _machine.incProgramCounter()
             }
@@ -520,7 +520,7 @@ class MachineTest {
             _machine.branch(1)
             assertEquals(1, _machine.programCounter)
             _machine.resetProgramCounter()
-            assertEquals(START_LOC, _machine.programCounter)
+            assertEquals(START_LOCATION, _machine.programCounter)
             _machine.branch(25)
             assertEquals(25, _machine.programCounter)
         } catch (e: VMError) {
@@ -535,7 +535,7 @@ class MachineTest {
     @Test
     fun testJUMP() {
         try {
-            assertEquals(START_LOC, _machine.programCounter)
+            assertEquals(START_LOCATION, _machine.programCounter)
             for (i in 0..99) {
                 _machine.incProgramCounter()
             }
@@ -571,7 +571,7 @@ class MachineTest {
     @Test
     fun testBREQL() {
         try {
-            assertEquals(START_LOC, _machine.programCounter)
+            assertEquals(START_LOCATION, _machine.programCounter)
             for (i in 0..99) {
                 _machine.incProgramCounter()
             }
@@ -606,7 +606,7 @@ class MachineTest {
     @Test
     fun testBRLSS() {
         try {
-            assertEquals(START_LOC, _machine.programCounter)
+            assertEquals(START_LOCATION, _machine.programCounter)
             for (i in 0..99) {
                 _machine.incProgramCounter()
             }
@@ -644,7 +644,7 @@ class MachineTest {
     @Test
     fun testBRGTR() {
         try {
-            assertEquals(START_LOC, _machine.programCounter)
+            assertEquals(START_LOCATION, _machine.programCounter)
             for (i in 0..99) {
                 _machine.incProgramCounter()
             }
