@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 35
 
     defaultConfig {
         applicationId "com.slickpath.mobile.android.simple.vm.app"
         minSdkVersion 17
-        targetSdkVersion 30
+        targetSdkVersion 35
 
         testApplicationId "com.slickpath.mobile.android.simple.vm.app.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
