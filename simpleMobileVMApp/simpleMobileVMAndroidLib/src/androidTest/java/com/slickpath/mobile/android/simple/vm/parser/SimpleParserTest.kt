@@ -21,7 +21,7 @@ import java.util.concurrent.CountDownLatch
  * @author Pete Procopio
  */
 @RunWith(AndroidJUnit4::class)
-class SimpleParserTest : ParserListener {
+class SimpleParserTest {
     private lateinit var _parser: SimpleParser
     private lateinit var _signal: CountDownLatch
     private lateinit var _commands: CommandList
@@ -30,13 +30,11 @@ class SimpleParserTest : ParserListener {
     @Before
     fun before() {
         _parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
-        _parser.addParserListener(this)
         _signal = CountDownLatch(1)
     }
 
     @After
     fun after() {
-        _parser.removeParserListener(this)
     }
 
     /**
@@ -45,7 +43,11 @@ class SimpleParserTest : ParserListener {
     @Test
     fun testParse() {
         runBlocking {
-            _parser.parse()
+            _parser.parse().collect { parseResult ->
+                _signal.countDown()
+                _error = parseResult.vmError
+                _commands = parseResult.commands
+            }
         }
         try {
             // Wait for Callback
@@ -195,13 +197,6 @@ class SimpleParserTest : ParserListener {
         // 48 - Comment
         // 49 [HALT] - Symbol
         assertEquals(_commands[i].commandId, Instructions.HALT) // 50
-    }
-
-    override fun completedParse(parseResult: ParseResult) {
-        // Save values on callback and release test thread
-        _error = parseResult.vmError
-        _commands = parseResult.commands
-        _signal.countDown() // notify the count down latch
     }
 
     companion object {

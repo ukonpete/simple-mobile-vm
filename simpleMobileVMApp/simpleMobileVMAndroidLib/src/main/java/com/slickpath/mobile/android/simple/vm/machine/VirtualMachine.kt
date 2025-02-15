@@ -12,6 +12,7 @@ import com.slickpath.mobile.android.simple.vm.parser.Parser
 import com.slickpath.mobile.android.simple.vm.parser.ParserListener
 import com.slickpath.mobile.android.simple.vm.util.Command
 import com.slickpath.mobile.android.simple.vm.util.CommandList
+import kotlinx.coroutines.flow.onCompletion
 import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadPoolExecutor
@@ -93,21 +94,10 @@ class VirtualMachine(
      * @param parser The parser containing the commands.
      */
     override suspend fun addCommands(parser: Parser) {
-        parser.addParserListener(vmParserListener)
-        parser.parse()
         this.parser = parser
-    }
-
-    /**
-     * Listener for parser events.
-     */
-    private var vmParserListener: ParserListener = object : ParserListener {
-        override fun completedParse(parseResult: ParseResult) {
-            if (parseResult.vmError == null) {
-                addCommands(parseResult.commands)
-            }
+        parser.parse().collect { parseResult ->
+            addCommands(parseResult.commands)
             vmListener?.completedAddingInstructions(parseResult.vmError, parseResult.commands.size)
-            parser?.removeParserListener(this)
         }
     }
 

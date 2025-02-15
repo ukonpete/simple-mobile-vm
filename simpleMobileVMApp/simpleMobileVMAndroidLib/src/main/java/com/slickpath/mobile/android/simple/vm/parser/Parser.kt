@@ -1,10 +1,8 @@
 package com.slickpath.mobile.android.simple.vm.parser
 
+import kotlinx.coroutines.flow.Flow
+
 interface Parser {
 
-    suspend fun parse()
-
-    fun addParserListener(parserListener: ParserListener)
-
-    fun removeParserListener(parserListener: ParserListener)
+    suspend fun parse() : Flow<ParseResult>
 }

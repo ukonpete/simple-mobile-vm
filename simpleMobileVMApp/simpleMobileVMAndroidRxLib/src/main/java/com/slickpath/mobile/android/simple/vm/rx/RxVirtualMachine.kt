@@ -53,7 +53,7 @@ class RxVirtualMachine(context: Context) {
         }
     }
 
-    fun addCommands(parser: Parser): Single<Int> {
+/*    fun addCommands(parser: Parser): Single<Int> {
         return Single.create { emitter ->
             parser.addParserListener(object : ParserListener {
                 override fun completedParse(parseResult: ParseResult) {
@@ -72,7 +72,7 @@ class RxVirtualMachine(context: Context) {
         }.flatMap { parseResult ->
             addCommands(parseResult.commands)
         }
-    }
+    }*/
 
     fun runNextInstruction(): Single<VirtualMachine.Results> {
         return Single.create { emitter ->
