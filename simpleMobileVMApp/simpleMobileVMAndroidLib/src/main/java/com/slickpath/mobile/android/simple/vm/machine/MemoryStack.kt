@@ -1,14 +1,14 @@
 package com.slickpath.mobile.android.simple.vm.machine
 
-import com.slickpath.mobile.android.simple.vm.extensions.dumpAsList
-import java.util.Stack
+import java.util.EmptyStackException
 
 class MemoryStack {
 
     /**
-     * Memory Stack
+     * Internal stack to store integers.
+     * Using ArrayDeque for better performance compared to Stack in most cases.
      */
-    private val _stack = Stack<Int>()
+    private val stack: ArrayDeque<Int> = ArrayDeque()
 
     /**
      * Returns if Stack is empty
@@ -16,13 +16,13 @@ class MemoryStack {
      * @return boolean
      */
     val isEmpty: Boolean
-        get() = _stack.isEmpty()
+        get() = stack.isEmpty()
 
     /**
      * Empty the stack
      */
     fun reset() {
-        _stack.clear()
+        stack.clear()
     }
 
     /**
@@ -30,18 +30,22 @@ class MemoryStack {
      *
      * @return value at every line of stack memory
     </Integer> */
-    fun stackDump(): List<Int> {
-        return _stack.dumpAsList()
+    fun dump(): List<Int> {
+        return stack.toList()
     }
 
     /**
      * pop the top value from the stack and return
      * clear out the old top
      *
-     * @return value at top of stack
+     * @return The value at the top of the stack.
+     * @throws EmptyStackException if the stack is empty.
      */
     fun popValue(): Int {
-        return _stack.pop()
+        if (stack.isEmpty()) {
+            throw EmptyStackException()
+        }
+        return stack.removeLast()
     }
 
     /**
@@ -51,6 +55,21 @@ class MemoryStack {
      * @return value pushed on the stack
      */
     fun pushValue(value: Int): Int {
-        return _stack.push(value)
+        stack.addLast(value)
+        return value
+    }
+
+    /**
+     * Returns the top element from the stack without removing it.
+     *
+     * @return The value at the top of the stack.
+     * @throws EmptyStackException if the stack is empty.
+     */
+    @Suppress("unused")
+    fun peek(): Int {
+        if(stack.isEmpty()){
+            throw EmptyStackException()
+        }
+        return stack.last()
     }
 }

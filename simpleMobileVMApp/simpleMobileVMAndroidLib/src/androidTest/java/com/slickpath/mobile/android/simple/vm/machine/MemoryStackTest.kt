@@ -19,7 +19,7 @@ class MemoryStackTest {
     @Test
     fun testMemorySetup() {
         assertTrue(memoryStack.isEmpty)
-        val tempMemory = memoryStack.stackDump()
+        val tempMemory = memoryStack.dump()
         assertEquals(0, tempMemory.size)
     }
 
@@ -27,17 +27,17 @@ class MemoryStackTest {
     fun testMemorySize() {
         assertTrue(memoryStack.isEmpty)
         memoryStack.pushValue(1)
-        var tempMemory = memoryStack.stackDump()
+        var tempMemory = memoryStack.dump()
         assertEquals(1, tempMemory.size)
         for (i in 1..5) {
             memoryStack.pushValue(1)
         }
-        tempMemory = memoryStack.stackDump()
+        tempMemory = memoryStack.dump()
         assertEquals(6, tempMemory.size)
         for (i in 1..99) {
             memoryStack.pushValue(1)
         }
-        tempMemory = memoryStack.stackDump()
+        tempMemory = memoryStack.dump()
         assertEquals(105, tempMemory.size)
     }
 
@@ -140,7 +140,7 @@ class MemoryStackTest {
         for (value in values) {
             memoryStack.pushValue(value)
         }
-        val stackDump = memoryStack.stackDump()
+        val stackDump = memoryStack.dump()
         assertNotNull(stackDump)
         assertEquals(values.size, stackDump.size)
         assertEquals(values[0], stackDump[0])

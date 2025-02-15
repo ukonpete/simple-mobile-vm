@@ -4,6 +4,7 @@ import com.slickpath.mobile.android.simple.vm.VMError
 import com.slickpath.mobile.android.simple.vm.VMErrorType
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet
 import com.slickpath.mobile.android.simple.vm.util.Command
+import java.util.EmptyStackException
 
 /**
 
@@ -100,9 +101,9 @@ open class Kernel : IDebugVerboseLogger {
      */
     @Throws(VMError::class)
     fun pop(): Int {
-        return if (!memoryStack.isEmpty) {
+        return try {
             memoryStack.popValue()
-        } else {
+        } catch (e: EmptyStackException) {
             throw VMError("_pop", VMErrorType.VM_ERROR_TYPE_STACK_EMPTY)
         }
     }
@@ -333,7 +334,7 @@ open class Kernel : IDebugVerboseLogger {
      * @return List<Integer> list of each each value of memory in the stack
     </Integer> */
     fun dumpStack(): List<Int> {
-        return memoryStack.stackDump()
+        return memoryStack.dump()
     }
 
     /**
