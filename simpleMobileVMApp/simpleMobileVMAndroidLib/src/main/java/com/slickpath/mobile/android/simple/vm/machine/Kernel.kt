@@ -59,10 +59,14 @@ open class Kernel {
      */
     @Throws(VMError::class)
     fun getValueAt(location: Int): Int {
-        return if (location < MemoryStore.MAX_MEMORY) {
+        return if (location in 0 until MemoryStore.MAX_MEMORY) {
             memoryStore[location]
         } else {
-            throw VMError("getValueAt : $location", VMErrorType.VM_ERROR_TYPE_MEMORY_LIMIT)
+            if (location < 0) {
+                throw VMError("getCommandAt", VMErrorType.VM_ERROR_TYPE_MEMORY_LIMIT_MIN)
+            } else {
+                throw VMError("getCommandAt", VMErrorType.VM_ERROR_TYPE_MEMORY_LIMIT_MAX)
+            }
         }
     }
 
@@ -76,10 +80,14 @@ open class Kernel {
      */
     @Throws(VMError::class)
     fun setValueAt(value: Int, location: Int): Int {
-        return if (location < MemoryStore.MAX_MEMORY) {
+        return if (location in 0 until MemoryStore.MAX_MEMORY) {
             memoryStore.set(location, value)
         } else {
-            throw VMError("setValAt", VMErrorType.VM_ERROR_TYPE_MEMORY_LIMIT)
+            if (location < 0) {
+                throw VMError("getCommandAt", VMErrorType.VM_ERROR_TYPE_MEMORY_LIMIT_MIN)
+            } else {
+                throw VMError("getCommandAt", VMErrorType.VM_ERROR_TYPE_MEMORY_LIMIT_MAX)
+            }
         }
     }
 
@@ -97,7 +105,7 @@ open class Kernel {
         return if (!memoryStack.isEmpty) {
             memoryStack.popValue()
         } else {
-            throw VMError("_pop", VMErrorType.VM_ERROR_TYPE_STACK_LIMIT)
+            throw VMError("_pop", VMErrorType.VM_ERROR_TYPE_STACK_EMPTY)
         }
     }
 
@@ -112,7 +120,7 @@ open class Kernel {
         try {
             memoryStack.pushValue(value)
         } catch (e: Exception) {
-            throw VMError("PUSHC", e, VMErrorType.VM_ERROR_TYPE_STACK_LIMIT)
+            throw VMError("PUSHC", e, VMErrorType.VM_ERROR_TYPE_STACK_GENERAL)
         }
     }
 
@@ -124,10 +132,14 @@ open class Kernel {
      */
     @Throws(VMError::class)
     fun branch(location: Int) {
-        if (location <= MemoryStore.MAX_MEMORY) {
+        if (location in 0 until MemoryStore.MAX_MEMORY) {
             programManager.setProgramCounter(location)
         } else {
-            throw VMError("BRANCH : loc=$location", VMErrorType.VM_ERROR_TYPE_STACK_LIMIT)
+            if (location < 0) {
+                throw VMError("BRANCH : loc=$location", VMErrorType.VM_ERROR_TYPE_STACK_LIMIT_MIN)
+            } else {
+                throw VMError("BRANCH : loc=$location", VMErrorType.VM_ERROR_TYPE_STACK_LIMIT_MAX)
+            }
         }
         debugVerbose(LOG_TAG, "--BR=" + programManager.getProgramCounter())
     }
@@ -239,7 +251,7 @@ open class Kernel {
      */
     @Throws(VMError::class)
     fun getCommandAt(location: Int): Command {
-        return if (location < MemoryStore.MAX_MEMORY) {
+        return if (location in 0 until MemoryStore.MAX_MEMORY) {
             val command = programManager.getCommandAt(location)
             val instruction = command.commandId
             val parameterCount = command.parameters.size
@@ -258,7 +270,11 @@ open class Kernel {
             }
             command
         } else {
-            throw VMError("getCommandAt", VMErrorType.VM_ERROR_TYPE_MEMORY_LIMIT)
+            if (location < 0) {
+                throw VMError("getCommandAt", VMErrorType.VM_ERROR_TYPE_MEMORY_LIMIT_MIN)
+            } else {
+                throw VMError("getCommandAt", VMErrorType.VM_ERROR_TYPE_MEMORY_LIMIT_MAX)
+            }
         }
     }
 
@@ -269,7 +285,7 @@ open class Kernel {
      * @param location location in memory
      */
     fun setCommandAt(command: Command, location: Int) {
-        if (location < MemoryStore.MAX_MEMORY) {
+        if (location in 0 until MemoryStore.MAX_MEMORY) {
             if (debug) {
                 var paramInfo = "<null>"
                 if (command.parameters.isNotEmpty()) {
@@ -282,6 +298,12 @@ open class Kernel {
             }
             programManager.setCommandAt(location, command)
             incrementProgramWriter()
+        } else {
+            if (location < 0) {
+                throw VMError("setCommandAt", VMErrorType.VM_ERROR_TYPE_MEMORY_LIMIT_MIN)
+            } else {
+                throw VMError("setCommandAt", VMErrorType.VM_ERROR_TYPE_MEMORY_LIMIT_MAX)
+            }
         }
     }
 

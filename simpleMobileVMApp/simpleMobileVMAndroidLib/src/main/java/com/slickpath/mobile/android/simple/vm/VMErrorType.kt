@@ -16,14 +16,34 @@ enum class VMErrorType {
     VM_ERROR_TYPE_UNKNOWN,
 
     /**
-     * An action has attempted access to the stack outside of it's limits
+     * An action has attempted access to an empty stack
      */
-    VM_ERROR_TYPE_STACK_LIMIT,
+    VM_ERROR_TYPE_STACK_EMPTY,
 
     /**
-     * An action has attempted access to the memory outside of it's limits
+     * An action has attempted access to the stack that generates a general error
      */
-    VM_ERROR_TYPE_MEMORY_LIMIT,
+    VM_ERROR_TYPE_STACK_GENERAL,
+
+    /**
+     * An action has attempted access to the stack outside of it's min limits
+     */
+    VM_ERROR_TYPE_STACK_LIMIT_MIN,
+
+    /**
+     * An action has attempted access to the stack outside of it's max limits
+     */
+    VM_ERROR_TYPE_STACK_LIMIT_MAX,
+
+    /**
+     * An action has attempted access to the memory outside of it's min limits
+     */
+    VM_ERROR_TYPE_MEMORY_LIMIT_MIN,
+
+    /**
+     * An action has attempted access to the memory outside of it's max limits
+     */
+    VM_ERROR_TYPE_MEMORY_LIMIT_MAX,
 
     /**
      * An I/O Exception
