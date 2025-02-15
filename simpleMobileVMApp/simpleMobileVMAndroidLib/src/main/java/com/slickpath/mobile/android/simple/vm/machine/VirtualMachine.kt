@@ -12,23 +12,25 @@ import com.slickpath.mobile.android.simple.vm.parser.Parser
 import com.slickpath.mobile.android.simple.vm.parser.ParserListener
 import com.slickpath.mobile.android.simple.vm.util.Command
 import com.slickpath.mobile.android.simple.vm.util.CommandList
-import java.io.FileOutputStream
 import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadPoolExecutor
 
 /**
- * @author Pete Procopio
+ * Virtual Machine class responsible for executing commands and managing program memory.
  *
+ * This class simulates a virtual machine environment, handling instructions, program execution,
+ * and interactions with input/output.
  *
- * Constructor:
  * - Allows caller to pass in streams for both input and output
  * - If outputListener is null output will be added to log is debugVerbose is set
  * - If inputListener is null input will be attempted to be retrieved from the console System.in
  *
- * @param context context object
- * @param outputListener listener for output events
- * @param inputListener listener to return input on input events
+ * @property context Android context.
+ * @property outputListener Listener for output events. Defaults to null.
+ * @property inputListener Listener for input events. Defaults to null.
+ *
+ * @author Pete Procopio
  */
 class VirtualMachine(
     private val context: Context,
@@ -37,17 +39,21 @@ class VirtualMachine(
 ) : VirtualMachineInterface, Machine(outputListener, inputListener), Instructions {
 
     companion object {
+        /**
+         * Constant to indicate that a command this value or larger requires a single parameter.
+         */
         const val SINGLE_PARAM_COMMAND_START = 1000
         private val LOG_TAG = VirtualMachine::class.java.name
         private val executorPool = Executors.newCachedThreadPool() as ThreadPoolExecutor
     }
 
-    private var numInstructionsRun = 0
+    /**
+     * Counter for the number of instructions executed.
+     */
+    private var instructionsRunCount = 0
 
     /**
-     * listener to listen to events thrown by VM
-     *
-     * @param listener listener on vm events
+     * Listener for VM events.
      */
     var vmListener: VMListener? = null
 
@@ -57,40 +63,44 @@ class VirtualMachine(
         try {
             Class.forName("BaseInstructionSet")
         } catch (e: ClassNotFoundException) {
-            debug(LOG_TAG, e.message ?: "<No Message>")
+            debug(LOG_TAG, "BaseInstructionSet class not found " + (e.message ?: "<No Message>"))
         }
     }
 
     //   EXECUTION
     /**
-     * Add the contents of a Command object to the VM
+     * Adds a single command to the program memory.
      *
-     *
-     * Basically write the command id and its parameter(s) into the program memory space
-     *
-     * @param command command to add
+     * @param command The command to add.
      */
     override fun addCommand(command: Command) {
         setCommandAt(command, programWriterPtr)
     }
 
     /**
-     * Launch thread that will add all the Commands in the CommandList to the VM
-     * will call completedAddingInstructions on VMListener after completion
+     * Adds a list of commands to the program memory asynchronously.
      *
-     * @param commands command container
+     * @param commands The list of commands to add.
      */
     override fun addCommands(commands: CommandList?) {
         resetProgramWriter()
         executorPool.execute { doAddInstructions(commands) }
     }
 
+    /**
+     * Adds commands from a parser asynchronously.
+     *
+     * @param parser The parser containing the commands.
+     */
     override suspend fun addCommands(parser: Parser) {
         parser.addParserListener(vmParserListener)
         parser.parse()
         this.parser = parser
     }
 
+    /**
+     * Listener for parser events.
+     */
     private var vmParserListener: ParserListener = object : ParserListener {
         override fun completedParse(parseResult: ParseResult) {
             if (parseResult.vmError == null) {
@@ -102,68 +112,71 @@ class VirtualMachine(
     }
 
     /**
-     * Add all the Commands in the CommandList to the VM
-     * will call completedAddingInstructions on VMListener after completion
+     * Adds a list of commands to the program memory synchronously.
      *
-     * @param commands commands to add
+     * @param commands The list of commands to add.
      */
     private fun doAddInstructions(commands: CommandList?) {
         Log.d(LOG_TAG, "^^^^^^^^^^ ADD INSTRUCTIONS START ^^^^^^^^^^")
         var vmError: VMError? = null
-        var numInstructionsAdded = 0
-        if (commands != null) {
-            val numCommands = commands.size
-            for (i in 0 until numCommands) {
-                addCommand(commands[i])
-                numInstructionsAdded++
-            }
+        var addedInstructionCount = 0
+        if (commands == null) {
+            vmError = VMError("Null command list provided to doAddInstructions", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS)
         } else {
-            vmError = VMError("addInstructions instructions", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS)
+            addedInstructionCount = commands.size
+            commands.forEach { command ->
+                addCommand(command)
+            }
         }
-        vmListener?.completedAddingInstructions(vmError, numInstructionsAdded)
+        vmListener?.completedAddingInstructions(vmError, addedInstructionCount)
         Log.d(LOG_TAG, "^^^^^^^^^^ ADD INSTRUCTIONS END ^^^^^^^^^^")
     }
 
     /**
-     * Will run the instruction the program pointer is pointing at.
-     * This is a synchronous call and will not call into the completedAddingInstructions
+     * Executes the next instruction in the program memory synchronously.
      *
-     * @return instruction was a halt
-     * @throws VMError on a VM error
+     * @return Results containing information about the executed instruction.
+     * @throws VMError if a virtual machine error occurs.
      */
     @Throws(VMError::class)
     override fun runNextInstruction(): Results {
         val results = doRunNextInstruction()
-        if (results.vmError != null) {
-            throw results.vmError
-        }
+        results.vmError?.let { throw it }
         return results
     }
 
     /**
-     * Run the instruction the program pointer is pointing at
-     * will call completedRunningInstruction on VMListener after completion
+     * Executes the next instruction in the program memory.
+     *
+     * @return Results containing information about the executed instruction.
      */
     private fun doRunNextInstruction(): Results {
         Log.d(LOG_TAG, "+doRunNextInstruction $programCounter")
-        var bHalt = false
+        var hasHalted = false
         var vmError: VMError? = null
-        var instructionVal = -1
+        var instructionValue = -1
         try {
-            instructionVal = instruction
-            runCommand(instructionVal)
+            instructionValue = currentInstruction
+            runCommand(instructionValue)
         } catch (e: VMError) {
             vmError = e
         }
-        if (instructionVal == Instructions.HALT) {
-            numInstructionsRun = 0
+        if (instructionValue == Instructions.HALT) {
+            instructionsRunCount = 0
             resetProgramWriter()
             resetStack()
-            bHalt = true
+            hasHalted = true
         }
-        return Results(bHalt, programCounter, vmError)
+        return Results(hasHalted, programCounter, vmError)
     }
 
+    /**
+     * Data class to hold the results of running an instruction.
+     *
+     * @property hasHalted Indicates if the HALT instruction was executed.
+     * @property lastLineExecuted The program counter value after execution.
+     * @property vmError Any VMError that occurred during execution.
+     */
     data class Results(
         val halt: Boolean,
         val lastLineExecuted: Int,
@@ -171,62 +184,59 @@ class VirtualMachine(
     )
 
     /**
-     * Launches thread that does - Run all remaining instructions - starting from current program ptr location
-     * will call completedRunningInstructions on VMListener after completion
+     * Executes all remaining instructions in the program memory asynchronously.
      */
     override fun runInstructions() {
         executorPool.execute { doRunInstructions() }
     }
 
     /**
-     * Launch thread that will Run N number of instructions - starting from current program ptr location
-     * will call completedRunningInstructions on VMListener after completion
+     * Executes a specified number of instructions in the program memory asynchronously.
      *
-     * @param numInstructionsToRun number of instructions to run until running stops
+     * @param numInstructionsToRun The number of instructions to execute.
      */
     override fun runInstructions(numInstructionsToRun: Int) {
         executorPool.execute { doRunInstructions(numInstructionsToRun) }
     }
 
     /**
-     * Run N number of instructions - starting from current program ptr location
-     * will call completedRunningInstructions on VMListener after completion
+     * Executes a specified number of instructions in the program memory.
      *
-     * @param numInstructionsToRun number of instructions to run until running stops
+     * @param numInstructionsToRun The number of instructions to execute. -1 to run all remaining
      */
     private fun doRunInstructions(numInstructionsToRun: Int = -1) {
         Log.d(LOG_TAG, "++++++++++ RUN INSTRUCTIONS START ++++++++++")
         var vmError: VMError? = null
-        dumpMem("1")
+        dumpMemory("1")
         var numInstructionsRun = 0
         var lastProgramCounter = -1
-        var instructionVal: Int = Instructions.BEGIN
+        var instructionValue: Int = Instructions.BEGIN
         try {
-            while (instructionVal != Instructions.HALT &&
+            while (instructionValue != Instructions.HALT &&
                 programCounter < MemoryStore.MAX_MEMORY &&
                 (numInstructionsRun < numInstructionsToRun || numInstructionsToRun == -1)
             ) {
                 lastProgramCounter = programCounter
                 numInstructionsRun++
-                instructionVal = instruction
-                runCommand(instructionVal)
+                instructionValue = currentInstruction
+                runCommand(instructionValue)
             }
             debug(LOG_TAG, "=========================")
-            logAdditionalInfo(numInstructionsRun, lastProgramCounter, instructionVal)
+            logExecutionSummary(numInstructionsRun, lastProgramCounter, instructionValue)
             debug(LOG_TAG, "=========================")
         } catch (vme: VMError) {
             debug(LOG_TAG, "=========================")
             debug(LOG_TAG, "VMError=(" + vme.type + ") " + vme.message)
-            logAdditionalInfo(numInstructionsRun, lastProgramCounter, instructionVal)
-            dumpMem("2")
+            logExecutionSummary(numInstructionsRun, lastProgramCounter, instructionValue)
+            dumpMemory("2")
             vmError = vme
             debug(LOG_TAG, "=========================")
         }
-        dumpMem("3")
+        dumpMemory("3")
         Log.d(LOG_TAG, "+DONE PROCESSING+++++++++")
 
         vmListener?.completedRunningInstructions(
-            instructionVal == Instructions.HALT,
+            instructionValue == Instructions.HALT,
             programCounter,
             vmError
         ) ?: run {
@@ -236,66 +246,61 @@ class VirtualMachine(
     }
 
     /**
-     * @param numInstructionsRun   number of instructions that were run
-     * @param lastProgramCounter    last program counter location
-     * @param instructionVal last instruction value
+     * Logs additional information about the last instruction executed and the program's state.
+     *
+     * @param numInstructionsRun The number of instructions that were executed.
+     * @param lastProgramCounter The last program counter location before exiting.
+     * @param lastInstructionValue The value of the last instruction executed.
      */
-    private fun logAdditionalInfo(
-        numInstructionsRun: Int, lastProgramCounter: Int,
-        instructionVal: Int
+    private fun logExecutionSummary(
+        numInstructionsRun: Int,
+        lastProgramCounter: Int,
+        lastInstructionValue: Int
     ) {
-        debug(
-            LOG_TAG,
-            "LAST_INSTRUCTION=(" + getInstructionString(instructionVal) + ") " + instructionVal
-        )
+        val lastInstructionString = getInstructionString(lastInstructionValue)
+        debug(LOG_TAG, "LAST INSTRUCTION: ($lastInstructionString) - Value: $lastInstructionValue")
         debug(LOG_TAG, "NUM INSTRUCTIONS RUN=$numInstructionsRun")
-        debug(LOG_TAG, "PROG_CTR=$programCounter")
-        debug(LOG_TAG, "LAST_PROG_CTR=$lastProgramCounter")
+        debug(LOG_TAG, "CURRENT PROGRAM CTR=$programCounter")
+        debug(LOG_TAG, "LAST PROGRAM CTR=$lastProgramCounter")
     }
 
     /**
-     * @param instructionVal instruction val
-     * @return instruction string representation
+     * Retrieves the string representation of an instruction based on its integer value.
+     *
+     * @param instructionValue The integer value representing the instruction.
+     * @return The string representation of the instruction, or null if the instruction value is not found.
      */
-    private fun getInstructionString(instructionVal: Int): String? {
-        return BaseInstructionSet.INSTRUCTION_SET_CONV[instructionVal]
+    private fun getInstructionString(instructionValue: Int): String? {
+        return BaseInstructionSet.INSTRUCTION_SET_CONV[instructionValue]
     }
 
     /**
-     * Dump the memory into a file for debugging purposes
-     * file name : "memDump<sAppend>.text
-    </sAppend> */
-    private fun dumpMem(append: String) {
-        if (debugDump) {
-            val filename = "memDump$append.txt"
-            val data = StringBuilder()
-            var i = 1
-            while (i < MemoryStore.MAX_MEMORY) {
-                try {
-                    val parameter = getValueAt(i)
-                    val command = getValueAt(i - 1)
-                    data.append(command)
-                        .append(' ')
-                        .append(parameter)
-                        .append("\r\n")
-                } catch (e: VMError) {
-                    e.printStackTrace()
-                }
-                i += 2
-            }
-            var fos: FileOutputStream? = null
+     * Dumps the memory contents to a file for debugging purposes.
+     * File name: "memDump_<append>.txt"
+     */
+    private fun dumpMemory(append: String) {
+        if (!debugDump) return
+
+        val filename = "memDump$append.txt"
+        val data = StringBuilder()
+
+        var i = 1
+        while (i < MemoryStore.MAX_MEMORY) {
             try {
-                fos = context.openFileOutput(filename, Context.MODE_PRIVATE)
-                fos.write(data.toString().toByteArray())
-            } catch (e: IOException) {
-                if (fos != null) {
-                    try {
-                        fos.close()
-                    } catch (e1: IOException) {
-                        Log.w(LOG_TAG, "unable to fo final close", e1)
-                    }
-                }
+                val parameter = getValueAt(i)
+                val command = getValueAt(i - 1)
+                data.append("$command $parameter\n")
+            } catch (e: VMError) {
+                Log.e(LOG_TAG, "Error accessing memory at index: ${i - 1} or $i", e)
             }
+            i += 2
+        }
+        try {
+            context.openFileOutput(filename, Context.MODE_PRIVATE).use { fos ->
+                fos.write(data.toString().toByteArray())
+            }
+        } catch (e: IOException) {
+            Log.e(LOG_TAG, "Error writing memory dump to file: $filename", e)
         }
     }
 
@@ -308,140 +313,120 @@ class VirtualMachine(
     @Throws(VMError::class)
     private fun runCommand(commandId: Int) {
         doRunCommandDebug(commandId)
-        numInstructionsRun++
-        val bBranched: Boolean
+        instructionsRunCount++
+        var shouldIncrementProgramCounter = true
         when (commandId) {
             Instructions.ADD -> {
                 ADD()
-                incProgramCounter()
             }
 
             Instructions.SUB -> {
                 SUB()
-                incProgramCounter()
             }
 
             Instructions.MUL -> {
                 MUL()
-                incProgramCounter()
             }
 
             Instructions.DIV -> {
                 DIV()
-                incProgramCounter()
             }
 
             Instructions.NEG -> {
                 NEG()
-                incProgramCounter()
             }
 
             Instructions.EQUAL -> {
                 EQUAL()
-                incProgramCounter()
             }
 
             Instructions.NOTEQL -> {
                 NOTEQL()
-                incProgramCounter()
             }
 
             Instructions.GREATER -> {
                 GREATER()
-                incProgramCounter()
             }
 
             Instructions.LESS -> {
                 LESS()
-                incProgramCounter()
             }
 
             Instructions.GTREQL -> {
                 GTREQL()
-                incProgramCounter()
             }
 
             Instructions.LSSEQL -> {
                 LSSEQL()
-                incProgramCounter()
             }
 
             Instructions.NOT -> {
                 NOT()
-                incProgramCounter()
             }
 
             Instructions.POP -> {
                 POP()
-                incProgramCounter()
             }
 
-            Instructions.JUMP -> JUMP()
+            Instructions.JUMP -> {
+                JUMP()
+                shouldIncrementProgramCounter = false
+            }
+
             Instructions.RDCHAR -> {
                 RDCHAR()
-                incProgramCounter()
             }
 
             Instructions.RDINT -> {
                 RDINT()
-                incProgramCounter()
             }
 
             Instructions.WRCHAR -> {
                 WRCHAR()
-                incProgramCounter()
             }
 
             Instructions.WRINT -> {
                 WRINT()
-                incProgramCounter()
             }
 
             Instructions.CONTENTS -> {
                 CONTENTS()
-                incProgramCounter()
             }
 
             Instructions.HALT -> {
                 HALT()
-                incProgramCounter()
             }
 
             Instructions.PUSHC -> {
-                PUSHC(parameter)
-                incProgramCounter()
+                PUSHC(currentParameter)
             }
 
             Instructions.PUSH -> {
-                PUSH(parameter)
-                incProgramCounter()
+                PUSH(currentParameter)
             }
 
             Instructions.POPC -> {
-                POPC(parameter)
-                incProgramCounter()
+                POPC(currentParameter)
             }
 
-            Instructions.BRANCH -> BRANCH(parameter)
+            Instructions.BRANCH -> {
+                BRANCH(currentParameter)
+                shouldIncrementProgramCounter = false
+            }
+
             Instructions.BREQL -> {
-                bBranched = BREQL(parameter)
-                if (!bBranched) {
-                    incProgramCounter()
-                }
+                val didBranch = BREQL(currentParameter)
+                shouldIncrementProgramCounter = didBranch.not()
             }
 
             Instructions.BRLSS -> {
-                bBranched = BRLSS(parameter)
-                if (!bBranched) {
-                    incProgramCounter()
-                }
+                val didBranch = BRLSS(currentParameter)
+                shouldIncrementProgramCounter = didBranch.not()
             }
 
             Instructions.BRGTR -> {
-                bBranched = BRGTR(parameter)
-                if (!bBranched) {
-                    incProgramCounter()
-                }
+                val didBranch = BRGTR(currentParameter)
+                shouldIncrementProgramCounter = didBranch.not()
             }
 
             else -> throw VMError(
@@ -449,23 +434,36 @@ class VirtualMachine(
                 VMErrorType.VM_ERROR_TYPE_BAD_UNKNOWN_COMMAND
             )
         }
+
+        if(shouldIncrementProgramCounter) {
+            incProgramCounter()
+        }
     }
 
-    @get:Throws(VMError::class)
-    private val instruction: Int
+    /**
+     * Gets the current instruction ID.
+     *
+     * @throws VMError if an error occurs while retrieving the instruction.
+     */
+    private val currentInstruction: Int
         get() {
             val command = getCommandAt(programCounter)
             return command.commandId
         }
 
-    @get:Throws(VMError::class)
-    private val parameter: Int
+
+    /**
+     * Gets the current parameter.
+     *
+     * @throws VMError if an error occurs while retrieving the parameter.
+     */
+    private val currentParameter: Int
         get() {
             val command = getCommandAt(programCounter)
             if (command.parameters.isEmpty() && command.commandId >= SINGLE_PARAM_COMMAND_START) {
-                throw VMError("No Parameters", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS)
+                throw VMError("No parameters provided for command requiring a parameter.", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS)
             } else if (command.parameters.isNotEmpty() && command.commandId < SINGLE_PARAM_COMMAND_START) {
-                throw VMError("Too many Parameters", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS)
+                throw VMError("Too many parameters provided for command.", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS)
             }
             return command.parameters[0]
         }
@@ -473,27 +471,28 @@ class VirtualMachine(
     /**
      * Debug output of runCommand
      *
-     * @param commandId id of command to run in debug
-     * @throws VMError on vm error
+     * @param commandId The ID of the command to execute.
+     * @throws VMError if a VM error occurs during execution.
      */
     @Throws(VMError::class)
     private fun doRunCommandDebug(commandId: Int) {
         debug(LOG_TAG) {
-            val lineCount = StringBuilder("[")
-            lineCount.append(numInstructionsRun)
-                .append("]")
-                .append(" Line=")
-                .append(programCounter - 1)
-                .append(" CMD=")
-                .append(getInstructionString(commandId))
-                .append(" (")
-                .append(commandId)
-                .append(")")
-            if (commandId >= 1000) {
-                lineCount.append(" PARAM=")
-                    .append(parameter)
+            buildString {
+                append("[")
+                append(instructionsRunCount)
+                append("]")
+                append(" Line=")
+                append(programCounter)
+                append(" CMD=")
+                append(getInstructionString(commandId))
+                append(" (")
+                append(commandId)
+                append(")")
+                if (commandId >= 1000) {
+                    append(" PARAM=")
+                    append(currentParameter)
+                }
             }
-            lineCount.toString()
         }
     }
 }
