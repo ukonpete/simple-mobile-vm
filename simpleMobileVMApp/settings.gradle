@@ -1,3 +1,2 @@
 include ':simpleMobileVMAndroidLib'
 include ':app'
-include 'simpleMobileVMAndroidRxLib'

@@ -429,14 +429,6 @@ class VirtualMachineTest {
         Log.d(TAG, "+..........CompletedRunningInstructions CountDown")
     }
 
-    private fun completedParse(parseResult: ParseResult) {
-        // Save values on callback and release test thread
-        Log.d(TAG, "+..........completedParse ")
-        _vmError = parseResult.vmError
-        _commands = parseResult.commands
-        Log.d(TAG, "+..........completedParse CountDown")
-    }
-
     companion object {
         private val TAG = VirtualMachineTest::class.java.name
         private const val NUM_COMMANDS_TO_RUN = 10

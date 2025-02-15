@@ -7,12 +7,9 @@ import android.util.Log
 import com.slickpath.mobile.android.simple.vm.*
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet
 import com.slickpath.mobile.android.simple.vm.instructions.Instructions
-import com.slickpath.mobile.android.simple.vm.parser.ParseResult
 import com.slickpath.mobile.android.simple.vm.parser.Parser
-import com.slickpath.mobile.android.simple.vm.parser.ParserListener
 import com.slickpath.mobile.android.simple.vm.util.Command
 import com.slickpath.mobile.android.simple.vm.util.CommandList
-import kotlinx.coroutines.flow.onCompletion
 import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadPoolExecutor

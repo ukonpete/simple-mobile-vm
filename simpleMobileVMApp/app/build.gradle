@@ -46,7 +46,6 @@ allprojects {
 dependencies {
     def appcompat_version = "1.7.0"
 
-    implementation project(':simpleMobileVMAndroidRxLib')
     implementation project(':simpleMobileVMAndroidLib')
     implementation 'androidx.annotation:annotation:1.9.1'
     implementation "androidx.core:core-ktx:1.15.0"
