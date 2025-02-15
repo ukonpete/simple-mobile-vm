@@ -149,7 +149,11 @@ class SimpleParser(private val parserHelper: ParserHelper) : AsyncParser() {
 
         if (thrownException != null) {
             debug("********** PARSE END WITH EXCEPTION **********")
-            throw VMError(additionalExceptionInfo + thrownException.message, thrownException, vmErrorType)
+            throw VMError(
+                additionalExceptionInfo + thrownException.message,
+                thrownException,
+                vmErrorType
+            )
         } else {
             debug("********** PARSE END **********")
         }
@@ -176,7 +180,7 @@ class SimpleParser(private val parserHelper: ParserHelper) : AsyncParser() {
                 paramVal = symbols[symbol]
                 paramVal?.let {
                     debug("  SYMBOL : $symbol($paramVal)")
-                } ?: throw IllegalStateException("Unrecognized symbol $symbol"  )
+                } ?: throw IllegalStateException("Unrecognized symbol $symbol")
 
             } else if (param.startsWith("g")) {
                 // Handle Variable

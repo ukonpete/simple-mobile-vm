@@ -1,6 +1,7 @@
 package com.slickpath.mobile.android.simple.vm.instructions
 
-import java.util.*
+import java.util.Collections
+import java.util.Hashtable
 
 /**
  * Defines two lookup tables (maps) that hold the complete instruction set
@@ -14,20 +15,24 @@ import java.util.*
  * @author Pete Procopio
  */
 object BaseInstructionSet : Instructions {
-    private val INSTRUCTION_SET_INTERNAL: MutableMap<String, Int> = Hashtable(Instructions.NUM_COMMANDS)
-    private val INSTRUCTION_SET_CONV_INTERNAL: MutableMap<Int, String> = Hashtable(Instructions.NUM_COMMANDS)
+    private val INSTRUCTION_SET_INTERNAL: MutableMap<String, Int> =
+        Hashtable(Instructions.NUM_COMMANDS)
+    private val INSTRUCTION_SET_CONV_INTERNAL: MutableMap<Int, String> =
+        Hashtable(Instructions.NUM_COMMANDS)
 
     /**
      * Lookup table for Command ID (Integer) by Command Name (String)
      */
     @JvmField
-    val INSTRUCTION_SET: MutableMap<String, Int> = Collections.unmodifiableMap(INSTRUCTION_SET_INTERNAL)
+    val INSTRUCTION_SET: MutableMap<String, Int> =
+        Collections.unmodifiableMap(INSTRUCTION_SET_INTERNAL)
 
     /**
      * Lookup table for Command Name (String) by Command ID (Integer)
      */
     @JvmField
-    val INSTRUCTION_SET_CONV: MutableMap<Int, String> = Collections.unmodifiableMap(INSTRUCTION_SET_CONV_INTERNAL)
+    val INSTRUCTION_SET_CONV: MutableMap<Int, String> =
+        Collections.unmodifiableMap(INSTRUCTION_SET_CONV_INTERNAL)
 
     init {
         //

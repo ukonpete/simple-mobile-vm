@@ -93,10 +93,10 @@ class VirtualMachine constructor(
 
     private var vmParserListener: ParserListener = object : ParserListener {
         override fun completedParse(parseResult: ParseResult) {
-            if(parseResult.vmError == null) {
+            if (parseResult.vmError == null) {
                 addCommands(parseResult.commands)
             }
-            vmListener?.completedAddingInstructions(parseResult.vmError, parseResult.commands.size )
+            vmListener?.completedAddingInstructions(parseResult.vmError, parseResult.commands.size)
             parser?.removeParserListener(this)
         }
     }
@@ -164,7 +164,11 @@ class VirtualMachine constructor(
         return Results(bHalt, programCounter, vmError)
     }
 
-    data class Results constructor(val halt: Boolean, val lastLineExecuted: Int, val vmError: VMError?)
+    data class Results constructor(
+        val halt: Boolean,
+        val lastLineExecuted: Int,
+        val vmError: VMError?
+    )
 
     /**
      * Launches thread that does - Run all remaining instructions - starting from current program ptr location
@@ -183,6 +187,7 @@ class VirtualMachine constructor(
     override fun runInstructions(numInstructionsToRun: Int) {
         executorPool.execute { doRunInstructions(numInstructionsToRun) }
     }
+
     /**
      * Run N number of instructions - starting from current program ptr location
      * will call completedRunningInstructions on VMListener after completion
@@ -312,91 +317,113 @@ class VirtualMachine constructor(
                 ADD()
                 incProgramCounter()
             }
+
             Instructions.SUB -> {
                 SUB()
                 incProgramCounter()
             }
+
             Instructions.MUL -> {
                 MUL()
                 incProgramCounter()
             }
+
             Instructions.DIV -> {
                 DIV()
                 incProgramCounter()
             }
+
             Instructions.NEG -> {
                 NEG()
                 incProgramCounter()
             }
+
             Instructions.EQUAL -> {
                 EQUAL()
                 incProgramCounter()
             }
+
             Instructions.NOTEQL -> {
                 NOTEQL()
                 incProgramCounter()
             }
+
             Instructions.GREATER -> {
                 GREATER()
                 incProgramCounter()
             }
+
             Instructions.LESS -> {
                 LESS()
                 incProgramCounter()
             }
+
             Instructions.GTREQL -> {
                 GTREQL()
                 incProgramCounter()
             }
+
             Instructions.LSSEQL -> {
                 LSSEQL()
                 incProgramCounter()
             }
+
             Instructions.NOT -> {
                 NOT()
                 incProgramCounter()
             }
+
             Instructions.POP -> {
                 POP()
                 incProgramCounter()
             }
+
             Instructions.JUMP -> JUMP()
             Instructions.RDCHAR -> {
                 RDCHAR()
                 incProgramCounter()
             }
+
             Instructions.RDINT -> {
                 RDINT()
                 incProgramCounter()
             }
+
             Instructions.WRCHAR -> {
                 WRCHAR()
                 incProgramCounter()
             }
+
             Instructions.WRINT -> {
                 WRINT()
                 incProgramCounter()
             }
+
             Instructions.CONTENTS -> {
                 CONTENTS()
                 incProgramCounter()
             }
+
             Instructions.HALT -> {
                 HALT()
                 incProgramCounter()
             }
+
             Instructions.PUSHC -> {
                 PUSHC(parameter)
                 incProgramCounter()
             }
+
             Instructions.PUSH -> {
                 PUSH(parameter)
                 incProgramCounter()
             }
+
             Instructions.POPC -> {
                 POPC(parameter)
                 incProgramCounter()
             }
+
             Instructions.BRANCH -> BRANCH(parameter)
             Instructions.BREQL -> {
                 bBranched = BREQL(parameter)
@@ -404,18 +431,21 @@ class VirtualMachine constructor(
                     incProgramCounter()
                 }
             }
+
             Instructions.BRLSS -> {
                 bBranched = BRLSS(parameter)
                 if (!bBranched) {
                     incProgramCounter()
                 }
             }
+
             Instructions.BRGTR -> {
                 bBranched = BRGTR(parameter)
                 if (!bBranched) {
                     incProgramCounter()
                 }
             }
+
             else -> throw VMError(
                 "BAD runCommand :$commandId",
                 VMErrorType.VM_ERROR_TYPE_BAD_UNKNOWN_COMMAND

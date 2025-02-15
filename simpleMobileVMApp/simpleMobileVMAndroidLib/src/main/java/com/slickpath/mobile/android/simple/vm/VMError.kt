@@ -58,7 +58,10 @@ class VMError : Exception {
      * @param cause throwable that was the cause of this VMError
      * @param type VMErrorType
      */
-    constructor(detailMessage: String?, cause: Throwable?, type: VMErrorType) : super(detailMessage, cause) {
+    constructor(detailMessage: String?, cause: Throwable?, type: VMErrorType) : super(
+        detailMessage,
+        cause
+    ) {
         this.type = type
     }
 }

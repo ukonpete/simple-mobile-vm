@@ -6,8 +6,12 @@ import com.slickpath.mobile.android.simple.vm.instructions.Instructions
 import com.slickpath.mobile.android.simple.vm.machine.FibonacciInstructions
 import com.slickpath.mobile.android.simple.vm.machine.FileHelperForTest
 import com.slickpath.mobile.android.simple.vm.util.CommandList
+import kotlinx.coroutines.runBlocking
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,7 +44,9 @@ class SimpleParserTest : ParserListener {
      */
     @Test
     fun testParse() {
-        _parser.parse()
+        runBlocking {
+            _parser.parse()
+        }
         try {
             // Wait for Callback
             _signal.await()

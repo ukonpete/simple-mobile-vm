@@ -4,11 +4,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.slickpath.mobile.android.simple.vm.VMError
 import com.slickpath.mobile.android.simple.vm.machine.ProgramManager.Companion.START_LOC
 import com.slickpath.mobile.android.simple.vm.util.Command
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.*
 
 /**
  * @author Pete Procopio
