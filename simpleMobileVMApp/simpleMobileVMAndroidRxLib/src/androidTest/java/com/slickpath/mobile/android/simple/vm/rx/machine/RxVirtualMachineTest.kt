@@ -12,6 +12,7 @@ import com.slickpath.mobile.android.simple.vm.rx.RxSchedulersRule
 import com.slickpath.mobile.android.simple.vm.rx.RxVirtualMachine
 import com.slickpath.mobile.android.simple.vm.util.Command
 import com.slickpath.mobile.android.simple.vm.util.CommandList
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
@@ -66,7 +67,8 @@ class RxVirtualMachineTest {
                     paramList.add(param)
                 }
                 val command = Command(instruction, paramList)
-                virtualMachine.addCommand(command).blockingGet()
+                val commandResult = virtualMachine.addCommand(command).blockingGet()
+                assertTrue(commandResult)
             }
             for (i in instructions.indices) {
                 val command = virtualMachine.getCommandAt(i)
@@ -109,7 +111,8 @@ class RxVirtualMachineTest {
                 val command = Command(instruction, paramList)
                 commandList.add(command)
             }
-            virtualMachine.addCommands(commandList).blockingGet()
+            val commandResult = virtualMachine.addCommands(commandList).blockingGet()
+            assertEquals(6, commandResult)
             for (i in instructions.indices) {
                 val command = virtualMachine.getCommandAt(i)
                 assertEquals(instructions[i], command.commandId)
@@ -131,7 +134,7 @@ class RxVirtualMachineTest {
     fun testRunNextInstruction() {
         val virtualMachine = RxVirtualMachine(ApplicationProvider.getApplicationContext())
         val signalParse = CountDownLatch(1)
-        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
         parser.addParserListener(object : ParserListener {
             override fun completedParse(parseResult: ParseResult) {
                 this@RxVirtualMachineTest.completedParse(parseResult)
@@ -141,7 +144,9 @@ class RxVirtualMachineTest {
         assertNull(_parseError)
 
         Log.d(TAG, "+...........................PARSE START ")
-        parser.parse()
+        runBlocking {
+            parser.parse()
+        }
         try {
             // Wait for Callback
             Log.d(TAG, "+...........................PARSE WAIT ")
@@ -180,7 +185,7 @@ class RxVirtualMachineTest {
     fun testRunInstructions() {
         val virtualMachine = RxVirtualMachine(ApplicationProvider.getApplicationContext())
         val signalParse = CountDownLatch(1)
-        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
         parser.addParserListener(object : ParserListener {
             override fun completedParse(parseResult: ParseResult) {
                 this@RxVirtualMachineTest.completedParse(parseResult)
@@ -188,7 +193,9 @@ class RxVirtualMachineTest {
             }
         })
         assertNull(_parseError)
-        parser.parse()
+        runBlocking {
+            parser.parse()
+        }
         try {
             // Wait for Callback
             signalParse.await()
@@ -196,7 +203,8 @@ class RxVirtualMachineTest {
             e.printStackTrace()
             fail(e.message)
         } // wait for callback
-        virtualMachine.addCommands(_commands).blockingGet()
+        val commandResult = virtualMachine.addCommands(_commands).blockingGet()
+        assertEquals(35, commandResult)
         val results = virtualMachine.runInstructions().blockingGet()
         assertEquals(35, results.lastLineExecuted)
 
@@ -210,7 +218,7 @@ class RxVirtualMachineTest {
         Log.d(TAG, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
         val virtualMachine = RxVirtualMachine(ApplicationProvider.getApplicationContext())
         val signalParse = CountDownLatch(1)
-        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
         parser.addParserListener(object : ParserListener {
             override fun completedParse(parseResult: ParseResult) {
                 this@RxVirtualMachineTest.completedParse(parseResult)
@@ -218,7 +226,9 @@ class RxVirtualMachineTest {
             }
         })
         assertNull(_parseError)
-        parser.parse()
+        runBlocking {
+            parser.parse()
+        }
         try {
             // Wait for Callback
             signalParse.await()
@@ -241,7 +251,7 @@ class RxVirtualMachineTest {
     fun testAddInstructionsWithParser() {
         Log.d(TAG, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
         val virtualMachine = RxVirtualMachine(ApplicationProvider.getApplicationContext())
-        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
         val numInstructionsAdded = virtualMachine.addCommands(parser).blockingGet()
         assertEquals(35, numInstructionsAdded)
         val results = virtualMachine.runInstructions().blockingGet()

@@ -1,11 +1,15 @@
-@file:Suppress("KDocUnresolvedReference")
-
 package com.slickpath.mobile.android.simple.vm.machine
 
+import com.slickpath.mobile.android.simple.vm.machine.MemoryStore.Companion.EMPTY_MEMORY_VALUE
+import com.slickpath.mobile.android.simple.vm.machine.MemoryStore.Companion.MAX_MEMORY
 import com.slickpath.mobile.android.simple.vm.util.Command
 
 /**
- * This class abstracts the handling of the memory used to store program instructions and parameters
+ * Manages the program memory, storing instructions and providing access to them.
+ *
+ * This class handles the memory used to store program instructions and parameters. It manages
+ * the program counter, program writer pointer, and provides methods to access and modify
+ * the program store.
  *
  * @author Pete Procopio
  */
@@ -13,107 +17,109 @@ internal class ProgramManager {
 
     companion object {
         /**
-         * Location in memory of stack pointer when stack is empty
+         * The starting location of the program in memory (when the stack is considered empty).
          */
-        const val START_LOC = 0
-
-        /**
-         * Value of memory if it is empty (unused)
-         */
-        private const val EMPTY_MEMORY_VALUE = 999999
-
-        /**
-         * Memory consists of N number of sequential Integers
-         */
-        private const val MAX_MEMORY = 500
+        const val START_LOCATION = 0
     }
 
     /**
-     * Actually store we use for memory
+     * The actual memory store for the program instructions.
      */
-    private val _programStore: MutableList<Command> = ArrayList(MAX_MEMORY)
+    private val programStore = MutableList(MAX_MEMORY) { Command(EMPTY_MEMORY_VALUE, null) }
 
     /**
-     * Keeps track of location of next instruction to run
+     * The current instruction being pointed to.
      */
-    private var _programCounter = START_LOC
+    private var programCounter = START_LOCATION
 
     /**
-     * Keeps track of next location where an instruction to run can be written to- part of program setup
+     * The next available location for writing an instruction.
      */
-    var programWriterPtr = START_LOC
+    var programWriterPointer = START_LOCATION
         private set
 
-    init {
-        // initialize every piece of instruction memory to EMPTY
-        for (i in 0 until MAX_MEMORY) {
-            _programStore.add(Command(EMPTY_MEMORY_VALUE, null))
-        }
-    }
-
+    /**
+     * Sets the program counter to the specified location.
+     *
+     * @param location The new location for the program counter.
+     * @throws IllegalArgumentException if the location is out of bounds.
+     */
     fun setProgramCounter(location: Int) {
-        _programCounter = location
-    }
-
-    fun getProgramCounter(): Int {
-        return _programCounter
+        require(location in 0 until MAX_MEMORY) { "Program counter location out of bounds: $location" }
+        programCounter = location
     }
 
     /**
-     * Increment program counter location to next line of instruction
+     * Gets the current location of the program counter.
+     *
+     * @return The current location of the program counter.
+     */
+    fun getProgramCounter(): Int {
+        return programCounter
+    }
+
+    /**
+     * Increments the program counter to the next instruction.
+     *
+     * @throws IllegalStateException if the program counter is at the end of memory.
      */
     fun incProgramCounter() {
-        _programCounter++
+        check(programCounter < MAX_MEMORY) { "Program counter cannot be incremented past the end of memory" }
+        programCounter++
     }
 
     /**
-     * Decrement program counter location to previous line of instruction
+     * Decrements the program counter to the previous instruction.
+     *
+     * @throws IllegalStateException if the program counter is at the beginning of memory.
      */
     fun decProgramCounter() {
-        _programCounter--
+        check(programCounter > 0) { "Program counter cannot be decremented past the beginning of memory" }
+        programCounter--
     }
 
     /**
-     * program counter location to start of program memory
+     * Resets the program counter to the start of the program.
      */
     fun resetProgramCounter() {
-        _programCounter = START_LOC
+        programCounter = START_LOCATION
     }
 
     /**
-     * Increment program writer location to previous memory location
+     * Increments the program writer pointer to the next available location.
+     *
+     * @throws IllegalStateException if the program writer pointer is at the end of memory.
      */
     fun incrementProgramWriter() {
-        programWriterPtr++
+        programWriterPointer++
     }
 
     /**
      * Reset program writer location to starting memory location
      */
     fun resetProgramWriter() {
-        programWriterPtr = START_LOC
+        check(programWriterPointer < MAX_MEMORY - 1) { "Program writer pointer cannot be incremented past the end of memory" }
+        programWriterPointer = START_LOCATION
     }
 
     /**
-     * Returns the instructions as a list
+     * Returns a copy of the program store.
      *
-     *
-     * NOTE: This makes a copy of the program memory
-     *
-     * @return Copy of memory
+     * @return A copy of the program memory.
      */
     fun dumpProgramStore(): List<Command> {
-        return ArrayList(_programStore)
+        return programStore.toList()
     }
 
     /**
-     * Returns the instruction at the specified location
+     * Returns the instruction at the specified location.
      *
-     * @param location location in program store
-     * @return command at location
+     * @param location The location in the program store.
+     * @return The command at the specified location.
+     * @throws IllegalArgumentException if the location is out of bounds.
      */
     fun getCommandAt(location: Int): Command {
-        return _programStore[location]
+        return programStore[location]
     }
 
     /**
@@ -123,7 +129,8 @@ internal class ProgramManager {
      * @param command command that will be set
      */
     fun setCommandAt(location: Int, command: Command) {
-        _programStore[location] = command
+        require(location in 0 until MAX_MEMORY) { "Set Location out of bounds: $location" }
+        programStore[location] = command
     }
 
 }

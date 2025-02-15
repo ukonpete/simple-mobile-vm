@@ -7,7 +7,6 @@ import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.*
 
 /**
  * @author Pete Procopio
@@ -18,16 +17,15 @@ class CommandListTest {
     companion object {
         private const val TEST_PARAM_VAL1 = 15
         private const val TEST_PARAM_VAL2 = 25
+        private const val COMMAND_1 = Instructions.PUSHC
+        private const val COMMAND_PARAM_VAL_1 = TEST_PARAM_VAL1
+        private val COMMAND_PARAM_LIST_1: List<Int> = ArrayList(listOf(COMMAND_PARAM_VAL_1))
+        private const val COMMAND_2 = Instructions.PUSH
+        private const val COMMAND_PARAM_VAL_2 = TEST_PARAM_VAL2
+        private val COMMAND_PARAM_LIST_2: List<Int> = ArrayList(listOf(COMMAND_PARAM_VAL_2))
+        private const val COMMAND_3 = Instructions.ADD
+        private val COMMAND_PARAM_LIST_3: List<Int>? = null
     }
-
-    private val COMMAND_1 = Instructions.PUSHC
-    private val COMMAND_PARAM_VAL_1 = TEST_PARAM_VAL1
-    private val COMMAND_PARAM_LIST_1: List<Int> = ArrayList(listOf(COMMAND_PARAM_VAL_1))
-    private val COMMAND_2 = Instructions.PUSH
-    private val COMMAND_PARAM_VAL_2 = TEST_PARAM_VAL2
-    private val COMMAND_PARAM_LIST_2: List<Int> = ArrayList(listOf(COMMAND_PARAM_VAL_2))
-    private val COMMAND_3 = Instructions.ADD
-    private val COMMAND_PARAM_LIST_3: List<Int>? = null
 
     private lateinit var testList1: CommandList
 

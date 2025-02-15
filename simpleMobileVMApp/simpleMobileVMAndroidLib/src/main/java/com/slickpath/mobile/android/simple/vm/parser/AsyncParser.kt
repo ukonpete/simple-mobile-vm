@@ -1,6 +1,6 @@
 package com.slickpath.mobile.android.simple.vm.parser
 
-abstract class AsyncParser: Parser {
+abstract class AsyncParser : Parser {
 
     private var parserListeners: MutableSet<ParserListener> = mutableSetOf()
 

@@ -1,7 +1,5 @@
 package com.slickpath.mobile.android.simple.vm.util
 
-import java.util.*
-
 /**
  * CommandList is a List Container that holds all the Commands
  *

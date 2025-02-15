@@ -1,13 +1,12 @@
 package com.slickpath.mobile.android.simple.vm.machine
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.slickpath.mobile.android.simple.vm.machine.ProgramManager.Companion.START_LOC
+import com.slickpath.mobile.android.simple.vm.machine.ProgramManager.Companion.START_LOCATION
 import com.slickpath.mobile.android.simple.vm.util.Command
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.*
 
 /**
  * @author Pete Procopio
@@ -27,15 +26,15 @@ class ProgramManagerTest {
      */
     @Test
     fun testSetProgramCounter() {
-        assertEquals(START_LOC, _programManager.getProgramCounter())
+        assertEquals(START_LOCATION, _programManager.getProgramCounter())
         _programManager.setProgramCounter(100)
         assertEquals(100, _programManager.getProgramCounter())
         _programManager.setProgramCounter(10)
         assertEquals(10, _programManager.getProgramCounter())
         _programManager.setProgramCounter(249)
         assertEquals(249, _programManager.getProgramCounter())
-        _programManager.setProgramCounter(START_LOC)
-        assertEquals(START_LOC, _programManager.getProgramCounter())
+        _programManager.setProgramCounter(START_LOCATION)
+        assertEquals(START_LOCATION, _programManager.getProgramCounter())
     }
 
     /**
@@ -45,7 +44,7 @@ class ProgramManagerTest {
      */
     @Test
     fun testGetProgramCounter() {
-        assertEquals(START_LOC, _programManager.getProgramCounter())
+        assertEquals(START_LOCATION, _programManager.getProgramCounter())
         for (i in 0..99) {
             _programManager.incProgramCounter()
         }
@@ -57,7 +56,7 @@ class ProgramManagerTest {
         for (i in 0..49) {
             _programManager.decProgramCounter()
         }
-        assertEquals(START_LOC, _programManager.getProgramCounter())
+        assertEquals(START_LOCATION, _programManager.getProgramCounter())
     }
 
     /**
@@ -65,24 +64,24 @@ class ProgramManagerTest {
      */
     @Test
     fun testResetProgramCounter() {
-        assertEquals(START_LOC, _programManager.getProgramCounter())
+        assertEquals(START_LOCATION, _programManager.getProgramCounter())
         _programManager.setProgramCounter(100)
         assertEquals(100, _programManager.getProgramCounter())
         _programManager.resetProgramCounter()
-        assertEquals(START_LOC, _programManager.getProgramCounter())
+        assertEquals(START_LOCATION, _programManager.getProgramCounter())
     }
 
     /**
-     * Test method for [com.slickpath.mobile.android.simple.vm.machine.ProgramManager.programWriterPtr].
+     * Test method for [com.slickpath.mobile.android.simple.vm.machine.ProgramManager.programWriterPointer].
      * Test method for [com.slickpath.mobile.android.simple.vm.machine.ProgramManager.incrementProgramWriter].
      */
     @Test
     fun testGetProgramWriterPtr() {
-        assertEquals(START_LOC, _programManager.programWriterPtr)
+        assertEquals(START_LOCATION, _programManager.programWriterPointer)
         for (i in 0..99) {
             _programManager.incrementProgramWriter()
         }
-        assertEquals(100, _programManager.programWriterPtr)
+        assertEquals(100, _programManager.programWriterPointer)
     }
 
     /**
@@ -115,19 +114,19 @@ class ProgramManagerTest {
      */
     @Test
     fun testResetProgramWriter() {
-        assertEquals(START_LOC, _programManager.programWriterPtr)
+        assertEquals(START_LOCATION, _programManager.programWriterPointer)
         for (i in 0..99) {
             _programManager.incrementProgramWriter()
         }
-        assertEquals(100, _programManager.programWriterPtr)
+        assertEquals(100, _programManager.programWriterPointer)
         _programManager.resetProgramWriter()
-        assertEquals(START_LOC, _programManager.programWriterPtr)
+        assertEquals(START_LOCATION, _programManager.programWriterPointer)
     }
 
     /**
-     * Test method for [com.slickpath.mobile.android.simple.vm.machine.MemoryStore.getCommand].
-     * Test method for [com.slickpath.mobile.android.simple.vm.machine.MemoryStore.setCommand] )}.
-     * Test method for [com.slickpath.mobile.android.simple.vm.machine.MemoryStore.programMemoryDump].
+     * Test method for [com.slickpath.mobile.android.simple.vm.machine.ProgramManager.getCommandAt].
+     * Test method for [com.slickpath.mobile.android.simple.vm.machine.ProgramManager.setCommandAt].
+     * Test method for [com.slickpath.mobile.android.simple.vm.machine.ProgramManager.dumpProgramStore].
      */
     @Test
     fun testGetCommand() {

@@ -14,40 +14,33 @@ import java.io.*
 import java.util.*
 
 /**
- * Parses file for commands, parameters, variables and symbols
- *
+ * Parses a file for commands, parameters, variables, and symbols.
  *
  * Possible line combinations:
- *
- *  * COMMAND
- *  * COMMAND PARAMETER
- *  * COMMAND VAR
- *  * COMMAND SYMBOL
- *  * SYMBOL
- *  * COMMENT
- *
- *
+ * - COMMAND
+ * - COMMAND PARAMETER
+ * - COMMAND VAR
+ * - COMMAND SYMBOL
+ * - SYMBOL
+ * - COMMENT
  *
  * Definitions:
- *
- *  * COMMAND - string
- *  * PARAMETER - string (typically an integer, but can be VAR OR SYMBOL)
- *  * VAR - String starting with 'g'  - Variable memory location reference
- *  * SYMBOL - [string] - NOTE: if a SYMBOL is used in a parameter it is a reference to an existing SYMBOL, that SYMBOL represents the line it is defined on. It MUST be defined somewhere on a line by itself
- *  * COMMENT - Ignore this line during parsing - user wants to leave a compiler ignored note at this line
- *
- *
+ * - COMMAND: A string representing an operation.
+ * - PARAMETER: A string, typically an integer, but can be a VAR or SYMBOL.
+ * - VAR: A string starting with 'g', representing a variable memory location reference.
+ * - SYMBOL: A string enclosed in square brackets, e.g., "[symbol_name]". If used as a parameter, it refers to an existing SYMBOL, which in turn represents the line it is defined on. It MUST be defined on a line by itself.
+ * - COMMENT: A line ignored during parsing, indicated by "//".
  *
  * Examples:
- *
- *  * COMMAND - ADD  (Adds the top two items on the stack and places result on the stack)
- *  * COMMAND PARAMETER - PUSHC 100 (Pushes the value 100 onto the top of the stack)
- *  * COMMAND VAR - POPC g1 - (Pop the top value of the stack and place into the memory location represented by g1
- *  * COMMAND SYMBOL - JUMP [LOOP2] - jump to the line number represented by [LOOP2]
- *  * SYMBOL - [LOOP2] - assign the next instructions line number to the symbol [LOOP2]
- *  * COMMENT - // This code rocks
+ * - COMMAND: ADD (Adds the top two items on the stack and places the result on the stack)
+ * - COMMAND PARAMETER: PUSHC 100 (Pushes the value 100 onto the top of the stack)
+ * - COMMAND VAR: POPC g1 (Pops the top value of the stack and places it into the memory location represented by g1)
+ * - COMMAND SYMBOL: JUMP [LOOP2] (Jumps to the line number represented by [LOOP2])
+ * - SYMBOL: [LOOP2] (Assigns the next instruction's line number to the symbol [LOOP2])
+ * - COMMENT: // This code rocks
  *
  * @author Pete Procopio
+ *
  * @see [Simple VM Wiki on Github](https://github.com/ukonpete/simple-mobile-vm/wiki)
  */
 class SimpleParser(private val parserHelper: ParserHelper) : AsyncParser() {
@@ -63,9 +56,7 @@ class SimpleParser(private val parserHelper: ParserHelper) : AsyncParser() {
     }
 
     /**
-     * arse file for all commands, parameters, variables and symbols when finished calls completedParse
-     * on the listener which returns any error information and the CommandList
-     *
+     * Parses instructions asynchronously.
      *
      * Subsequent calls will be queued until the previous call is finished.
      */
@@ -89,69 +80,74 @@ class SimpleParser(private val parserHelper: ParserHelper) : AsyncParser() {
     @Throws(VMError::class)
     private fun doParse() {
         debug("********** PARSE START **********")
-        var stream: InputStream? = null
-        var thrownException: Exception? = null
-        var vmErrorType = VMErrorType.VM_ERROR_TYPE_LAZY_UNSET
-        var additionalExceptionInfo = "[runInstructions] "
+        val instructionsString = parserHelper.getInstructionsString()
+        val inputStream = ByteArrayInputStream(instructionsString.toByteArray())
+
         try {
-            stream = ByteArrayInputStream(parserHelper.getInstructionsString().toByteArray())
             debug("********** SYMBOLS START **********")
-            getSymbols(stream)
+            getSymbols(inputStream)
             debug("********** SYMBOLS END**********")
-            stream.close()
-            stream = ByteArrayInputStream(parserHelper.getInstructionsString().toByteArray())
-            val buffReader = getBufferedReader(stream)
-            var line = buffReader.readLine()
-            val emptyList = ArrayList<Int>(0)
+
+            inputStream.reset() // Reset the stream to the beginning
+
+            val buffReader = getBufferedReader(inputStream)
+            var line: String? = buffReader.readLine()
             var lineCount = 0
             debug("********** PARSE LINE START **********")
             while (line != null) {
                 debug("LINE $lineCount : $line")
                 lineCount++
-                // If line is not a comment
-                if (!line.startsWith("//")) {
-                    val lineWords = line.split(" ".toRegex()).toTypedArray()
-                    val instructionWord = lineWords[0]
-                    // If the line does not start with a symbol
-                    if (!(instructionWord.startsWith("[") && instructionWord.contains("]"))) {
-                        val commandVal = BaseInstructionSet.INSTRUCTION_SET[instructionWord]
-                        commandVal?.let {
-                            debug("  CMD VAL : $commandVal")
-                            val params: List<Int> = if (lineWords.size > 1) {
-                                parseParameters(lineWords)
-                            } else {
-                                // All Empty params point to the same empty List
-                                emptyList
-                            }
-                            commands.add(commandVal, params)
-                        } ?: run {
-                            throw IllegalStateException("Instruction $instructionWord is not recognized for line: $line")
-                        }
-                    }
+                line = line.trim() // Trim leading/trailing whitespace
+
+                // If line is not a comment or empty
+                if (line.isNotEmpty() && !line.startsWith("//")) {
+                    parseLine(line)
                 }
                 line = buffReader.readLine()
             }
-        } catch (e: Exception) {
-            thrownException = e
-            vmErrorType = VMErrorType.VM_ERROR_TYPE_UNKNOWN
-        } finally {
             debug("********** PARSE LINE END **********")
-            if (stream != null) {
-                try {
-                    stream.close()
-                } catch (e: IOException) {
-                    thrownException = e
-                    vmErrorType = VMErrorType.VM_ERROR_TYPE_IO
-                    additionalExceptionInfo += "stream close "
-                }
-            }
-        }
 
-        if (thrownException != null) {
-            debug("********** PARSE END WITH EXCEPTION **********")
-            throw VMError(additionalExceptionInfo + thrownException.message, thrownException, vmErrorType)
-        } else {
+        } catch (e: Exception) {
+            val vmErrorType = when (e) {
+                is IOException -> VMErrorType.VM_ERROR_TYPE_IO
+                is IllegalStateException -> VMErrorType.VM_ERROR_TYPE_BAD_UNKNOWN_COMMAND
+                else -> VMErrorType.VM_ERROR_TYPE_UNKNOWN
+            }
+
+            val additionalExceptionInfo = "[runInstructions] "
+            throw VMError(
+                additionalExceptionInfo + e.message,
+                e,
+                vmErrorType
+            )
+        } finally {
             debug("********** PARSE END **********")
+            inputStream.close() // Ensure proper stream closure.
+        }
+    }
+
+    /**
+     * Parse a single line for all the commands, and parameters
+     * @param line the line string to be parsed
+     */
+    private fun parseLine(line: String) {
+        val lineWords = line.split("\\s+".toRegex()).filter { it.isNotEmpty() }
+        val instructionWord = lineWords[0]
+
+        // If the line does not start with a symbol
+        if (!(instructionWord.startsWith("[") && instructionWord.contains("]"))) {
+            val commandVal = BaseInstructionSet.INSTRUCTION_SET[instructionWord]
+            commandVal?.let {
+                debug("  CMD VAL : $commandVal")
+                val params = if (lineWords.size > 1) {
+                    parseParameters(lineWords.drop(1)) // Pass only parameters
+                } else {
+                    emptyList()
+                }
+                commands.add(commandVal, params)
+            } ?: run {
+                throw IllegalStateException("Instruction $instructionWord is not recognized for line: $line")
+            }
         }
     }
 
@@ -161,79 +157,64 @@ class SimpleParser(private val parserHelper: ParserHelper) : AsyncParser() {
      * @param lineWords words on one line
      * @return parameters as list
      */
-    private fun parseParameters(lineWords: Array<String>): List<Int> {
-        val parameters: MutableList<Int> = ArrayList()
-        val params = lineWords[1]
-        val instrParams = params.split(",".toRegex()).toTypedArray()
-        var paramVal: Int?
-        for (paramTemp in instrParams) {
-            val param = paramTemp.trim { it <= ' ' }
+    private fun parseParameters(lineWords: List<String>): List<Int> {
+        val parameters = mutableListOf<Int>()
+        for (paramTemp in lineWords) {
+            val instrParams =
+                paramTemp.split(",".toRegex()).filter { it.isNotEmpty() } // Handle multiple spaces
+            for (param in instrParams) {
+                val paramVal: Int = when {
+                    param.startsWith("[") && param.contains("]") -> {
+                        val symbol = param.substring(1, param.indexOf(']'))
+                        symbols[symbol]
+                            ?.also { debug("  SYMBOL : $symbol($it)") }
+                            ?: throw IllegalStateException("Unrecognized symbol $symbol")
+                    }
 
-            // We found a symbol parameter, replace with line number from symbol table
-            if (param.startsWith("[") && param.contains("]")) {
-                val locEnd = param.indexOf(']')
-                val symbol = param.substring(1, locEnd)
-                paramVal = symbols[symbol]
-                paramVal?.let {
-                    debug("  SYMBOL : $symbol($paramVal)")
-                } ?: throw IllegalStateException("Unrecognized symbol $symbol"  )
+                    param.startsWith("g") -> {
+                        val memLoc = addresses.getOrPut(param) { freeMemoryLoc++ }
+                        debug("  G-PARAM : $param($memLoc)")
+                        memLoc
+                    }
 
-            } else if (param.startsWith("g")) {
-                // Handle Variable
-                var memLoc = freeMemoryLoc
-                val addressMemLoc = addresses[param]
-                if (addressMemLoc != null) {
-                    memLoc = addressMemLoc
-                } else {
-                    addresses[param] = memLoc
-                    freeMemoryLoc++
+                    else -> {
+                        debug("  PARAM : $param")
+                        param.toInt()
+                    }
                 }
-                paramVal = memLoc
-                debug("  G-PARAM : $param($paramVal)")
-            } else {
-                paramVal = param.toInt()
-                debug("  PARAM : $param")
+                parameters.add(paramVal)
             }
-            parameters.add(paramVal)
         }
+
         return parameters
     }
 
     /**
      * Look for lines with symbol definitions (These are lines with "[XYZ]" where XYZ is a String).
      *
-     *
      * If its found save the XYZ String and the line number for later use.
-     *
      *
      * If when parsing a command during parse, we see a symbol (Parameter with "[XYZ]" where XYZ is a String)
      * we replace that symbol with the line number associated with the matching symbol in the symbol table.
      *
-     * @param fis - FileInputStream
+     * @param inputStream the input stream
      */
-    private fun getSymbols(fis: InputStream) {
+    private fun getSymbols(inputStream: InputStream) {
+        val buffReader = getBufferedReader(inputStream)
         var lineNum = 0
-        val buffReader = getBufferedReader(fis)
-        var line: String?
-        var symbol = ""
-        try {
-            line = buffReader.readLine()
-            while (line != null) {
-                // If line is not a comment
-                if (!line.startsWith("//")) {
-                    if (line.startsWith("[") && line.contains("]")) {
-                        val locEnd = line.indexOf(']')
-                        symbol = line.substring(1, locEnd)
-                        debug("--NEW SYM : $symbol($line)")
+        buffReader.useLines { lines ->
+            lines.forEach { line ->
+                val trimmedLine = line.trim()
+                if (trimmedLine.isNotEmpty() && !trimmedLine.startsWith("//")) {
+                    if (trimmedLine.startsWith("[") && trimmedLine.contains("]")) {
+                        val symbol = trimmedLine.substring(1, trimmedLine.indexOf(']'))
+                        debug("--NEW SYM : $symbol($lineNum)")
                         symbols[symbol] = lineNum
                     } else {
                         lineNum++
                     }
                 }
-                line = buffReader.readLine()
             }
-        } catch (e: IOException) {
-            debug("[getSymbols] IOException " + symbol + "(" + lineNum + ") " + e.message)
         }
     }
 

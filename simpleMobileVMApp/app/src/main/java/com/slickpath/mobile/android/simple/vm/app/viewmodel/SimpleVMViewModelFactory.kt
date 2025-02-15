@@ -7,7 +7,7 @@ import com.slickpath.mobile.android.simple.vm.machine.VirtualMachine
 class SimpleVMViewModelFactory(private val virtualMachine: VirtualMachine) :
     ViewModelProvider.Factory {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
         return SimpleVMViewModel(virtualMachine) as T
     }

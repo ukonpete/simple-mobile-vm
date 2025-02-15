@@ -3,12 +3,11 @@ package com.slickpath.mobile.android.simple.vm.app.viewmodel
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.slickpath.mobile.android.simple.vm.VMListener
 import com.slickpath.mobile.android.simple.vm.VMError
+import com.slickpath.mobile.android.simple.vm.VMListener
 import com.slickpath.mobile.android.simple.vm.app.SimpleMobileVMAppActivity
 import com.slickpath.mobile.android.simple.vm.machine.VirtualMachine
 import com.slickpath.mobile.android.simple.vm.parser.Parser
-import com.slickpath.mobile.android.simple.vm.util.CommandList
 import kotlinx.coroutines.runBlocking
 
 class SimpleVMViewModel(private var virtualMachine: VirtualMachine) : ViewModel(), VMListener {

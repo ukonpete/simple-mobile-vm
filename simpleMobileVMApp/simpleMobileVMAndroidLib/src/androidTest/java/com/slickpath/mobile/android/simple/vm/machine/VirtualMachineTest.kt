@@ -11,11 +11,16 @@ import com.slickpath.mobile.android.simple.vm.parser.ParserListener
 import com.slickpath.mobile.android.simple.vm.parser.SimpleParser
 import com.slickpath.mobile.android.simple.vm.util.Command
 import com.slickpath.mobile.android.simple.vm.util.CommandList
-import org.junit.Assert.*
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.*
 import java.util.concurrent.CountDownLatch
 
 /**
@@ -47,7 +52,6 @@ class VirtualMachineTest {
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
         assertNull(virtualMachine.vmListener)
         virtualMachine.vmListener = null
-        assertNull(virtualMachine.vmListener)
         virtualMachine.vmListener = object : VMListener {
             override fun completedAddingInstructions(vmError: VMError?, instructionsAdded: Int) {
                 this@VirtualMachineTest.completedAddingInstructions(vmError, instructionsAdded)
@@ -167,7 +171,7 @@ class VirtualMachineTest {
     fun testRunNextInstruction() {
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
         val signalParse = CountDownLatch(1)
-        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
         parser.addParserListener(object : ParserListener {
             override fun completedParse(parseResult: ParseResult) {
                 this@VirtualMachineTest.completedParse(parseResult)
@@ -176,7 +180,9 @@ class VirtualMachineTest {
         })
 
         Log.d(TAG, "+...........................PARSE START ")
-        parser.parse()
+        runBlocking {
+            parser.parse()
+        }
         try {
             // Wait for Callback
             Log.d(TAG, "+...........................PARSE WAIT ")
@@ -274,14 +280,16 @@ class VirtualMachineTest {
     fun testRunInstructions() {
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
         val signalParse = CountDownLatch(1)
-        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
         parser.addParserListener(object : ParserListener {
             override fun completedParse(parseResult: ParseResult) {
                 this@VirtualMachineTest.completedParse(parseResult)
                 signalParse.countDown() // notify the count down latch
             }
         })
-        parser.parse()
+        runBlocking {
+            parser.parse()
+        }
         try {
             // Wait for Callback
             signalParse.await()
@@ -323,14 +331,16 @@ class VirtualMachineTest {
         Log.d(TAG, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
         val signalParse = CountDownLatch(1)
-        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
         parser.addParserListener(object : ParserListener {
             override fun completedParse(parseResult: ParseResult) {
                 this@VirtualMachineTest.completedParse(parseResult)
                 signalParse.countDown() // notify the count down latch
             }
         })
-        parser.parse()
+        runBlocking {
+            parser.parse()
+        }
         try {
             // Wait for Callback
             signalParse.await()
@@ -374,10 +384,12 @@ class VirtualMachineTest {
     fun testAddInstructionsWithParser() {
         Log.d(TAG, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
-        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
         val signalAddCommands = CountDownLatch(1)
         addVMListenerAdding(virtualMachine, signalAddCommands)
-        virtualMachine.addCommands(parser)
+        runBlocking {
+            virtualMachine.addCommands(parser)
+        }
         try {
             // Wait for Callback
             signalAddCommands.await()

@@ -35,5 +35,3 @@ interface VMListener {
      */
     fun completedRunningInstructions(bHalt: Boolean, lastLineExecuted: Int, vmError: VMError?)
 }
-
-data class CompletedAddingInstructionsResult(val vmError: VMError?)
