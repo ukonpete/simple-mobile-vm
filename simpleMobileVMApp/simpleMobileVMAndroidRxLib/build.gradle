@@ -24,12 +24,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    lintOptions {
-        checkReleaseBuilds false
-        abortOnError false
-        htmlOutput file("$project.buildDir/reports/lint/lint-report.html")
-        xmlOutput file("$project.buildDir/reports/lint/lint-report.xml")
-    }
 
 //    task vmAnalyze(dependsOn: ['lint', 'pmd']) doLast {
 //    }
@@ -38,6 +32,12 @@ android {
         jvmTarget = '1.8'
     }
     namespace 'com.slickpath.mobile.android.simple.vm.rx'
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+        htmlOutput file("$project.buildDir/reports/lint/lint-report.html")
+        xmlOutput file("$project.buildDir/reports/lint/lint-report.xml")
+    }
 
 }
 
