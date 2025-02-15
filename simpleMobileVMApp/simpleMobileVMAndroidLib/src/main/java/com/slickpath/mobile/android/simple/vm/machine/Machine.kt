@@ -6,69 +6,34 @@ import com.slickpath.mobile.android.simple.vm.*
 import java.io.IOException
 
 /**
- * The Machine.  The calls that are made to execute instructions
+ * The Machine class represents a virtual machine that executes a set of instructions.
+ * It provides methods for performing arithmetic, logical, stack manipulation, input/output,
+ * and control flow operations. The machine utilizes a stack-based architecture for
+ * instruction execution.
+ *
+ * The Machine interacts with the external world via `OutputListener` and `InputListener`.
+ *
+ * @param outputListener An optional listener for output operations. If provided,
+ *                       the machine will use it to write output.
+ *                       If null output operations will not occur.
+ * @param inputListener  An optional listener for input operations. If provided,
+ *                       the machine will use it to read input. If null, a
+ *                       `DefaultInputListener` is used.
  *
  * @author Pete Procopio
  */
 open class Machine @JvmOverloads constructor(
-    outputListener: OutputListener? = null,
+    private val outputListener: OutputListener? = null,
     inputListener: InputListener? = null
 ) : Kernel() {
 
     companion object {
-        private val LOG_TAG = Machine::class.java.name
+        private val LOG_TAG = Machine::class.java.simpleName
+        const val PUSHC_YES = 1
+        const val PUSHC_NO = 0
     }
 
-    /**
-     * Listener where output can be written to
-     */
-    private val outputListener: OutputListener
-
-    /**
-     * Stream where input can be read from
-     */
-    private val inputListener: InputListener
-
-    /**
-     * Constructor
-     *
-     *
-     * Allows caller to pass in streams for both input and output
-     *  * output will be added to log is debugVerbose is set
-     *  * input will be attempted to be retrieved from the console System.in
-     *
-     *  * If outputListener is null output will be added to log if debugVerbose is set
-     *  * If inputListener is null input will be attempted to be retrieved from the console System.in
-     *
-     * @param outputListener listener for output events
-     * @param inputListener listener to return input on input events
-     */
-    init {
-        if (outputListener == null) {
-            this.outputListener = defaultOutputListener
-        } else {
-            this.outputListener = outputListener
-        }
-        if (inputListener == null) {
-            this.inputListener = DefaultInputListener()
-        } else {
-            this.inputListener = inputListener
-        }
-    }
-
-    /**
-     * @return default output listener that send output to log if debugVerbose is set
-     */
-    private val defaultOutputListener: OutputListener
-        get() = object : OutputListener {
-            override fun charOutput(c: Char) {
-                debugVerbose(LOG_TAG, "char of output: $c")
-            }
-
-            override fun lineOutput(line: String) {
-                debugVerbose(LOG_TAG, "line of output: $line")
-            }
-        }
+    private var _inputListener: InputListener = inputListener ?: DefaultInputListener()
 
     /////////////////////////////////////////////////  Command Category : ARITHMATIC
     /**
@@ -83,8 +48,7 @@ open class Machine @JvmOverloads constructor(
     fun ADD() {
         val val1 = pop()
         val val2 = pop()
-        val val3 = val1 + val2
-        PUSHC(val3)
+        PUSHC(val1 + val2)
     }
 
     /**
@@ -99,8 +63,7 @@ open class Machine @JvmOverloads constructor(
     fun SUB() {
         val val1 = pop()
         val val2 = pop()
-        val val3 = val1 - val2
-        PUSHC(val3)
+        PUSHC(val1 - val2)
     }
 
     /**
@@ -115,8 +78,7 @@ open class Machine @JvmOverloads constructor(
     fun MUL() {
         val val1 = pop()
         val val2 = pop()
-        val val3 = val1 * val2
-        PUSHC(val3)
+        PUSHC(val1 * val2)
     }
 
     /**
@@ -131,8 +93,7 @@ open class Machine @JvmOverloads constructor(
     fun DIV() {
         val val1 = pop()
         val val2 = pop()
-        val val3 = val1 / val2
-        PUSHC(val3)
+        PUSHC(val1 / val2)
     }
 
     /**
@@ -146,8 +107,7 @@ open class Machine @JvmOverloads constructor(
     @Throws(VMError::class)
     fun NEG() {
         val val1 = pop()
-        val val2 = 0 - val1
-        PUSHC(val2)
+        PUSHC(-val1)
     }
     /////////////////////////////////////////////////  Command Category : BOOLEAN
     /**
@@ -346,7 +306,7 @@ open class Machine @JvmOverloads constructor(
     @Throws(VMError::class)
     fun RDCHAR() {
         try {
-            PUSHC(inputListener.char.code)
+            PUSHC(_inputListener.char.code)
         } catch (e: IOException) {
             throw VMError("Exception in RDCHAR : " + e.message, e, VMErrorType.VM_ERROR_TYPE_IO)
         }
@@ -364,7 +324,7 @@ open class Machine @JvmOverloads constructor(
     fun WRCHAR() {
         val value = pop()
         val sVal = value.toChar()
-        outputListener.charOutput(sVal)
+        outputListener?.charOutput(sVal)
         debugVerbose(LOG_TAG, "WRCHAR: $sVal")
     }
 
@@ -380,7 +340,7 @@ open class Machine @JvmOverloads constructor(
     fun RDINT() {
         val rdInt: Int
         try {
-            rdInt = inputListener.int
+            rdInt = _inputListener.int
             PUSHC(rdInt)
         } catch (e: IOException) {
             throw VMError("Exception in RDINT : " + e.message, e, VMErrorType.VM_ERROR_TYPE_IO)
@@ -399,7 +359,7 @@ open class Machine @JvmOverloads constructor(
     fun WRINT() {
         val value = pop()
         val out = value.toString()
-        outputListener.lineOutput(out + "\n")
+        outputListener?.lineOutput(out + "\n")
         debugVerbose(LOG_TAG, "WRINT $out")
     }
     ////////////////////////////////////////////////////  Command Category : CONTROL

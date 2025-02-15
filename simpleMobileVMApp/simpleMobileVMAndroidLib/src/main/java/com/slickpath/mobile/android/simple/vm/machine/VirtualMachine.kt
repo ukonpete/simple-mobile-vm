@@ -307,9 +307,7 @@ class VirtualMachine(
      */
     @Throws(VMError::class)
     private fun runCommand(commandId: Int) {
-        if (debugVerbose) {
-            doRunCommandDebug(commandId)
-        }
+        doRunCommandDebug(commandId)
         numInstructionsRun++
         val bBranched: Boolean
         when (commandId) {
@@ -480,20 +478,22 @@ class VirtualMachine(
      */
     @Throws(VMError::class)
     private fun doRunCommandDebug(commandId: Int) {
-        val lineCount = StringBuilder("[")
-        lineCount.append(numInstructionsRun)
-            .append("]")
-            .append(" Line=")
-            .append(programCounter - 1)
-            .append(" CMD=")
-            .append(getInstructionString(commandId))
-            .append(" (")
-            .append(commandId)
-            .append(")")
-        if (commandId >= 1000) {
-            lineCount.append(" PARAM=")
-                .append(parameter)
+        debug(LOG_TAG) {
+            val lineCount = StringBuilder("[")
+            lineCount.append(numInstructionsRun)
+                .append("]")
+                .append(" Line=")
+                .append(programCounter - 1)
+                .append(" CMD=")
+                .append(getInstructionString(commandId))
+                .append(" (")
+                .append(commandId)
+                .append(")")
+            if (commandId >= 1000) {
+                lineCount.append(" PARAM=")
+                    .append(parameter)
+            }
+            lineCount.toString()
         }
-        debug(LOG_TAG, lineCount.toString())
     }
 }

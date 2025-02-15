@@ -1,37 +1,35 @@
 package com.slickpath.mobile.android.simple.vm.machine
 
-import android.util.Log
 import com.slickpath.mobile.android.simple.vm.VMError
 import com.slickpath.mobile.android.simple.vm.VMErrorType
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet
 import com.slickpath.mobile.android.simple.vm.util.Command
 
 /**
- * Kernel level call for the VM
+
  *
  * @author Pete Procopio
  */
-open class Kernel {
+open class Kernel : IDebugVerboseLogger {
 
     companion object {
-        private val LOG_TAG = Machine::class.java.name
-        const val PUSHC_YES = 1
-        const val PUSHC_NO = 0
+        private val LOG_TAG = Machine::class.java.simpleName
     }
 
     var debugDump = false
 
-    /**
-     * @return is debug verbose enabled
-     */
-    var debugVerbose = true
-
-    /**
-     * Toggle if debug will be enabled
-     * If enabled certain methods will log to Android Log.d
-     * Also any output commands (example WRCHR and WRINT) will Log.d the output
-     */
-    private var debug = true
+    private val debugVerboseLogger = DebugVerboseLogger(
+        /**
+         * Toggle if debug will be enabled
+         * If enabled certain methods will log to Android Log.d
+         * Also any output commands (example WRCHR and WRINT) will Log.d the output
+         */
+        debug = true, // is debug verbose enabled
+        /**
+         * @return is debug verbose enabled
+         */
+        debugVerbose = false
+    )
 
     private val memoryStore = MemoryStore()
 
@@ -163,12 +161,23 @@ open class Kernel {
      * This allows sub-classes of this class to do logging without having to implement it.
      *
      * @param tag  - the Log.d LOG_TAG to use
-     * @param text test to log
+     * @param text text to log is debugVerbose is enabled
      */
-    fun debugVerbose(tag: String?, text: String) {
-        if (debugVerbose) {
-            debug(tag, text)
-        }
+    override fun debugVerbose(tag: String, text: String) {
+        debugVerboseLogger.debugVerbose(tag, text)
+    }
+
+    /**
+     * If debugVerbose is enabled write the output to a log
+     *
+     *
+     * This allows sub-classes of this class to do logging without having to implement it.
+     *
+     * @param tag  - the Log.d LOG_TAG to use
+     * @param text callback for text to log is debugVerbose is enabled
+     */
+    override fun debugVerbose(tag: String, text: () -> String) {
+        debugVerboseLogger.debugVerbose(tag, text())
     }
 
     /**
@@ -180,10 +189,21 @@ open class Kernel {
      * @param tag  the Log.d LOG_TAG to use
      * @param text string to log if debug is enabled
      */
-    fun debug(tag: String?, text: String) {
-        if (debug) {
-            Log.d(tag, text)
-        }
+    override fun debug(tag: String, text: String) {
+        debugVerboseLogger.debug(tag, text)
+    }
+
+    /**
+     * If debug is enabled write the output to a log
+     *
+     *
+     * This allows sub-classes of this class to do logging without having to implement it.
+     *
+     * @param tag  the Log.d LOG_TAG to use
+     * @param text callback for string to log if debug is enabled
+     */
+    override fun debug(tag: String, text: () -> String) {
+        debugVerboseLogger.debug(tag, text)
     }
 
     /**
@@ -255,17 +275,11 @@ open class Kernel {
             val command = programManager.getCommandAt(location)
             val instruction = command.commandId
             val parameterCount = command.parameters.size
-            if (debug) {
+            debug(LOG_TAG) {
                 if (parameterCount > 0) {
-                    Log.d(
-                        LOG_TAG,
-                        "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[instruction] + ") " + instruction + " param(0) " + command.parameters[0] + " at " + location
-                    )
+                    "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[instruction] + ") " + instruction + " param(0) " + command.parameters[0] + " at " + location
                 } else {
-                    Log.d(
-                        LOG_TAG,
-                        "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[instruction] + ") " + instruction + " NO param at " + location
-                    )
+                    "Get Instruction (" + BaseInstructionSet.INSTRUCTION_SET_CONV[instruction] + ") " + instruction + " NO param at " + location
                 }
             }
             command
@@ -286,15 +300,12 @@ open class Kernel {
      */
     fun setCommandAt(command: Command, location: Int) {
         if (location in 0 until MemoryStore.MAX_MEMORY) {
-            if (debug) {
+            debug(LOG_TAG) {
                 var paramInfo = "<null>"
                 if (command.parameters.isNotEmpty()) {
                     paramInfo = command.parameters[0].toString()
                 }
-                Log.d(
-                    LOG_TAG,
-                    "  Set CMD : ${BaseInstructionSet.INSTRUCTION_SET_CONV[command.commandId]} (${command.commandId}) PARAM $paramInfo at loc $location"
-                )
+                "  Set CMD : ${BaseInstructionSet.INSTRUCTION_SET_CONV[command.commandId]} (${command.commandId}) PARAM $paramInfo at loc $location"
             }
             programManager.setCommandAt(location, command)
             incrementProgramWriter()
