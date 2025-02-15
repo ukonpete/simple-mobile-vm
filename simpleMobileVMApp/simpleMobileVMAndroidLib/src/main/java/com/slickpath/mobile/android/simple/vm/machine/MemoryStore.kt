@@ -1,7 +1,9 @@
 package com.slickpath.mobile.android.simple.vm.machine
 
 /**
- * This class is the VM Basic Memory Store
+ * This class represents a basic memory store for a virtual machine.
+ *
+ * It manages a fixed-size block of memory, providing read and write access to individual memory locations.
  *
  * @author Pete Procopio
  */
@@ -22,17 +24,7 @@ internal class MemoryStore {
     /**
      * Memory to store values
      */
-    private val _memoryStore: MutableList<Int> = ArrayList(MAX_MEMORY)
-
-    /**
-     * Constructor
-     */
-    init {
-        // initialize every piece of memory to EMPTY
-        for (i in 0 until MAX_MEMORY) {
-            _memoryStore.add(EMPTY_MEMORY_VALUE)
-        }
-    }
+    private val memoryStore: MutableList<Int> = MutableList(MAX_MEMORY) { EMPTY_MEMORY_VALUE }
 
     /**
      * Return memory as a List<Integer>
@@ -42,27 +34,31 @@ internal class MemoryStore {
      * @return value at every line of memory
     </Integer> */
     fun memoryDump(): List<Int> {
-        return ArrayList(_memoryStore)
+        return memoryStore.toList()
     }
 
     /**
-     * Return value at location
+     * Retrieves the value stored at the specified memory location.
      *
-     * @param location location in memory
+     * @param location The index of the memory location to read from
      * @return value at location
+     * @throws IndexOutOfBoundsException if the location is outside the valid memory range.
      */
     operator fun get(location: Int): Int {
-        return _memoryStore[location]
+        require(location in 0 until MAX_MEMORY) { "Invalid get memory location: $location. Must be between 0 and ${MAX_MEMORY - 1}." }
+        return memoryStore[location]
     }
 
     /**
-     * Set value at location
+     * Stores a value at the specified memory location.
      *
-     * @param location location in memory
+     * @param location The index of the memory location to write to.
      * @param value value to set
      * @return value that was set
+     * @throws IndexOutOfBoundsException if the location is outside the valid memory range.
      */
     operator fun set(location: Int, value: Int): Int {
-        return _memoryStore.set(location, value)
+        require(location in 0 until MAX_MEMORY) { "Invalid set memory location: $location. Must be between 0 and ${MAX_MEMORY - 1}." }
+        return memoryStore.set(location, value)
     }
 }

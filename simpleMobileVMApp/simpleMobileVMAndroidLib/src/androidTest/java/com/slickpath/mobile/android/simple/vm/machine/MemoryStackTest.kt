@@ -131,7 +131,7 @@ class MemoryStackTest {
     }
 
     /**
-     * Test method for [com.slickpath.mobile.android.simple.vm.machine.MemoryStack.stackDump].
+     * Test method for [com.slickpath.mobile.android.simple.vm.machine.MemoryStack.dump].
      */
     @Test
     fun testStackDump() {

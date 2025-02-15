@@ -2,6 +2,12 @@ package com.slickpath.mobile.android.simple.vm.machine
 
 import java.util.EmptyStackException
 
+/**
+ * Represents a stack data structure that stores integer values.
+ *
+ * This class provides methods to push, pop, peek, and manage the stack.
+ * It utilizes an `ArrayDeque` internally for efficient stack operations.
+ */
 class MemoryStack {
 
     /**
@@ -67,7 +73,7 @@ class MemoryStack {
      */
     @Suppress("unused")
     fun peek(): Int {
-        if(stack.isEmpty()){
+        if (stack.isEmpty()) {
             throw EmptyStackException()
         }
         return stack.last()
