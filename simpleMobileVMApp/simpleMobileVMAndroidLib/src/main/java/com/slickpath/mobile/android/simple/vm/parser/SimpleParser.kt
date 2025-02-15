@@ -56,7 +56,7 @@ class SimpleParser(private val parserHelper: ParserHelper) : AsyncParser() {
     private val addresses: MutableMap<String, Int> = Hashtable()
     private val commands = CommandList()
     private var freeMemoryLoc = 0
-    private var parserDebug = true
+    private var parserDebug = false
 
     companion object {
         private val LOG_TAG = SimpleParser::class.java.name
