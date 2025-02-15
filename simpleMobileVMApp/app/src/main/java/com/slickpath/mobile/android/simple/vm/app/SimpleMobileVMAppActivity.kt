@@ -41,7 +41,7 @@ class SimpleMobileVMAppActivity : AppCompatActivity() {
             )
         )
 
-        model = ViewModelProvider(this, factory).get(SimpleVMViewModel::class.java)
+        model = ViewModelProvider(this, factory)[SimpleVMViewModel::class.java]
         model.onCompletedAddingInstructions.observe(owner = this) { status ->
             onCompletedAddingInstructions(status.vmError)
         }
