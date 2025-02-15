@@ -30,7 +30,7 @@ import java.util.concurrent.ThreadPoolExecutor
  * @param outputListener listener for output events
  * @param inputListener listener to return input on input events
  */
-class VirtualMachine constructor(
+class VirtualMachine(
     private val context: Context,
     private val outputListener: OutputListener? = null,
     private val inputListener: InputListener? = null
@@ -164,7 +164,7 @@ class VirtualMachine constructor(
         return Results(bHalt, programCounter, vmError)
     }
 
-    data class Results constructor(
+    data class Results(
         val halt: Boolean,
         val lastLineExecuted: Int,
         val vmError: VMError?

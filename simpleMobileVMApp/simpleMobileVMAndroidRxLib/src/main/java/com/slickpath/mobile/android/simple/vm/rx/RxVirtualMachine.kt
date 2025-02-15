@@ -12,7 +12,6 @@ import com.slickpath.mobile.android.simple.vm.util.CommandList
 import io.reactivex.rxjava3.core.Single
 import kotlinx.coroutines.runBlocking
 
-@Suppress("MemberVisibilityCanBePrivate", "unused")
 class RxVirtualMachine(context: Context) {
 
     private val vm = VirtualMachine(context)
@@ -55,7 +54,7 @@ class RxVirtualMachine(context: Context) {
     }
 
     fun addCommands(parser: Parser): Single<Int> {
-        return Single.create<ParseResult> { emitter ->
+        return Single.create { emitter ->
             parser.addParserListener(object : ParserListener {
                 override fun completedParse(parseResult: ParseResult) {
                     if (parseResult.vmError != null) {
@@ -100,7 +99,7 @@ class RxVirtualMachine(context: Context) {
                         throw vmError
                     }
                     rxVMListener.removeListener(this)
-                    emitter.onSuccess(VirtualMachine.Results(bHalt, lastLineExecuted, vmError))
+                    emitter.onSuccess(VirtualMachine.Results(bHalt, lastLineExecuted, vmError = null))
                 }
 
             })
@@ -128,7 +127,7 @@ class RxVirtualMachine(context: Context) {
                         throw vmError
                     }
                     rxVMListener.removeListener(this)
-                    emitter.onSuccess(VirtualMachine.Results(bHalt, lastLineExecuted, vmError))
+                    emitter.onSuccess(VirtualMachine.Results(bHalt, lastLineExecuted, vmError = null))
                 }
 
             })

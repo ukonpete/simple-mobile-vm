@@ -25,13 +25,6 @@ class VMError : Exception {
     val type: VMErrorType
 
     /**
-     * Constructor - Private so that it can not be called
-     */
-    private constructor() : super() {
-        type = VMErrorType.VM_ERROR_TYPE_LAZY_UNSET
-    }
-
-    /**
      * Constructor
      *
      * @param detailMessage message to add to this VMError

@@ -1,7 +1,7 @@
 package com.slickpath.mobile.android.simple.vm.rx.machine
 
 object FibonacciInstructions {
-    const val instructions = "PUSHC [HALT]\n" +
+    const val INSTRUCTIONS = "PUSHC [HALT]\n" +
             "PUSHC 0\n" +
             "WRINT\n" +
             "PUSHC 1\n" +

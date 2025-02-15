@@ -29,7 +29,7 @@ class SimpleParserTest : ParserListener {
 
     @Before
     fun before() {
-        _parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        _parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
         _parser.addParserListener(this)
         _signal = CountDownLatch(1)
     }

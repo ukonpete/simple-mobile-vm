@@ -62,6 +62,7 @@ inline fun <T> LiveData<T>.observe(
     return wrappedObserver
 }
 
+@Suppress("unused")
 fun <T : ViewBinding> Fragment.viewBinding(viewBindingFactory: (View) -> T) =
     FragmentViewBindingDelegate(this, viewBindingFactory)
 
@@ -72,6 +73,7 @@ inline fun <T : ViewBinding> AppCompatActivity.viewBinding(
         bindingInflater.invoke(layoutInflater)
     }
 
+@Suppress("unused")
 inline fun <T : ViewBinding> Activity.viewBinding(
     crossinline bindingInflater: (LayoutInflater) -> T
 ) =

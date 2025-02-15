@@ -52,7 +52,6 @@ class VirtualMachineTest {
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
         assertNull(virtualMachine.vmListener)
         virtualMachine.vmListener = null
-        assertNull(virtualMachine.vmListener)
         virtualMachine.vmListener = object : VMListener {
             override fun completedAddingInstructions(vmError: VMError?, instructionsAdded: Int) {
                 this@VirtualMachineTest.completedAddingInstructions(vmError, instructionsAdded)
@@ -172,7 +171,7 @@ class VirtualMachineTest {
     fun testRunNextInstruction() {
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
         val signalParse = CountDownLatch(1)
-        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
         parser.addParserListener(object : ParserListener {
             override fun completedParse(parseResult: ParseResult) {
                 this@VirtualMachineTest.completedParse(parseResult)
@@ -281,7 +280,7 @@ class VirtualMachineTest {
     fun testRunInstructions() {
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
         val signalParse = CountDownLatch(1)
-        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
         parser.addParserListener(object : ParserListener {
             override fun completedParse(parseResult: ParseResult) {
                 this@VirtualMachineTest.completedParse(parseResult)
@@ -332,7 +331,7 @@ class VirtualMachineTest {
         Log.d(TAG, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
         val signalParse = CountDownLatch(1)
-        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
         parser.addParserListener(object : ParserListener {
             override fun completedParse(parseResult: ParseResult) {
                 this@VirtualMachineTest.completedParse(parseResult)
@@ -385,7 +384,7 @@ class VirtualMachineTest {
     fun testAddInstructionsWithParser() {
         Log.d(TAG, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
-        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.instructions))
+        val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
         val signalAddCommands = CountDownLatch(1)
         addVMListenerAdding(virtualMachine, signalAddCommands)
         runBlocking {

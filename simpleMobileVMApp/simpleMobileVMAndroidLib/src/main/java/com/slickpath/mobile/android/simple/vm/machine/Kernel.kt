@@ -31,7 +31,7 @@ open class Kernel {
      * If enabled certain methods will log to Android Log.d
      * Also any output commands (example WRCHR and WRINT) will Log.d the output
      */
-    var debug = true
+    private var debug = true
 
     private val memoryStore = MemoryStore()
 

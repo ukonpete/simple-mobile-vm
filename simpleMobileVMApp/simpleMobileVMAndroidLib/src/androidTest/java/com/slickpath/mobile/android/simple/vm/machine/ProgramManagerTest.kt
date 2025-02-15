@@ -125,9 +125,9 @@ class ProgramManagerTest {
     }
 
     /**
-     * Test method for [com.slickpath.mobile.android.simple.vm.machine.MemoryStore.getCommand].
-     * Test method for [com.slickpath.mobile.android.simple.vm.machine.MemoryStore.setCommand] )}.
-     * Test method for [com.slickpath.mobile.android.simple.vm.machine.MemoryStore.programMemoryDump].
+     * Test method for [com.slickpath.mobile.android.simple.vm.machine.ProgramManager.getCommandAt].
+     * Test method for [com.slickpath.mobile.android.simple.vm.machine.ProgramManager.setCommandAt].
+     * Test method for [com.slickpath.mobile.android.simple.vm.machine.ProgramManager.dumpProgramStore].
      */
     @Test
     fun testGetCommand() {

@@ -14,13 +14,17 @@ import java.util.*
 @RunWith(AndroidJUnit4::class)
 class CommandTest {
 
-    private val COMMAND_1 = Instructions.PUSHC
-    private val COMMAND_PARAM_VAL_1 = TEST_PARAM_VAL
-    private val COMMAND_PARAM_LIST_1: List<Int> = ArrayList(listOf(COMMAND_PARAM_VAL_1))
-    private val COMMAND_2 = Instructions.ADD
-    private val COMMAND_PARAM_LIST_2: List<Int>? = null
-    private lateinit var _commandWithParam: Command
-    private lateinit var _commandWithOutParam: Command
+    companion object {
+        private const val TEST_PARAM_VAL = 15
+
+        private const val COMMAND_1 = Instructions.PUSHC
+        private const val COMMAND_PARAM_VAL_1 = TEST_PARAM_VAL
+        private val COMMAND_PARAM_LIST_1: List<Int> = ArrayList(listOf(COMMAND_PARAM_VAL_1))
+        private const val COMMAND_2 = Instructions.ADD
+        private val COMMAND_PARAM_LIST_2: List<Int>? = null
+        private lateinit var _commandWithParam: Command
+        private lateinit var _commandWithOutParam: Command
+    }
 
     @Before
     fun before() {
@@ -29,7 +33,7 @@ class CommandTest {
     }
 
     /**
-     * Test method for [com.slickpath.mobile.android.simple.vm.util.Command.getCommandId].
+     * Test method for [com.slickpath.mobile.android.simple.vm.util.Command.commandId].
      */
     @Test
     fun testGetCommandId() {
@@ -38,7 +42,7 @@ class CommandTest {
     }
 
     /**
-     * Test method for [com.slickpath.mobile.android.simple.vm.util.Command.getParameters].
+     * Test method for [com.slickpath.mobile.android.simple.vm.util.Command.parameters].
      */
     @Test
     fun testGetParameters() {
@@ -47,7 +51,4 @@ class CommandTest {
         assertNotNull(_commandWithOutParam.parameters)
     }
 
-    companion object {
-        private const val TEST_PARAM_VAL = 15
-    }
 }
