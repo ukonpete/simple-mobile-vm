@@ -4,18 +4,12 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.slickpath.mobile.android.simple.vm.VMError
-import com.slickpath.mobile.android.simple.vm.VMListener
 import com.slickpath.mobile.android.simple.vm.app.SimpleMobileVMAppActivity
+import com.slickpath.mobile.android.simple.vm.machine.AddInstructionsResult
 import com.slickpath.mobile.android.simple.vm.machine.VirtualMachine
 import com.slickpath.mobile.android.simple.vm.parser.Parser
-import kotlinx.coroutines.runBlocking
 
-class SimpleVMViewModel(private var virtualMachine: VirtualMachine) : ViewModel(), VMListener {
-
-
-    init {
-        virtualMachine.vmListener = this
-    }
+class SimpleVMViewModel(private var virtualMachine: VirtualMachine) : ViewModel() {
 
     val onCompletedAddingInstructions: MutableLiveData<CompletedAddingInstructionsStatus> by lazy {
         MutableLiveData<CompletedAddingInstructionsStatus>()
@@ -25,33 +19,40 @@ class SimpleVMViewModel(private var virtualMachine: VirtualMachine) : ViewModel(
         MutableLiveData<CompletedRunningInstructionsStatus>()
     }
 
-    fun addCommands(parser: Parser) {
+    suspend fun addCommands(parser: Parser): AddInstructionsResult {
         virtualMachine.reset()
-        runBlocking {
-            virtualMachine.addCommands(parser)
-        }
+        val result = virtualMachine.addCommands(parser)
+        completedAddingInstructions(result)
+        return result
     }
 
-    suspend fun runInstructions() {
-        virtualMachine.runInstructions()
+    suspend fun runInstructions(): VirtualMachine.RunResult {
+        val result = virtualMachine.runInstructions()
+        completedRunningInstructions(result)
+        return result
     }
 
     fun reset(context: Context, outputListener: SimpleMobileVMAppActivity.SimpleVMOutputListener) {
         virtualMachine = VirtualMachine(context, outputListener, null)
-        virtualMachine.vmListener = this
     }
 
-    override fun completedAddingInstructions(vmError: VMError?, instructionsAdded: Int) {
-        onCompletedAddingInstructions.postValue(CompletedAddingInstructionsStatus(vmError))
+    private fun completedAddingInstructions(addInstructionsResult: AddInstructionsResult) {
+        onCompletedAddingInstructions.postValue(
+            CompletedAddingInstructionsStatus(
+                addInstructionsResult.vmError
+            )
+        )
     }
 
-    override fun completedRunningInstructions(
-        bHalt: Boolean,
-        lastLineExecuted: Int,
-        vmError: VMError?
+    private fun completedRunningInstructions(
+        runResult: VirtualMachine.RunResult
     ) {
         onCompletedRunningInstructionsInstructionsStatus.postValue(
-            CompletedRunningInstructionsStatus(bHalt, lastLineExecuted, vmError)
+            CompletedRunningInstructionsStatus(
+                runResult.didHalt,
+                runResult.lastLineExecuted,
+                runResult.vmError
+            )
         )
     }
 }

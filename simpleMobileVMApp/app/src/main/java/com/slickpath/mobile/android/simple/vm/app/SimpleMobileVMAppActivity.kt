@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.slickpath.mobile.android.simple.vm.OutputListener
 import com.slickpath.mobile.android.simple.vm.VMError
 import com.slickpath.mobile.android.simple.vm.app.databinding.MainBinding
@@ -81,7 +82,10 @@ class SimpleMobileVMAppActivity : AppCompatActivity() {
                 SimpleFileParserHelper(applicationContext, instructionPath, selectedFile)
             val parser = SimpleParser(simpleFileParserHelper)
             model.reset(applicationContext, SimpleVMOutputListener())
-            model.addCommands(parser)
+            lifecycleScope.launch {
+                model.addCommands(parser)
+            }
+
         } catch (e: IOException) {
             Toast.makeText(this, "Unable to find file $selectedFile", Toast.LENGTH_LONG).show()
         }

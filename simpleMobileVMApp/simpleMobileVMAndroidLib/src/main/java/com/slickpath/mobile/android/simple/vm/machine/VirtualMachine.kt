@@ -7,7 +7,6 @@ import android.util.Log
 import com.slickpath.mobile.android.simple.vm.*
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet
 import com.slickpath.mobile.android.simple.vm.instructions.Instructions
-import com.slickpath.mobile.android.simple.vm.parser.ParseResult
 import com.slickpath.mobile.android.simple.vm.parser.Parser
 import com.slickpath.mobile.android.simple.vm.util.Command
 import com.slickpath.mobile.android.simple.vm.util.CommandList
@@ -50,11 +49,6 @@ class VirtualMachine(
      */
     private var instructionsRunCount = 0
 
-    /**
-     * Listener for VM events.
-     */
-    var vmListener: VMListener? = null
-
     var parser: Parser? = null
 
     init {
@@ -93,8 +87,7 @@ class VirtualMachine(
     override suspend fun addCommands(parser: Parser): AddInstructionsResult {
         this.parser = parser
         val parseResult = parser.parse()
-        doAddInstructions(parseResult.commands)
-        return parseResult.toAddInstructionsResult()
+        return doAddInstructions(parseResult.commands)
     }
 
     /**
@@ -102,25 +95,28 @@ class VirtualMachine(
      *
      * @param commands The list of commands to add.
      */
-    private suspend fun doAddInstructions(commands: CommandList?) {
+    private suspend fun doAddInstructions(commands: CommandList?): AddInstructionsResult {
         Log.d(LOG_TAG, "^^^^^^^^^^ ADD INSTRUCTIONS START ^^^^^^^^^^")
         var vmError: VMError? = null
-        var addedInstructionCount = 0
         if (commands == null) {
             vmError = VMError(
                 "Null command list provided to doAddInstructions",
                 VMErrorType.VM_ERROR_TYPE_BAD_PARAMS
             )
         } else {
-            addedInstructionCount = commands.size
             withContext(Dispatchers.IO) {
                 commands.forEach { command ->
                     addCommand(command)
                 }
             }
         }
-        vmListener?.completedAddingInstructions(vmError, addedInstructionCount)
+        val addedInstructionCount = commands?.size ?: 0
+        Log.d(
+            LOG_TAG,
+            "^ doAddInstructions  addedInstructionCount=$addedInstructionCount  vmError-$vmError"
+        )
         Log.d(LOG_TAG, "^^^^^^^^^^ ADD INSTRUCTIONS END ^^^^^^^^^^")
+        return AddInstructionsResult(vmError, addedInstructionCount)
     }
 
     /**
@@ -130,7 +126,7 @@ class VirtualMachine(
      * @throws VMError if a virtual machine error occurs.
      */
     @Throws(VMError::class)
-    override fun runNextInstruction(): Results {
+    override fun runNextInstruction(): RunResult {
         val results = doRunNextInstruction()
         results.vmError?.let { throw it }
         return results
@@ -141,7 +137,7 @@ class VirtualMachine(
      *
      * @return Results containing information about the executed instruction.
      */
-    private fun doRunNextInstruction(): Results {
+    private fun doRunNextInstruction(): RunResult {
         Log.d(LOG_TAG, "+doRunNextInstruction $programCounter")
         var hasHalted = false
         var vmError: VMError? = null
@@ -158,7 +154,7 @@ class VirtualMachine(
             resetStack()
             hasHalted = true
         }
-        return Results(hasHalted, programCounter, vmError)
+        return RunResult(hasHalted, programCounter, vmError)
     }
 
     /**
@@ -168,8 +164,8 @@ class VirtualMachine(
      * @property lastLineExecuted The program counter value after execution.
      * @property vmError Any VMError that occurred during execution.
      */
-    data class Results(
-        val halt: Boolean,
+    data class RunResult(
+        val didHalt: Boolean,
         val lastLineExecuted: Int,
         val vmError: VMError?
     )
@@ -177,8 +173,8 @@ class VirtualMachine(
     /**
      * Executes all remaining instructions in the program memory asynchronously.
      */
-    override suspend fun runInstructions() {
-        doRunInstructions()
+    override suspend fun runInstructions(): RunResult {
+        return doRunInstructions()
     }
 
     /**
@@ -186,8 +182,8 @@ class VirtualMachine(
      *
      * @param numInstructionsToRun The number of instructions to execute.
      */
-    override suspend fun runInstructions(numInstructionsToRun: Int) {
-        doRunInstructions(numInstructionsToRun)
+    override suspend fun runInstructions(numInstructionsToRun: Int): RunResult {
+        return doRunInstructions(numInstructionsToRun)
     }
 
     /**
@@ -195,7 +191,7 @@ class VirtualMachine(
      *
      * @param numInstructionsToRun The number of instructions to execute. -1 to run all remaining
      */
-    private fun doRunInstructions(numInstructionsToRun: Int = -1) {
+    private fun doRunInstructions(numInstructionsToRun: Int = -1): RunResult {
         Log.d(LOG_TAG, "++++++++++ RUN INSTRUCTIONS START ++++++++++")
         var vmError: VMError? = null
         dumpMemory("1")
@@ -226,14 +222,18 @@ class VirtualMachine(
         dumpMemory("3")
         Log.d(LOG_TAG, "+DONE PROCESSING+++++++++")
 
-        vmListener?.completedRunningInstructions(
-            instructionValue == Instructions.HALT,
-            programCounter,
-            vmError
-        ) ?: run {
-            debug(LOG_TAG, "NO VMListener")
-        }
+        val didHalt = instructionValue == Instructions.HALT
+        Log.d(
+            LOG_TAG,
+            "+RunResult didHalt=${didHalt}  lastLineExecuted=$programCounter  vmError=${vmError}"
+        )
         Log.d(LOG_TAG, "++++++++++ RUN INSTRUCTIONS END ++++++++++")
+
+        return RunResult(
+            didHalt = didHalt,
+            lastLineExecuted = programCounter,
+            vmError = vmError,
+        )
     }
 
     /**
@@ -494,6 +494,4 @@ class VirtualMachine(
     }
 }
 
-data class AddInstructionsResult(val vmError: VMError?, val commands: CommandList)
-
-fun ParseResult.toAddInstructionsResult() = AddInstructionsResult(vmError, commands)
+data class AddInstructionsResult(val vmError: VMError?, val addedInstructionCount: Int)
