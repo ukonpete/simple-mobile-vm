@@ -32,7 +32,7 @@ class SimpleVMViewModel(private var virtualMachine: VirtualMachine) : ViewModel(
         }
     }
 
-    fun runInstructions() {
+    suspend fun runInstructions() {
         virtualMachine.runInstructions()
     }
 

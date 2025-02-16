@@ -19,6 +19,9 @@ import com.slickpath.mobile.android.simple.vm.app.viewmodel.SimpleVMViewModelFac
 import com.slickpath.mobile.android.simple.vm.machine.VirtualMachine
 import com.slickpath.mobile.android.simple.vm.parser.SimpleFileParserHelper
 import com.slickpath.mobile.android.simple.vm.parser.SimpleParser
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.IOException
 
 
@@ -43,7 +46,9 @@ class SimpleMobileVMAppActivity : AppCompatActivity() {
 
         model = ViewModelProvider(this, factory)[SimpleVMViewModel::class.java]
         model.onCompletedAddingInstructions.observe(owner = this) { status ->
-            onCompletedAddingInstructions(status.vmError)
+            CoroutineScope(Dispatchers.IO).launch {
+                onCompletedAddingInstructions(status.vmError)
+            }
         }
         model.onCompletedRunningInstructionsInstructionsStatus.observe(owner = this) { completedStatus ->
             onCompletedRunningInstructions(
@@ -113,7 +118,7 @@ class SimpleMobileVMAppActivity : AppCompatActivity() {
         return selectedFile
     }
 
-    private fun onCompletedAddingInstructions(vmError: VMError?) {
+    private suspend fun onCompletedAddingInstructions(vmError: VMError?) {
         if (vmError != null) {
             Toast.makeText(this, "ERROR ADD INST" + vmError.message, Toast.LENGTH_LONG).show()
             vmError.printStackTrace()

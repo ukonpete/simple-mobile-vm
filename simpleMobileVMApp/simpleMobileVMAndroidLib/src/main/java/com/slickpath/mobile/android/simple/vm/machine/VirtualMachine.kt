@@ -14,8 +14,6 @@ import com.slickpath.mobile.android.simple.vm.util.CommandList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
-import java.util.concurrent.Executors
-import java.util.concurrent.ThreadPoolExecutor
 
 /**
  * Virtual Machine class responsible for executing commands and managing program memory.
@@ -45,7 +43,6 @@ class VirtualMachine(
          */
         const val SINGLE_PARAM_COMMAND_START = 1000
         private val LOG_TAG = VirtualMachine::class.java.name
-        private val executorPool = Executors.newCachedThreadPool() as ThreadPoolExecutor
     }
 
     /**
@@ -106,24 +103,24 @@ class VirtualMachine(
      * @param commands The list of commands to add.
      */
     private suspend fun doAddInstructions(commands: CommandList?) {
-        withContext(Dispatchers.IO) {
-            Log.d(LOG_TAG, "^^^^^^^^^^ ADD INSTRUCTIONS START ^^^^^^^^^^")
-            var vmError: VMError? = null
-            var addedInstructionCount = 0
-            if (commands == null) {
-                vmError = VMError(
-                    "Null command list provided to doAddInstructions",
-                    VMErrorType.VM_ERROR_TYPE_BAD_PARAMS
-                )
-            } else {
-                addedInstructionCount = commands.size
+        Log.d(LOG_TAG, "^^^^^^^^^^ ADD INSTRUCTIONS START ^^^^^^^^^^")
+        var vmError: VMError? = null
+        var addedInstructionCount = 0
+        if (commands == null) {
+            vmError = VMError(
+                "Null command list provided to doAddInstructions",
+                VMErrorType.VM_ERROR_TYPE_BAD_PARAMS
+            )
+        } else {
+            addedInstructionCount = commands.size
+            withContext(Dispatchers.IO) {
                 commands.forEach { command ->
                     addCommand(command)
                 }
             }
-            vmListener?.completedAddingInstructions(vmError, addedInstructionCount)
-            Log.d(LOG_TAG, "^^^^^^^^^^ ADD INSTRUCTIONS END ^^^^^^^^^^")
         }
+        vmListener?.completedAddingInstructions(vmError, addedInstructionCount)
+        Log.d(LOG_TAG, "^^^^^^^^^^ ADD INSTRUCTIONS END ^^^^^^^^^^")
     }
 
     /**
@@ -180,8 +177,8 @@ class VirtualMachine(
     /**
      * Executes all remaining instructions in the program memory asynchronously.
      */
-    override fun runInstructions() {
-        executorPool.execute { doRunInstructions() }
+    override suspend fun runInstructions() {
+        doRunInstructions()
     }
 
     /**
@@ -189,8 +186,8 @@ class VirtualMachine(
      *
      * @param numInstructionsToRun The number of instructions to execute.
      */
-    override fun runInstructions(numInstructionsToRun: Int) {
-        executorPool.execute { doRunInstructions(numInstructionsToRun) }
+    override suspend fun runInstructions(numInstructionsToRun: Int) {
+        doRunInstructions(numInstructionsToRun)
     }
 
     /**

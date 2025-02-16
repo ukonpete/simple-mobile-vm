@@ -56,15 +56,15 @@ class SimpleParser(private val parserHelper: ParserHelper) : Parser {
     }
 
     override suspend fun parse(): ParseResult {
-        return withContext(Dispatchers.IO) {
-            var vmError: VMError? = null
-            try {
+        var vmError: VMError? = null
+        try {
+            withContext(Dispatchers.IO) {
                 doParse()
-            } catch (e: VMError) {
-                vmError = e
             }
-            ParseResult(vmError, commands)
+        } catch (e: VMError) {
+            vmError = e
         }
+        return ParseResult(vmError, commands)
     }
 
 

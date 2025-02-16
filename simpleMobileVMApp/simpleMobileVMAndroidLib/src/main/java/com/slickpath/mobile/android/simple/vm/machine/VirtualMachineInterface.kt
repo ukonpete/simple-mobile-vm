@@ -9,6 +9,6 @@ interface VirtualMachineInterface {
     suspend fun addCommands(commands: CommandList?)
     suspend fun addCommands(parser: Parser): AddInstructionsResult
     fun runNextInstruction(): VirtualMachine.Results
-    fun runInstructions()
-    fun runInstructions(numInstructionsToRun: Int)
+    suspend fun runInstructions()
+    suspend fun runInstructions(numInstructionsToRun: Int)
 }
