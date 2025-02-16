@@ -11,7 +11,6 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
-import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,20 +41,11 @@ class SimpleParserTest {
      */
     @Test
     fun testParse() {
-        runBlocking {
-            _parser.parse().collect { parseResult ->
-                _signal.countDown()
-                _error = parseResult.vmError
-                _commands = parseResult.commands
-            }
+        val parseResult = runBlocking {
+            _parser.parse()
         }
-        try {
-            // Wait for Callback
-            _signal.await()
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-            fail(e.message)
-        } // wait for callback
+        _error = parseResult.vmError
+        _commands = parseResult.commands
         assertNull(_error)
         assertNotNull(_commands)
         assertEquals(35, _commands.size)

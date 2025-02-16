@@ -8,8 +8,8 @@ import com.slickpath.mobile.android.simple.vm.VMError
 import com.slickpath.mobile.android.simple.vm.VMErrorType
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet
 import com.slickpath.mobile.android.simple.vm.util.CommandList
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.*
 import java.util.*
 
@@ -43,7 +43,7 @@ import java.util.*
  *
  * @see [Simple VM Wiki on Github](https://github.com/ukonpete/simple-mobile-vm/wiki)
  */
-class SimpleParser(private val parserHelper: ParserHelper): Parser {
+class SimpleParser(private val parserHelper: ParserHelper) : Parser {
 
     private val symbols: MutableMap<String, Int> = Hashtable()
     private val addresses: MutableMap<String, Int> = Hashtable()
@@ -55,22 +55,18 @@ class SimpleParser(private val parserHelper: ParserHelper): Parser {
         private val LOG_TAG = SimpleParser::class.java.name
     }
 
-    /**
-     * Parses instructions asynchronously.
-     *
-     * Subsequent calls will be queued until the previous call is finished.
-     */
-    override suspend fun parse(): Flow<ParseResult> {
-        return flow {
+    override suspend fun parse(): ParseResult {
+        return withContext(Dispatchers.IO) {
             var vmError: VMError? = null
             try {
                 doParse()
             } catch (e: VMError) {
                 vmError = e
             }
-            emit(ParseResult(vmError, commands))
+            ParseResult(vmError, commands)
         }
     }
+
 
     /**
      * Parse file for all commands, parameters, variables and symbols

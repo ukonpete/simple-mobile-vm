@@ -46,13 +46,15 @@ class SimpleFileParserHelper(
     private fun readInstructions() {
         val filePath = getInstructionsFilePath()
         Log.d(LOG_TAG, "Reading instruction string from $filePath")
-        context.assets.open(filePath).use { inputStream -> // Use resources with `use` for proper closing.
-            InputStreamReader(inputStream).use { inputStreamReader ->
-                BufferedReader(inputStreamReader, BUFFER_SIZE).use { bufferedReader ->
-                    instructions = bufferedReader.readText() // Use readText for efficient reading
+        context.assets.open(filePath)
+            .use { inputStream -> // Use resources with `use` for proper closing.
+                InputStreamReader(inputStream).use { inputStreamReader ->
+                    BufferedReader(inputStreamReader, BUFFER_SIZE).use { bufferedReader ->
+                        instructions =
+                            bufferedReader.readText() // Use readText for efficient reading
+                    }
                 }
             }
-        }
         val instructionsSplit = instructions.split("\n")
         Log.d(LOG_TAG, "Successfully read instructions. Lines detected: ${instructionsSplit.size}")
     }

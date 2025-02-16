@@ -6,11 +6,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.slickpath.mobile.android.simple.vm.VMError
 import com.slickpath.mobile.android.simple.vm.VMListener
 import com.slickpath.mobile.android.simple.vm.instructions.Instructions
-import com.slickpath.mobile.android.simple.vm.parser.ParseResult
 import com.slickpath.mobile.android.simple.vm.parser.SimpleParser
 import com.slickpath.mobile.android.simple.vm.util.Command
 import com.slickpath.mobile.android.simple.vm.util.CommandList
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -116,7 +114,7 @@ class VirtualMachineTest {
      * Test method for [com.slickpath.mobile.android.simple.vm.machine.VirtualMachine.addCommands].
      */
     @Test
-    fun testAddCommands() {
+    fun testAddCommands() = runTest {
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
         val instructions = intArrayOf(
             Instructions.ADD,
@@ -168,31 +166,13 @@ class VirtualMachineTest {
      * Test method for [com.slickpath.mobile.android.simple.vm.machine.VirtualMachine.runNextInstruction].
      */
     @Test
-    fun testRunNextInstruction() {
+    fun testRunNextInstruction() = runTest {
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
-        val signalParse = CountDownLatch(1)
         val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
-        var testParseResult : ParseResult? = null
-        runBlocking {
-            parser.parse().collect {
-                testParseResult = it
-                signalParse.countDown()
-            }
-        }
-        try {
-            // Wait for Callback
-            Log.d(TAG, "+...........................PARSE WAIT ")
-            signalParse.await()
-            Log.d(TAG, "+...........................PARSE DONE WAIT ")
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-            fail(e.message)
-        } // wait for callback
+        val parseResult = parser.parse()
         Log.d(TAG, "+...........................VM ADD COMMANDS START")
         val signalAddCommands = CountDownLatch(1)
         addVMListenerAdding(virtualMachine, signalAddCommands)
-        assertNotNull(testParseResult)
-        val parseResult = testParseResult!!
         virtualMachine.addCommands(parseResult.commands)
         try {
             // Wait for Callback
@@ -277,24 +257,10 @@ class VirtualMachineTest {
     @Test
     fun testRunInstructions() = runTest {
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
-        val signalParse = CountDownLatch(1)
         val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
-        var testParseResult : ParseResult? = null
-        parser.parse().collect {
-            testParseResult = it
-            signalParse.countDown()
-        }
-        try {
-            // Wait for Callback
-            signalParse.await()
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-            fail(e.message)
-        } // wait for callback
+        val parseResult = parser.parse()
         val signalAddCommands = CountDownLatch(1)
         addVMListenerAdding(virtualMachine, signalAddCommands)
-        assertNotNull(testParseResult)
-        val parseResult = testParseResult!!
         virtualMachine.addCommands(parseResult.commands)
         assertNull(parseResult.vmError)
         try {
@@ -323,29 +289,13 @@ class VirtualMachineTest {
      * Test method for [com.slickpath.mobile.android.simple.vm.machine.VirtualMachine.runInstructions].
      */
     @Test
-    fun testRunInstructionsInt() {
+    fun testRunInstructionsInt() = runTest {
         Log.d(TAG, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
-        val signalParse = CountDownLatch(1)
         val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
-        var testParseResult : ParseResult? = null
-        runBlocking {
-            parser.parse().collect {
-                testParseResult = it
-                signalParse.countDown()
-            }
-        }
-        try {
-            // Wait for Callback
-            signalParse.await()
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-            fail(e.message)
-        } // wait for callback
+        val parseResult = parser.parse()
         val signalAddCommands = CountDownLatch(1)
         addVMListenerAdding(virtualMachine, signalAddCommands)
-        assertNotNull(testParseResult)
-        val parseResult = testParseResult!!
         virtualMachine.addCommands(parseResult.commands)
         assertNull(parseResult.vmError)
         try {
@@ -381,19 +331,8 @@ class VirtualMachineTest {
         Log.d(TAG, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
         val virtualMachine = VirtualMachine(ApplicationProvider.getApplicationContext())
         val parser = SimpleParser(FileHelperForTest(FibonacciInstructions.INSTRUCTIONS))
-        val signalAddCommands = CountDownLatch(1)
-        addVMListenerAdding(virtualMachine, signalAddCommands)
-        runBlocking {
-            virtualMachine.addCommands(parser)
-        }
-        try {
-            // Wait for Callback
-            signalAddCommands.await()
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-            fail(e.message)
-        } // wait for callback
-        assertEquals(35, _instructionAddedCount)
+        val addInstructionsResult = virtualMachine.addCommands(parser)
+        assertEquals(35, addInstructionsResult.commands.size)
         val signalRunInstructions = CountDownLatch(1)
         addVMListenerRunning(virtualMachine, signalRunInstructions)
         virtualMachine.runInstructions()
@@ -405,7 +344,7 @@ class VirtualMachineTest {
             fail(e.message)
         } // wait for callback
         Log.d(TAG, "+......... checking last line executed")
-        assertEquals(35, _lastLineExecuted)
+        assertEquals(35, virtualMachine.programCounter)
         Log.d(TAG, "??????????????????????????????")
     }
 

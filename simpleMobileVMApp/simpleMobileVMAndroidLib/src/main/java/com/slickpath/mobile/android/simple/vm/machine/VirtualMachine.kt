@@ -7,9 +7,12 @@ import android.util.Log
 import com.slickpath.mobile.android.simple.vm.*
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet
 import com.slickpath.mobile.android.simple.vm.instructions.Instructions
+import com.slickpath.mobile.android.simple.vm.parser.ParseResult
 import com.slickpath.mobile.android.simple.vm.parser.Parser
 import com.slickpath.mobile.android.simple.vm.util.Command
 import com.slickpath.mobile.android.simple.vm.util.CommandList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadPoolExecutor
@@ -80,9 +83,9 @@ class VirtualMachine(
      *
      * @param commands The list of commands to add.
      */
-    override fun addCommands(commands: CommandList?) {
+    override suspend fun addCommands(commands: CommandList?) {
         resetProgramWriter()
-        executorPool.execute { doAddInstructions(commands) }
+        doAddInstructions(commands)
     }
 
     /**
@@ -90,12 +93,11 @@ class VirtualMachine(
      *
      * @param parser The parser containing the commands.
      */
-    override suspend fun addCommands(parser: Parser) {
+    override suspend fun addCommands(parser: Parser): AddInstructionsResult {
         this.parser = parser
-        parser.parse().collect { parseResult ->
-            addCommands(parseResult.commands)
-            vmListener?.completedAddingInstructions(parseResult.vmError, parseResult.commands.size)
-        }
+        val parseResult = parser.parse()
+        doAddInstructions(parseResult.commands)
+        return parseResult.toAddInstructionsResult()
     }
 
     /**
@@ -103,20 +105,25 @@ class VirtualMachine(
      *
      * @param commands The list of commands to add.
      */
-    private fun doAddInstructions(commands: CommandList?) {
-        Log.d(LOG_TAG, "^^^^^^^^^^ ADD INSTRUCTIONS START ^^^^^^^^^^")
-        var vmError: VMError? = null
-        var addedInstructionCount = 0
-        if (commands == null) {
-            vmError = VMError("Null command list provided to doAddInstructions", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS)
-        } else {
-            addedInstructionCount = commands.size
-            commands.forEach { command ->
-                addCommand(command)
+    private suspend fun doAddInstructions(commands: CommandList?) {
+        withContext(Dispatchers.IO) {
+            Log.d(LOG_TAG, "^^^^^^^^^^ ADD INSTRUCTIONS START ^^^^^^^^^^")
+            var vmError: VMError? = null
+            var addedInstructionCount = 0
+            if (commands == null) {
+                vmError = VMError(
+                    "Null command list provided to doAddInstructions",
+                    VMErrorType.VM_ERROR_TYPE_BAD_PARAMS
+                )
+            } else {
+                addedInstructionCount = commands.size
+                commands.forEach { command ->
+                    addCommand(command)
+                }
             }
+            vmListener?.completedAddingInstructions(vmError, addedInstructionCount)
+            Log.d(LOG_TAG, "^^^^^^^^^^ ADD INSTRUCTIONS END ^^^^^^^^^^")
         }
-        vmListener?.completedAddingInstructions(vmError, addedInstructionCount)
-        Log.d(LOG_TAG, "^^^^^^^^^^ ADD INSTRUCTIONS END ^^^^^^^^^^")
     }
 
     /**
@@ -422,7 +429,7 @@ class VirtualMachine(
             )
         }
 
-        if(shouldIncrementProgramCounter) {
+        if (shouldIncrementProgramCounter) {
             incProgramCounter()
         }
     }
@@ -448,9 +455,15 @@ class VirtualMachine(
         get() {
             val command = getCommandAt(programCounter)
             if (command.parameters.isEmpty() && command.commandId >= SINGLE_PARAM_COMMAND_START) {
-                throw VMError("No parameters provided for command requiring a parameter.", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS)
+                throw VMError(
+                    "No parameters provided for command requiring a parameter.",
+                    VMErrorType.VM_ERROR_TYPE_BAD_PARAMS
+                )
             } else if (command.parameters.isNotEmpty() && command.commandId < SINGLE_PARAM_COMMAND_START) {
-                throw VMError("Too many parameters provided for command.", VMErrorType.VM_ERROR_TYPE_BAD_PARAMS)
+                throw VMError(
+                    "Too many parameters provided for command.",
+                    VMErrorType.VM_ERROR_TYPE_BAD_PARAMS
+                )
             }
             return command.parameters[0]
         }
@@ -483,3 +496,7 @@ class VirtualMachine(
         }
     }
 }
+
+data class AddInstructionsResult(val vmError: VMError?, val commands: CommandList)
+
+fun ParseResult.toAddInstructionsResult() = AddInstructionsResult(vmError, commands)
