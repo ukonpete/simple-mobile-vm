@@ -128,7 +128,7 @@ class VirtualMachineTest {
         assertNull(runResult.vmError)
 
         for (i in 0..99) {
-            var result: VirtualMachine.RunResult? = null
+            var result: RunResult? = null
             try {
                 result = virtualMachine.runNextInstruction()
                 assertFalse("($i) Halt= ", result.didHalt)

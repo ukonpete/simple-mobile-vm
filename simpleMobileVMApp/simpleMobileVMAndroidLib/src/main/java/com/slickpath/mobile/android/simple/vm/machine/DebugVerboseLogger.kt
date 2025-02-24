@@ -7,12 +7,16 @@ interface IDebugVerboseLogger {
     fun debugVerbose(tag: String, text: () -> String)
     fun debug(tag: String, text: String)
     fun debug(tag: String, text: () -> String)
+
+    var debugDump: Boolean
 }
 
 class DebugVerboseLogger(
     private val debug: Boolean,
     private val debugVerbose: Boolean
 ) : IDebugVerboseLogger {
+
+    override var debugDump = false
 
     /**
      * If debugVerbose is enabled write the output to a log

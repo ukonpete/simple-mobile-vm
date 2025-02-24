@@ -86,11 +86,11 @@ class KernelTest {
         try {
             assertEquals(START_LOCATION, _kernel.programCounter)
             for (i in 0..99) {
-                _kernel.incProgramCounter()
+                _kernel.incrementProgramCounter()
             }
             assertEquals(100, _kernel.programCounter)
             for (i in 0..19) {
-                _kernel.decProgramCounter()
+                _kernel.decrementProgramCounter()
             }
             assertEquals(80, _kernel.programCounter)
             _kernel.branch(50)
@@ -112,8 +112,8 @@ class KernelTest {
     /**
      * Test method for [com.slickpath.mobile.android.simple.vm.machine.Kernel.jump].
      * Test method for [com.slickpath.mobile.android.simple.vm.machine.Kernel.programCounter].
-     * Test method for [com.slickpath.mobile.android.simple.vm.machine.Kernel.incProgramCounter].
-     * Test method for [com.slickpath.mobile.android.simple.vm.machine.Kernel.decProgramCounter].
+     * Test method for [com.slickpath.mobile.android.simple.vm.machine.Kernel.incrementProgramCounter].
+     * Test method for [com.slickpath.mobile.android.simple.vm.machine.Kernel.decrementProgramCounter].
      * Test method for [com.slickpath.mobile.android.simple.vm.machine.Kernel.resetStack].
      */
     @Test
@@ -121,11 +121,11 @@ class KernelTest {
         try {
             assertEquals(START_LOCATION, _kernel.programCounter)
             for (i in 0..99) {
-                _kernel.incProgramCounter()
+                _kernel.incrementProgramCounter()
             }
             assertEquals(100, _kernel.programCounter)
             for (i in 0..19) {
-                _kernel.decProgramCounter()
+                _kernel.decrementProgramCounter()
             }
             assertEquals(80, _kernel.programCounter)
             _kernel.push(2)

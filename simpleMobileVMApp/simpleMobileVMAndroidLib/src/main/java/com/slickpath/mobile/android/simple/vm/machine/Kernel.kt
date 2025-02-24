@@ -11,13 +11,13 @@ import java.util.EmptyStackException
  *
  * @author Pete Procopio
  */
-open class Kernel : IDebugVerboseLogger {
+open class Kernel : IKernel, IDebugVerboseLogger {
 
     companion object {
         private val LOG_TAG = Machine::class.java.simpleName
     }
 
-    var debugDump = false
+    override var debugDump: Boolean = false
 
     private val debugVerboseLogger = DebugVerboseLogger(
         /**
@@ -46,7 +46,7 @@ open class Kernel : IDebugVerboseLogger {
      *
      * @return int
      */
-    val programCounter: Int
+    override val programCounter: Int
         get() = programManager.getProgramCounter()
 
     /**
@@ -57,7 +57,7 @@ open class Kernel : IDebugVerboseLogger {
      * @throws VMError error in VM
      */
     @Throws(VMError::class)
-    fun getValueAt(location: Int): Int {
+    override fun getValueAt(location: Int): Int {
         return if (location in 0 until MemoryStore.MAX_MEMORY) {
             memoryStore[location]
         } else {
@@ -210,21 +210,21 @@ open class Kernel : IDebugVerboseLogger {
     /**
      * Increment program counter location to next line of instruction
      */
-    fun incProgramCounter() {
+    override fun incrementProgramCounter() {
         programManager.incProgramCounter()
     }
 
     /**
      * Decrement program counter location to previous line of instruction
      */
-    fun decProgramCounter() {
+    override fun decrementProgramCounter() {
         programManager.decProgramCounter()
     }
 
     /**
      * program counter location to start of program memory
      */
-    fun resetProgramCounter() {
+    override fun resetProgramCounter() {
         programManager.resetProgramCounter()
     }
 
@@ -246,18 +246,18 @@ open class Kernel : IDebugVerboseLogger {
     /**
      * Reset program writer location to starting memory location
      */
-    fun resetProgramWriter() {
+    override fun resetProgramWriter() {
         programManager.resetProgramWriter()
     }
 
     /**
      * Empty the stack
      */
-    fun resetStack() {
+    override fun resetStack() {
         memoryStack.reset()
     }
 
-    fun reset() {
+    override fun reset() {
         programManager.incrementProgramWriter()
         programManager.resetProgramWriter()
         resetStack()
@@ -271,7 +271,7 @@ open class Kernel : IDebugVerboseLogger {
      * @throws VMError error in VM
      */
     @Throws(VMError::class)
-    fun getCommandAt(location: Int): Command {
+    override fun getCommandAt(location: Int): Command {
         return if (location in 0 until MemoryStore.MAX_MEMORY) {
             val command = programManager.getCommandAt(location)
             val instruction = command.commandId
@@ -324,7 +324,7 @@ open class Kernel : IDebugVerboseLogger {
      *
      * @return List<Integer> list of each each value of memory
     </Integer> */
-    fun dumpMemory(): List<Int> {
+    override fun dumpMemory(): List<Int> {
         return memoryStore.memoryDump()
     }
 
@@ -333,7 +333,7 @@ open class Kernel : IDebugVerboseLogger {
      *
      * @return List<Integer> list of each each value of memory in the stack
     </Integer> */
-    fun dumpStack(): List<Int> {
+    override fun dumpStack(): List<Int> {
         return memoryStack.dump()
     }
 
@@ -344,5 +344,9 @@ open class Kernel : IDebugVerboseLogger {
     </Integer> */
     fun dumpInstructionMemory(): List<Command> {
         return programManager.dumpProgramStore()
+    }
+
+    override fun addCommand(command: Command) {
+        setCommandAt(command, programWriterPtr)
     }
 }

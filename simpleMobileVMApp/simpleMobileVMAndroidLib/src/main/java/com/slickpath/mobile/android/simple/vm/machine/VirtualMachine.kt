@@ -8,7 +8,6 @@ import com.slickpath.mobile.android.simple.vm.*
 import com.slickpath.mobile.android.simple.vm.instructions.BaseInstructionSet
 import com.slickpath.mobile.android.simple.vm.instructions.Instructions
 import com.slickpath.mobile.android.simple.vm.parser.Parser
-import com.slickpath.mobile.android.simple.vm.util.Command
 import com.slickpath.mobile.android.simple.vm.util.CommandList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,7 +33,7 @@ class VirtualMachine(
     private val context: Context,
     private val outputListener: OutputListener? = null,
     private val inputListener: InputListener? = null
-) : VirtualMachineInterface, Machine(outputListener, inputListener), Instructions {
+) : IVirtualMachine, Machine(outputListener, inputListener, Kernel()), Instructions {
 
     companion object {
         /**
@@ -60,14 +59,6 @@ class VirtualMachine(
     }
 
     //   EXECUTION
-    /**
-     * Adds a single command to the program memory.
-     *
-     * @param command The command to add.
-     */
-    override fun addCommand(command: Command) {
-        setCommandAt(command, programWriterPtr)
-    }
 
     /**
      * Adds a list of commands to the program memory asynchronously.
@@ -156,19 +147,6 @@ class VirtualMachine(
         }
         return RunResult(hasHalted, programCounter, vmError)
     }
-
-    /**
-     * Data class to hold the results of running an instruction.
-     *
-     * @property hasHalted Indicates if the HALT instruction was executed.
-     * @property lastLineExecuted The program counter value after execution.
-     * @property vmError Any VMError that occurred during execution.
-     */
-    data class RunResult(
-        val didHalt: Boolean,
-        val lastLineExecuted: Int,
-        val vmError: VMError?
-    )
 
     /**
      * Executes all remaining instructions in the program memory asynchronously.
@@ -427,7 +405,7 @@ class VirtualMachine(
         }
 
         if (shouldIncrementProgramCounter) {
-            incProgramCounter()
+            incrementProgramCounter()
         }
     }
 

@@ -3,6 +3,7 @@
 package com.slickpath.mobile.android.simple.vm.machine
 
 import com.slickpath.mobile.android.simple.vm.*
+import com.slickpath.mobile.android.simple.vm.util.Command
 import java.io.IOException
 
 /**
@@ -24,8 +25,9 @@ import java.io.IOException
  */
 open class Machine @JvmOverloads constructor(
     private val outputListener: OutputListener? = null,
-    inputListener: InputListener? = null
-) : Kernel() {
+    inputListener: InputListener? = null,
+    private val kernel: Kernel,
+) : IKernel, IDebugVerboseLogger {
 
     companion object {
         private val LOG_TAG = Machine::class.java.simpleName
@@ -35,6 +37,14 @@ open class Machine @JvmOverloads constructor(
 
     private var _inputListener: InputListener = inputListener ?: DefaultInputListener()
 
+    override val programCounter: Int
+        get() = kernel.programCounter
+
+    override var debugDump: Boolean
+        get() = kernel.debugDump
+        set(value) {
+            kernel.debugDump = value
+        }
     /////////////////////////////////////////////////  Command Category : ARITHMATIC
     /**
      *
@@ -46,8 +56,8 @@ open class Machine @JvmOverloads constructor(
      */
     @Throws(VMError::class)
     fun ADD() {
-        val val1 = pop()
-        val val2 = pop()
+        val val1 = kernel.pop()
+        val val2 = kernel.pop()
         PUSHC(val1 + val2)
     }
 
@@ -61,8 +71,8 @@ open class Machine @JvmOverloads constructor(
      */
     @Throws(VMError::class)
     fun SUB() {
-        val val1 = pop()
-        val val2 = pop()
+        val val1 = kernel.pop()
+        val val2 = kernel.pop()
         PUSHC(val1 - val2)
     }
 
@@ -76,8 +86,8 @@ open class Machine @JvmOverloads constructor(
      */
     @Throws(VMError::class)
     fun MUL() {
-        val val1 = pop()
-        val val2 = pop()
+        val val1 = kernel.pop()
+        val val2 = kernel.pop()
         PUSHC(val1 * val2)
     }
 
@@ -91,8 +101,8 @@ open class Machine @JvmOverloads constructor(
      */
     @Throws(VMError::class)
     fun DIV() {
-        val val1 = pop()
-        val val2 = pop()
+        val val1 = kernel.pop()
+        val val2 = kernel.pop()
         PUSHC(val1 / val2)
     }
 
@@ -106,7 +116,7 @@ open class Machine @JvmOverloads constructor(
      */
     @Throws(VMError::class)
     fun NEG() {
-        val val1 = pop()
+        val val1 = kernel.pop()
         PUSHC(-val1)
     }
     /////////////////////////////////////////////////  Command Category : BOOLEAN
@@ -121,8 +131,8 @@ open class Machine @JvmOverloads constructor(
     @Throws(VMError::class)
     fun EQUAL() {
         var equal = PUSHC_YES
-        val val1 = pop()
-        val val2 = pop()
+        val val1 = kernel.pop()
+        val val2 = kernel.pop()
         if (val1 != val2) {
             equal = PUSHC_NO
         }
@@ -140,8 +150,8 @@ open class Machine @JvmOverloads constructor(
     @Throws(VMError::class)
     fun NOTEQL() {
         var notEqual = PUSHC_NO
-        val val1 = pop()
-        val val2 = pop()
+        val val1 = kernel.pop()
+        val val2 = kernel.pop()
         if (val1 != val2) {
             notEqual = PUSHC_YES
         }
@@ -159,8 +169,8 @@ open class Machine @JvmOverloads constructor(
     @Throws(VMError::class)
     fun GREATER() {
         var greater = PUSHC_NO
-        val val1 = pop()
-        val val2 = pop()
+        val val1 = kernel.pop()
+        val val2 = kernel.pop()
         if (val1 > val2) {
             greater = PUSHC_YES
         }
@@ -178,8 +188,8 @@ open class Machine @JvmOverloads constructor(
     @Throws(VMError::class)
     fun LESS() {
         var less = PUSHC_NO
-        val val1 = pop()
-        val val2 = pop()
+        val val1 = kernel.pop()
+        val val2 = kernel.pop()
         if (val1 < val2) {
             less = PUSHC_YES
         }
@@ -197,8 +207,8 @@ open class Machine @JvmOverloads constructor(
     @Throws(VMError::class)
     fun GTREQL() {
         var greaterOrEqual = PUSHC_NO
-        val val1 = pop()
-        val val2 = pop()
+        val val1 = kernel.pop()
+        val val2 = kernel.pop()
         if (val1 >= val2) {
             greaterOrEqual = PUSHC_YES
         }
@@ -216,8 +226,8 @@ open class Machine @JvmOverloads constructor(
     @Throws(VMError::class)
     fun LSSEQL() {
         var lessEqual = PUSHC_NO
-        val val1 = pop()
-        val val2 = pop()
+        val val1 = kernel.pop()
+        val val2 = kernel.pop()
         if (val1 <= val2) {
             lessEqual = PUSHC_YES
         }
@@ -234,7 +244,7 @@ open class Machine @JvmOverloads constructor(
      */
     @Throws(VMError::class)
     fun NOT() {
-        var poppedVal = pop()
+        var poppedVal = kernel.pop()
 
         // long-hand for val == 0?1:0
         poppedVal = if (poppedVal == 0) {
@@ -265,7 +275,7 @@ open class Machine @JvmOverloads constructor(
      */
     @Throws(VMError::class)
     fun PUSHC(value: Int) {
-        push(value)
+        kernel.push(value)
     }
 
     /**
@@ -277,7 +287,7 @@ open class Machine @JvmOverloads constructor(
      */
     @Throws(VMError::class)
     fun POP() {
-        val location = pop()
+        val location = kernel.pop()
         POPC(location)
     }
 
@@ -291,8 +301,8 @@ open class Machine @JvmOverloads constructor(
      */
     @Throws(VMError::class)
     fun POPC(location: Int) {
-        val value = pop()
-        setValueAt(value, location)
+        val value = kernel.pop()
+        kernel.setValueAt(value, location)
     }
     ///////////////////////////////////////////////// Command Category : INPUT/OUTPUT
     /**
@@ -322,10 +332,10 @@ open class Machine @JvmOverloads constructor(
      */
     @Throws(VMError::class)
     fun WRCHAR() {
-        val value = pop()
+        val value = kernel.pop()
         val sVal = value.toChar()
         outputListener?.charOutput(sVal)
-        debugVerbose(LOG_TAG, "WRCHAR: $sVal")
+        kernel.debugVerbose(LOG_TAG, "WRCHAR: $sVal")
     }
 
     /**
@@ -357,10 +367,10 @@ open class Machine @JvmOverloads constructor(
      */
     @Throws(VMError::class)
     fun WRINT() {
-        val value = pop()
+        val value = kernel.pop()
         val out = value.toString()
         outputListener?.lineOutput(out + "\n")
-        debugVerbose(LOG_TAG, "WRINT $out")
+        kernel.debugVerbose(LOG_TAG, "WRINT $out")
     }
     ////////////////////////////////////////////////////  Command Category : CONTROL
     /**
@@ -371,8 +381,8 @@ open class Machine @JvmOverloads constructor(
      */
     @Throws(VMError::class)
     fun BRANCH(location: Int) {
-        debugVerbose(LOG_TAG, "--BR=$location")
-        branch(location)
+        kernel.debugVerbose(LOG_TAG, "--BR=$location")
+        kernel.branch(location)
     }
 
     /**
@@ -382,7 +392,7 @@ open class Machine @JvmOverloads constructor(
      */
     @Throws(VMError::class)
     fun JUMP() {
-        jump()
+        kernel.jump()
     }
 
     /**
@@ -397,7 +407,7 @@ open class Machine @JvmOverloads constructor(
      */
     @Throws(VMError::class)
     fun BREQL(location: Int): Boolean {
-        val poppedVal = pop()
+        val poppedVal = kernel.pop()
         var bBranched = false
         if (poppedVal == 0) {
             BRANCH(location)
@@ -418,7 +428,7 @@ open class Machine @JvmOverloads constructor(
      */
     @Throws(VMError::class)
     fun BRLSS(location: Int): Boolean {
-        val poppedValue = pop()
+        val poppedValue = kernel.pop()
         var bBranched = false
         if (poppedValue < 0) {
             BRANCH(location)
@@ -439,7 +449,7 @@ open class Machine @JvmOverloads constructor(
      */
     @Throws(VMError::class)
     fun BRGTR(location: Int): Boolean {
-        val poppedValue = pop()
+        val poppedValue = kernel.pop()
         var bBranched = false
         if (poppedValue > 0) {
             BRANCH(location)
@@ -458,7 +468,7 @@ open class Machine @JvmOverloads constructor(
      */
     @Throws(VMError::class)
     fun CONTENTS() {
-        val location = pop()
+        val location = kernel.pop()
         val valAt = getValueAt(location)
         PUSHC(valAt)
     }
@@ -470,7 +480,67 @@ open class Machine @JvmOverloads constructor(
      * This will send info to Log if debug is enabled
      */
     fun HALT() {
-        debug(LOG_TAG, "HALT")
+        kernel.debug(LOG_TAG, "HALT")
+    }
+
+    override fun addCommand(command: Command) {
+        kernel.addCommand(command)
+    }
+
+    override fun resetProgramWriter() {
+        kernel.resetProgramCounter()
+    }
+
+    override fun resetStack() {
+        kernel.resetStack()
+    }
+
+    override fun getValueAt(location: Int): Int {
+        return kernel.getValueAt(location)
+    }
+
+    override fun incrementProgramCounter() {
+        kernel.incrementProgramCounter()
+    }
+
+    override fun decrementProgramCounter() {
+        kernel.decrementProgramCounter()
+    }
+
+    override fun resetProgramCounter() {
+        kernel.resetProgramCounter()
+    }
+
+    override fun getCommandAt(location: Int): Command {
+        return kernel.getCommandAt(location)
+    }
+
+    override fun dumpStack(): List<Int> {
+        return kernel.dumpStack()
+    }
+
+    override fun dumpMemory(): List<Int> {
+        return kernel.dumpMemory()
+    }
+
+    override fun reset() {
+        kernel.reset()
+    }
+
+    override fun debugVerbose(tag: String, text: String) {
+        kernel.debugVerbose(tag, text)
+    }
+
+    override fun debugVerbose(tag: String, text: () -> String) {
+        kernel.debugVerbose(tag, text)
+    }
+
+    override fun debug(tag: String, text: String) {
+        kernel.debug(tag, text)
+    }
+
+    override fun debug(tag: String, text: () -> String) {
+        kernel.debug(tag, text)
     }
 
 }

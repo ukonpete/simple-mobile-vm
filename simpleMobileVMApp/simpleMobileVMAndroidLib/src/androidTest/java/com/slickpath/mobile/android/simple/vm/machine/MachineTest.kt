@@ -26,10 +26,12 @@ class MachineTest {
     }
 
     private lateinit var _machine: Machine
+    private lateinit var _kernel: Kernel
 
     @Before
     fun before() {
-        _machine = Machine()
+        _kernel = Kernel()
+        _machine = Machine(kernel = _kernel)
     }
 
     /**
@@ -39,7 +41,7 @@ class MachineTest {
     fun testADD() {
         try {
             _machine.PUSHC(LOW_VAL)
-            _machine.setValueAt(HIGH_VAL, MEM_LOC_1)
+            _kernel.setValueAt(HIGH_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.ADD()
             _machine.PUSHC(RESULT_LOC)
@@ -61,7 +63,7 @@ class MachineTest {
     fun testSUB() {
         try {
             _machine.PUSHC(LOW_VAL)
-            _machine.setValueAt(HIGH_VAL, MEM_LOC_1)
+            _kernel.setValueAt(HIGH_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.SUB()
             _machine.PUSHC(RESULT_LOC)
@@ -83,7 +85,7 @@ class MachineTest {
     fun testMUL() {
         try {
             _machine.PUSHC(LOW_VAL)
-            _machine.setValueAt(HIGH_VAL, MEM_LOC_1)
+            _kernel.setValueAt(HIGH_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.MUL()
             _machine.PUSHC(RESULT_LOC)
@@ -105,7 +107,7 @@ class MachineTest {
     fun testDIV() {
         try {
             _machine.PUSHC(LOW_VAL)
-            _machine.setValueAt(HIGH_VAL, MEM_LOC_1)
+            _kernel.setValueAt(HIGH_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.DIV()
             _machine.PUSHC(RESULT_LOC)
@@ -147,7 +149,7 @@ class MachineTest {
     fun testEQUAL() {
         try {
             _machine.PUSHC(LOW_VAL)
-            _machine.setValueAt(HIGH_VAL, MEM_LOC_1)
+            _kernel.setValueAt(HIGH_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.EQUAL()
             _machine.PUSHC(RESULT_LOC)
@@ -157,7 +159,7 @@ class MachineTest {
             assertTrue("POP should have thrown VMError", didPopFail())
             assertTrue("EQUAL should have thrown VMError", didMethodFail(_machine, "EQUAL"))
             _machine.PUSHC(LOW_VAL)
-            _machine.setValueAt(LOW_VAL, MEM_LOC_1)
+            _kernel.setValueAt(LOW_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.EQUAL()
             _machine.PUSHC(RESULT_LOC)
@@ -179,7 +181,7 @@ class MachineTest {
     fun testNOTEQL() {
         try {
             _machine.PUSHC(LOW_VAL)
-            _machine.setValueAt(HIGH_VAL, MEM_LOC_1)
+            _kernel.setValueAt(HIGH_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.NOTEQL()
             _machine.PUSHC(RESULT_LOC)
@@ -189,7 +191,7 @@ class MachineTest {
             assertTrue("POP should have thrown VMError", didPopFail())
             assertTrue("NOTEQL should have thrown VMError", didMethodFail(_machine, "NOTEQL"))
             _machine.PUSHC(LOW_VAL)
-            _machine.setValueAt(LOW_VAL, MEM_LOC_1)
+            _kernel.setValueAt(LOW_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.NOTEQL()
             _machine.PUSHC(RESULT_LOC)
@@ -211,7 +213,7 @@ class MachineTest {
     fun testGREATER() {
         try {
             _machine.PUSHC(LOW_VAL)
-            _machine.setValueAt(HIGH_VAL, MEM_LOC_1)
+            _kernel.setValueAt(HIGH_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.GREATER()
             _machine.PUSHC(RESULT_LOC)
@@ -221,7 +223,7 @@ class MachineTest {
             assertTrue("POP should have thrown VMError", didPopFail())
             assertTrue("GREATER should have thrown VMError", didMethodFail(_machine, "GREATER"))
             _machine.PUSHC(LOW_VAL)
-            _machine.setValueAt(LOW_VAL, MEM_LOC_1)
+            _kernel.setValueAt(LOW_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.GREATER()
             _machine.PUSHC(RESULT_LOC)
@@ -231,7 +233,7 @@ class MachineTest {
             assertTrue("POP should have thrown VMError", didPopFail())
             assertTrue("GREATER should have thrown VMError", didMethodFail(_machine, "GREATER"))
             _machine.PUSHC(HIGH_VAL)
-            _machine.setValueAt(LOW_VAL, MEM_LOC_1)
+            _kernel.setValueAt(LOW_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.GREATER()
             _machine.PUSHC(RESULT_LOC)
@@ -253,7 +255,7 @@ class MachineTest {
     fun testLESS() {
         try {
             _machine.PUSHC(LOW_VAL)
-            _machine.setValueAt(HIGH_VAL, MEM_LOC_1)
+            _kernel.setValueAt(HIGH_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.LESS()
             _machine.PUSHC(RESULT_LOC)
@@ -263,7 +265,7 @@ class MachineTest {
             assertTrue("POP should have thrown VMError", didPopFail())
             assertTrue("LESS should have thrown VMError", didMethodFail(_machine, "LESS"))
             _machine.PUSHC(LOW_VAL)
-            _machine.setValueAt(LOW_VAL, MEM_LOC_1)
+            _kernel.setValueAt(LOW_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.LESS()
             _machine.PUSHC(RESULT_LOC)
@@ -273,7 +275,7 @@ class MachineTest {
             assertTrue("POP should have thrown VMError", didPopFail())
             assertTrue("LESS should have thrown VMError", didMethodFail(_machine, "LESS"))
             _machine.PUSHC(HIGH_VAL)
-            _machine.setValueAt(LOW_VAL, MEM_LOC_1)
+            _kernel.setValueAt(LOW_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.LESS()
             _machine.PUSHC(RESULT_LOC)
@@ -295,7 +297,7 @@ class MachineTest {
     fun testGTREQL() {
         try {
             _machine.PUSHC(LOW_VAL)
-            _machine.setValueAt(HIGH_VAL, MEM_LOC_1)
+            _kernel.setValueAt(HIGH_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.GTREQL()
             _machine.PUSHC(RESULT_LOC)
@@ -305,7 +307,7 @@ class MachineTest {
             assertTrue("POP should have thrown VMError", didPopFail())
             assertTrue("GTREQL should have thrown VMError", didMethodFail(_machine, "GTREQL"))
             _machine.PUSHC(LOW_VAL)
-            _machine.setValueAt(LOW_VAL, MEM_LOC_1)
+            _kernel.setValueAt(LOW_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.GTREQL()
             _machine.PUSHC(RESULT_LOC)
@@ -315,7 +317,7 @@ class MachineTest {
             assertTrue("POP should have thrown VMError", didPopFail())
             assertTrue("GTREQL should have thrown VMError", didMethodFail(_machine, "GTREQL"))
             _machine.PUSHC(HIGH_VAL)
-            _machine.setValueAt(LOW_VAL, MEM_LOC_1)
+            _kernel.setValueAt(LOW_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.GTREQL()
             _machine.PUSHC(RESULT_LOC)
@@ -337,7 +339,7 @@ class MachineTest {
     fun testLSSEQL() {
         try {
             _machine.PUSHC(LOW_VAL)
-            _machine.setValueAt(HIGH_VAL, MEM_LOC_1)
+            _kernel.setValueAt(HIGH_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.LSSEQL()
             _machine.PUSHC(RESULT_LOC)
@@ -347,7 +349,7 @@ class MachineTest {
             assertTrue("POP should have thrown VMError", didPopFail())
             assertTrue("LSSEQL should have thrown VMError", didMethodFail(_machine, "LSSEQL"))
             _machine.PUSHC(LOW_VAL)
-            _machine.setValueAt(LOW_VAL, MEM_LOC_1)
+            _kernel.setValueAt(LOW_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.LSSEQL()
             _machine.PUSHC(RESULT_LOC)
@@ -357,7 +359,7 @@ class MachineTest {
             assertTrue("POP should have thrown VMError", didPopFail())
             assertTrue("LSSEQL should have thrown VMError", didMethodFail(_machine, "LSSEQL"))
             _machine.PUSHC(HIGH_VAL)
-            _machine.setValueAt(LOW_VAL, MEM_LOC_1)
+            _kernel.setValueAt(LOW_VAL, MEM_LOC_1)
             _machine.PUSH(MEM_LOC_1)
             _machine.LSSEQL()
             _machine.PUSHC(RESULT_LOC)
@@ -426,7 +428,7 @@ class MachineTest {
             val values = intArrayOf(20, 15, 17, 44, 101)
             val locations = intArrayOf(33, 45, 62, 77, 249)
             for (i in values.indices) {
-                _machine.setValueAt(values[i], locations[i])
+                _kernel.setValueAt(values[i], locations[i])
                 _machine.PUSH(locations[i])
             }
             val stackDump = _machine.dumpStack()
@@ -506,22 +508,22 @@ class MachineTest {
         try {
             assertEquals(START_LOCATION, _machine.programCounter)
             for (i in 0..99) {
-                _machine.incProgramCounter()
+                _machine.incrementProgramCounter()
             }
             assertEquals(100, _machine.programCounter)
             for (i in 0..19) {
-                _machine.decProgramCounter()
+                _machine.decrementProgramCounter()
             }
             assertEquals(80, _machine.programCounter)
-            _machine.branch(50)
+            _machine.BRANCH(50)
             assertEquals(50, _machine.programCounter)
-            _machine.branch(249)
+            _machine.BRANCH(249)
             assertEquals(249, _machine.programCounter)
-            _machine.branch(1)
+            _machine.BRANCH(1)
             assertEquals(1, _machine.programCounter)
             _machine.resetProgramCounter()
             assertEquals(START_LOCATION, _machine.programCounter)
-            _machine.branch(25)
+            _machine.BRANCH(25)
             assertEquals(25, _machine.programCounter)
         } catch (e: VMError) {
             e.printStackTrace()
@@ -537,27 +539,27 @@ class MachineTest {
         try {
             assertEquals(START_LOCATION, _machine.programCounter)
             for (i in 0..99) {
-                _machine.incProgramCounter()
+                _machine.incrementProgramCounter()
             }
             assertEquals(100, _machine.programCounter)
             for (i in 0..19) {
-                _machine.decProgramCounter()
+                _machine.decrementProgramCounter()
             }
             assertEquals(80, _machine.programCounter)
-            _machine.push(2)
-            _machine.push(12)
-            _machine.push(72)
-            _machine.push(99)
-            _machine.jump()
+            _machine.PUSHC(2)
+            _machine.PUSHC(12)
+            _machine.PUSHC(72)
+            _machine.PUSHC(99)
+            _machine.JUMP()
             assertEquals(99, _machine.programCounter)
-            _machine.jump()
+            _machine.JUMP()
             assertEquals(72, _machine.programCounter)
-            _machine.jump()
+            _machine.JUMP()
             assertEquals(12, _machine.programCounter)
             _machine.resetStack()
-            _machine.push(7)
+            _machine.PUSHC(7)
             assertEquals(12, _machine.programCounter)
-            _machine.jump()
+            _machine.JUMP()
             assertEquals(7, _machine.programCounter)
         } catch (e: VMError) {
             e.printStackTrace()
@@ -573,11 +575,11 @@ class MachineTest {
         try {
             assertEquals(START_LOCATION, _machine.programCounter)
             for (i in 0..99) {
-                _machine.incProgramCounter()
+                _machine.incrementProgramCounter()
             }
             assertEquals(100, _machine.programCounter)
             for (i in 0..19) {
-                _machine.decProgramCounter()
+                _machine.decrementProgramCounter()
             }
             assertEquals(80, _machine.programCounter)
             _machine.PUSHC(1)
@@ -608,11 +610,11 @@ class MachineTest {
         try {
             assertEquals(START_LOCATION, _machine.programCounter)
             for (i in 0..99) {
-                _machine.incProgramCounter()
+                _machine.incrementProgramCounter()
             }
             assertEquals(100, _machine.programCounter)
             for (i in 0..19) {
-                _machine.decProgramCounter()
+                _machine.decrementProgramCounter()
             }
             assertEquals(80, _machine.programCounter)
             _machine.PUSHC(1)
@@ -646,11 +648,11 @@ class MachineTest {
         try {
             assertEquals(START_LOCATION, _machine.programCounter)
             for (i in 0..99) {
-                _machine.incProgramCounter()
+                _machine.incrementProgramCounter()
             }
             assertEquals(100, _machine.programCounter)
             for (i in 0..19) {
-                _machine.decProgramCounter()
+                _machine.decrementProgramCounter()
             }
             assertEquals(80, _machine.programCounter)
             _machine.PUSHC(-1)
@@ -686,7 +688,7 @@ class MachineTest {
             val locations = intArrayOf(33, 45, 62, 77, 249)
             for (i in values.indices) {
                 _machine.PUSHC(locations[i])
-                _machine.setValueAt(values[i], locations[i])
+                _kernel.setValueAt(values[i], locations[i])
             }
             for (i in values.indices) {
                 _machine.CONTENTS()
@@ -717,11 +719,11 @@ class MachineTest {
         val memory = _machine.dumpMemory()
         val stack = _machine.dumpStack()
         for (i in 0..99) {
-            _machine.incProgramCounter()
+            _machine.incrementProgramCounter()
         }
         assertEquals(100, _machine.programCounter)
         for (i in 0..19) {
-            _machine.decProgramCounter()
+            _machine.decrementProgramCounter()
         }
         assertEquals(80, _machine.programCounter)
         _machine.HALT()

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.slickpath.mobile.android.simple.vm.VMError
 import com.slickpath.mobile.android.simple.vm.app.SimpleMobileVMAppActivity
 import com.slickpath.mobile.android.simple.vm.machine.AddInstructionsResult
+import com.slickpath.mobile.android.simple.vm.machine.RunResult
 import com.slickpath.mobile.android.simple.vm.machine.VirtualMachine
 import com.slickpath.mobile.android.simple.vm.parser.Parser
 
@@ -26,7 +27,7 @@ class SimpleVMViewModel(private var virtualMachine: VirtualMachine) : ViewModel(
         return result
     }
 
-    suspend fun runInstructions(): VirtualMachine.RunResult {
+    suspend fun runInstructions(): RunResult {
         val result = virtualMachine.runInstructions()
         completedRunningInstructions(result)
         return result
@@ -45,7 +46,7 @@ class SimpleVMViewModel(private var virtualMachine: VirtualMachine) : ViewModel(
     }
 
     private fun completedRunningInstructions(
-        runResult: VirtualMachine.RunResult
+        runResult: RunResult
     ) {
         onCompletedRunningInstructionsInstructionsStatus.postValue(
             CompletedRunningInstructionsStatus(
