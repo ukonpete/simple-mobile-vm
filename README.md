@@ -16,6 +16,10 @@ Note: To open the Android project it is located in the simpleMobileVMApp directo
 
   * More details available on [wiki](https://github.com/ukonpete/simple-mobile-vm/wiki)
 
+* minSdkVersion 21
+* targetSdkVersion 35
+* compileSdkVersion 35
+
 ## Release Notes
 
 * 2/12/2025 - 2/15/2025
